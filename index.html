@@ -136,6 +136,14 @@
         grid-template-columns: 1fr;
         gap: 40px;
       }
+      
+      .page section {
+        order: 1;
+      }
+      
+      .page .hero-image {
+        order: 2;
+      }
     }
 
     /* Left column */
@@ -293,6 +301,7 @@
       justify-content: center;
       opacity: 0;
       animation: fadeInUp 0.8s ease-out 0.5s forwards;
+      width: 100%;
     }
 
     .hero-image img {
@@ -398,13 +407,26 @@
 
       .page {
         gap: 32px;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      
+      .page section {
+        order: 1;
+        width: 100%;
+      }
+      
+      .page .hero-image {
+        order: 2;
+        margin-bottom: 0;
+        width: 100%;
       }
 
       .bottom-buttons {
         flex-direction: column;
         width: 100%;
         gap: 14px;
-        margin-top: 48px;
+        margin-top: 32px;
         margin-bottom: 16px;
       }
 
@@ -472,7 +494,7 @@
     </aside>
   </main>
 
-  <!-- Bottom buttons -->
+  <!-- Bottom buttons (after main content) -->
   <div class="bottom-buttons">
     <a href="https://drive.google.com/file/d/1VtcHmRdm67tygGzq6UQLCJJqZIZOSZmQ/view?fbclid=PAT01DUAPdm6dleHRuA2FlbQIxMABzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAac3gk-396MXC6Sxzi5ViP9ci1zwqSsKnRDnQILWbQRZTAsvoMjw27l6UA5lUQ_aem_z00WrM2-3_IGVMheeG_kJA" target="_blank" rel="noopener noreferrer" class="bottom-btn btn-learn-more" aria-label="Learn more about ProArtist Africa">Learn More</a>
     <a href="tel:+254740726132" class="bottom-btn btn-contact" aria-label="Call ProArtist Africa on +254740726132">Contact</a>
