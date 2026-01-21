@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ProArtist Africa – Launching Soon</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ProArtist Africa – Launching soon. An artist-first grooming and investment ecosystem for Africa." />
+  <meta property="og:title" content="ProArtist Africa – Launching Soon" />
+  <meta property="og:description" content="We're building Africa's next grooming investment ecosystem for investors, professionals, and operators across the continent." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="proartist-africa.png.jpeg" />
+  <meta property="og:url" content="" />
+  <!-- Montserrat font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #ffdb00;
+      --bg-card: #ffffff;
+      --accent: #ffdb00;
+      --accent-soft: rgba(255, 219, 0, 0.2);
+      --text-main: #000000;
+      --text-muted: #333333;
+      --border-subtle: rgba(0, 0, 0, 0.15);
+      --danger: #f25757;
+      --success: #29c36a;
+      --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.15);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --transition: 200ms ease-out;
+      --font-body: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: #ffdb00;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 16px;
+    }
+
+    .logo-header {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-main);
+      z-index: 10;
+    }
+
+    .logo-header strong {
+      font-weight: 700;
+    }
+
+    .page {
+      max-width: 1120px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left column */
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--text-main);
+      box-shadow: 0 0 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-title {
+      font-size: clamp(52px, 7vw, 80px);
+      line-height: 1.05;
+      font-weight: 800;
+      margin: 60px 0 16px;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-title span.highlight {
+      color: var(--text-main);
+      font-weight: 800;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      max-width: 540px;
+      margin-bottom: 32px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-main);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .btn-primary,
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+
+    .btn-primary {
+      background: #000000;
+      color: #ffdb00;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-ghost {
+      border-color: rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text-main);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--text-main);
+      background: rgba(255, 255, 255, 1);
+      color: var(--text-main);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 14px rgba(41, 195, 106, 0.9);
+    }
+
+    /* Right column: hero image */
+    .hero-image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-image img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    /* Bottom buttons section */
+    .bottom-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      max-width: 1120px;
+      padding: 0 24px;
+      margin: 40px auto 12px;
+    }
+
+    .bottom-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all var(--transition);
+      border: 1px solid transparent;
+      background: #000000;
+      color: #ffdb00;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .bottom-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .bottom-btn:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.6);
+    }
+
+    @media (max-width: 600px) {
+      .hero-title {
+        margin-top: 40px;
+      }
+
+      .hero-subtitle {
+        font-size: 15px;
+      }
+
+      .bottom-buttons {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .bottom-btn {
+        width: 100%;
+        max-width: 280px;
+      }
+    }
+
+    .footer-copy {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="logo-header">
+    <strong>Pro</strong>Artist
+  </header>
+  <main class="page" aria-label="ProArtist Africa – Launching Soon">
+    <!-- LEFT: Copy / hero -->
+    <section>
+      <h1 class="hero-title">
+        LAUNCHING SOON
+      </h1>
+
+      <p class="hero-subtitle">
+        We're building Africa's next grooming investment ecosystem.<br /><br />
+        ProArtist is an artist-first grooming platform bringing together barbershops, beauty brands, and structured investment opportunities under one scalable franchise model.<br /><br />
+        Our website is currently under active development as we prepare to launch a platform designed for investors, professionals, and operators across Africa.
+      </p>
+
+      <div class="meta">
+        <span><span class="dot"></span> Launch phase in progress</span>
+        <span>Built for investors &amp; grooming professionals</span>
+      </div>
+    </section>
+
+    <!-- RIGHT: image -->
+    <aside class="hero-image" aria-label="ProArtist Africa graphic">
+      <img src="proartist-africa.png.jpeg" alt="Africa silhouette graphic for ProArtist Africa" loading="lazy" />
+    </aside>
+  </main>
+
+  <!-- Bottom buttons -->
+  <div class="bottom-buttons">
+    <a href="https://drive.google.com/file/d/1VtcHmRdm67tygGzq6UQLCJJqZIZOSZmQ/view?fbclid=PAT01DUAPdm6dleHRuA2FlbQIxMABzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAac3gk-396MXC6Sxzi5ViP9ci1zwqSsKnRDnQILWbQRZTAsvoMjw27l6UA5lUQ_aem_z00WrM2-3_IGVMheeG_kJA" target="_blank" rel="noopener noreferrer" class="bottom-btn btn-learn-more" aria-label="Learn more about ProArtist Africa">Learn More</a>
+    <a href="tel:+254740726132" class="bottom-btn btn-contact" aria-label="Call ProArtist Africa on +254740726132">Contact</a>
+    <a href="mailto:info@proartistafrica.africa" class="bottom-btn btn-contact" aria-label="Email ProArtist Africa at info@proartistafrica.africa">Email</a>
+    <a href="https://wa.me/254740726132" target="_blank" rel="noopener noreferrer" class="bottom-btn btn-whatsapp" aria-label="Chat with ProArtist Africa on WhatsApp">WhatsApp</a>
+    <a href="https://instagram.com/proartistafrica" target="_blank" rel="noopener noreferrer" class="bottom-btn btn-instagram" aria-label="Visit ProArtist Africa on Instagram">Instagram</a>
+  </div>
+
+  <div class="footer-copy">
+    © <span id="year"></span> ProArtist Africa. All rights reserved.
+  </div>
+
+  <script>
+    const y = document.getElementById('year');
+    if (y) {
+      y.textContent = new Date().getFullYear();
+    }
+  </script>
+</body>
+</html>
+
