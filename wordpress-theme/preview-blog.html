@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ProArtist Africa - Blog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="proartist-theme/assets/css/main.css">
+    <style>
+        body { background: #ffffff; }
+        
+        @keyframes blogFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .site-main {
+            animation: blogFadeIn 1.5s ease forwards;
+        }
+        
+        @media (min-width: 769px) {
+            .primary-menu {
+                display: flex !important;
+                list-style: none;
+                gap: 30px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+        
+        .primary-menu a {
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+        
+        .blog-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 60px;
+        }
+        
+        .blog-card {
+            border: 2px solid #ffdb00;
+            border-radius: 12px;
+            padding: 24px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+        
+        .blog-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 16px;
+            transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+        
+        .blog-card img:hover {
+            transform: scale(1.08) translateZ(30px);
+        }
+        
+        .blog-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 12px;
+        }
+        
+        .blog-card p {
+            font-size: 14px;
+            color: #000000;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 900px) {
+            .blog-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .blog-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="site-branding">
+                <a href="preview-home.html" class="logo-link"><strong>Pro</strong>Artist</a>
+            </div>
+            <nav class="main-navigation">
+                <ul class="primary-menu">
+                    <li><a href="preview-home.html">HOME</a></li>
+                    <li><a href="preview-investors.html">INVESTORS</a></li>
+                    <li><a href="preview-about.html">ABOUT</a></li>
+                    <li><a href="preview-brands.html">BRANDS</a></li>
+                    <li><a href="preview-blog.html">BLOG</a></li>
+                    <li><a href="preview-jobs.html">JOBS</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <!-- Hero Section -->
+        <section class="hero-section" style="padding: 60px 0; background: #ffffff;">
+            <div class="container" style="max-width: 1200px; text-align: center;">
+                <h1 class="hero-title" style="text-align: center; margin-bottom: 24px; line-height: 1.2; font-weight: 800; color: #000000; font-size: clamp(32px, 5vw, 48px);">
+                    Learn More About The<br />Grooming Industry
+                </h1>
+                <p class="hero-subtitle" style="text-align: center; margin-bottom: 32px; color: #000000; font-size: 16px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                    Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.
+                </p>
+            </div>
+        </section>
+
+        <!-- Blog Cards Section -->
+        <section style="padding: 0 0 60px; background: #ffffff;">
+            <div class="container" style="max-width: 1200px;">
+                <div class="blog-cards">
+                    <div class="blog-card">
+                        <h3>Pro-Franchising 101: What You Need to Know</h3>
+                        <p>Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.</p>
+                        <img src="proartist-theme/assets/images/blog-image.jpg" alt="Barbershop interior" />
+                    </div>
+                    <div class="blog-card">
+                        <h3>Pro-Franchising 101: What You Need to Know</h3>
+                        <p>Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.</p>
+                        <img src="proartist-theme/assets/images/blog-image.jpg" alt="Barbershop interior" />
+                    </div>
+                    <div class="blog-card">
+                        <h3>Pro-Franchising 101: What You Need to Know</h3>
+                        <p>Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.</p>
+                        <img src="proartist-theme/assets/images/blog-image.jpg" alt="Barbershop interior" />
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ProArtist Africa</h3>
+                    <p>Building Africa's next big portfolio of hair & beauty investment opportunities.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-menu">
+                        <li><a href="preview-home.html">Home</a></li>
+                        <li><a href="preview-investors.html">Investors</a></li>
+                        <li><a href="preview-about.html">About</a></li>
+                        <li><a href="preview-brands.html">Brands</a></li>
+                        <li><a href="preview-jobs.html">Jobs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: <a href="mailto:info@proartistafrica.africa">info@proartistafrica.africa</a></p>
+                    <p>Phone: <a href="tel:+254740726132">+254 740 726 132</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://wa.me/254740726132" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                        <a href="https://instagram.com/proartistafrica" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="year"></span> ProArtist Africa. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="proartist-theme/assets/js/main.js"></script>
+    <script>
+        const y = document.getElementById('year');
+        if (y) {
+            y.textContent = new Date().getFullYear();
+        }
+    </script>
+</body>
+</html>
+

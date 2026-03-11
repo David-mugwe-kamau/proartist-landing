@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" class="home-slides-root">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ProArtist Africa - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="proartist-theme/assets/css/main.css">
+    <style>
+        body { background: #ffdb00; }
+        
+        @media (min-width: 769px) {
+            .primary-menu {
+                display: flex !important;
+                list-style: none;
+                gap: 30px;
+                margin: 0;
+                padding: 0;
+            }
+        }
+        
+        .primary-menu a {
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+        }
+        
+        .hero-title {
+            font-size: clamp(36px, 6vw, 56px) !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 17px !important;
+        }
+        
+        .section-title {
+            font-size: clamp(28px, 4vw, 40px) !important;
+        }
+        
+        .section-content {
+            font-size: 16px !important;
+        }
+        
+        .brand-title {
+            font-size: 28px !important;
+        }
+        
+        @media (max-width: 900px) {
+            .hero-section .container {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .hero-section .container > div:first-child {
+                order: 1;
+            }
+            
+            .hero-section .container > div:last-child {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="site-branding">
+                <a href="#" class="logo-link"><strong>Pro</strong>Artist</a>
+            </div>
+            <nav class="main-navigation">
+                <ul class="primary-menu">
+                    <li><a href="preview-home.html">HOME</a></li>
+                    <li><a href="preview-investors.html">INVESTORS</a></li>
+                    <li><a href="preview-about.html">ABOUT</a></li>
+                    <li><a href="preview-brands.html">BRANDS</a></li>
+                    <li><a href="preview-blog.html">BLOG</a></li>
+                    <li><a href="preview-jobs.html">JOBS</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="site-main home-slides">
+        <div class="home-carousel">
+            <div class="home-carousel-track">
+                <!-- Slide 1: Investors Thrive, Professionals Grow -->
+                <section class="home-slide hero-section" style="padding: 60px 0;">
+            <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1200px;">
+                <div style="display: flex; flex-direction: column; justify-content: center; max-width: 550px;">
+                    <h1 class="hero-title" style="text-align: left; margin-bottom: 24px; line-height: 1.2; font-weight: 800; font-size: clamp(28px, 4vw, 40px);">
+                        Investors Thrive, <span style="white-space: nowrap;">Professionals Grow.</span>
+                    </h1>
+                    <p class="hero-subtitle" style="text-align: left; margin-bottom: 32px; color: #333;">
+                        We're building Africa's next big portfolio of hair & beauty investment opportunities - starting with barbershops.
+                    </p>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 24px;">
+                        <a href="preview-investors.html" class="btn" style="background: var(--color-primary); color: var(--color-black); border: 1px solid var(--color-black);">Invest With Us</a>
+                        <a href="preview-brands.html" class="btn" style="background: var(--color-black); color: var(--color-primary); border: none;">Explore Our Brands</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: flex-end;">
+                    <img src="proartist-theme/assets/images/pdf_page0_img0.png" alt="Africa silhouette graphic for ProArtist Africa" style="max-width: 100%; height: auto; display: block;" />
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: 360 Degree Support System -->
+        <section class="home-slide hero-section" style="padding: 60px 0; background: #ffdb00;">
+            <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1200px;">
+                <div style="display: flex; flex-direction: column; justify-content: center; max-width: 550px;">
+                    <h2 class="section-title" style="text-align: left; font-size: clamp(28px, 4vw, 40px); margin-bottom: 16px; color: #000000;">360 Degree Support System</h2>
+                    <p class="section-content" style="text-align: left; margin-bottom: 32px; color: #000000;">
+                        We handle everything - recruitment, training, operations, customer experience and growth.
+                        This allows each location to thrive with clarity and consistency.
+                    </p>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 24px;">
+                        <a href="preview-investors.html" class="btn" style="background: var(--color-primary); color: var(--color-black); border: 1px solid var(--color-black);">Invest With Us</a>
+                        <a href="preview-brands.html" class="btn" style="background: var(--color-black); color: var(--color-primary); border: none;">Explore Our Brands</a>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: flex-end;">
+                    <img src="proartist-theme/assets/images/pdf_page0_img0.png" alt="Africa silhouette graphic for ProArtist Africa" style="max-width: 100%; height: auto; display: block;" />
+                </div>
+            </div>
+        </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ProArtist Africa</h3>
+                    <p>Building Africa's next big portfolio of hair & beauty investment opportunities.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-menu">
+                        <li><a href="preview-home.html">Home</a></li>
+                        <li><a href="preview-investors.html">Investors</a></li>
+                        <li><a href="preview-about.html">About</a></li>
+                        <li><a href="#">Brands</a></li>
+                        <li><a href="#">Jobs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: <a href="mailto:info@proartistafrica.africa">info@proartistafrica.africa</a></p>
+                    <p>Phone: <a href="tel:+254740726132">+254 740 726 132</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://wa.me/254740726132" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                        <a href="https://instagram.com/proartistafrica" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="year"></span> ProArtist Africa. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="proartist-theme/assets/js/main.js"></script>
+    <script>
+        const y = document.getElementById('year');
+        if (y) {
+            y.textContent = new Date().getFullYear();
+        }
+    </script>
+</body>
+</html>
+

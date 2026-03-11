@@ -1,0 +1,20 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# Raw/unused image formats
+*.HEIC
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
