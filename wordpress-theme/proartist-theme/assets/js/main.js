@@ -197,7 +197,7 @@
         if (slides.length < 2) return;
         var idx = 0;
         var autoTimer = null;
-        var SLIDE_INTERVAL = 9000;
+        var SLIDE_INTERVAL = 3000;
 
         function goToSlide(index) {
             idx = Math.max(0, Math.min(index, slides.length - 1));
