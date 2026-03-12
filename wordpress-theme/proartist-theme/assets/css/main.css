@@ -713,6 +713,10 @@ body {
     .home-carousel .home-slide {
         min-height: auto;
     }
+
+    .hero-title span {
+        white-space: normal !important;
+    }
 }
 
 @media (max-width: 600px) {
