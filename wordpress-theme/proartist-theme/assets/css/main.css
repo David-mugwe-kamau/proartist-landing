@@ -703,6 +703,16 @@ body {
         padding-top: 80px;
         padding-bottom: 40px;
     }
+
+    .home-carousel {
+        height: auto;
+        min-height: auto;
+        overflow: visible;
+    }
+
+    .home-carousel .home-slide {
+        min-height: auto;
+    }
 }
 
 @media (max-width: 600px) {
