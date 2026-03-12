@@ -644,7 +644,8 @@ body {
     }
     
     .primary-menu.active {
-        max-height: 400px;
+        max-height: 70vh;
+        overflow-y: auto;
         opacity: 1;
         padding: 20px;
         pointer-events: auto;
@@ -679,6 +680,14 @@ body {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .home-carousel .home-slide .container > div:last-child {
+        justify-content: center;
+    }
+
+    .home-carousel .home-slide .container > div:last-child img {
+        object-position: center center;
     }
 }
 
