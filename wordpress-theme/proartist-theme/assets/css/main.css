@@ -623,6 +623,11 @@ body {
 }
 
 @media (max-width: 768px) {
+    .site-header {
+        padding: 14px 0;
+        padding-top: calc(14px + env(safe-area-inset-top));
+    }
+
     .menu-toggle {
         display: flex;
     }
@@ -652,7 +657,7 @@ body {
     }
     
     .hero-section {
-        padding: 40px 0;
+        padding: 56px 0;
     }
     
     .section {
@@ -702,7 +707,7 @@ body {
     }
 
     .hero-section {
-        padding: 32px 0;
+        padding: 64px 0;
     }
 
     .section {
