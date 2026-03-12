@@ -694,6 +694,15 @@ body {
     .home-carousel .home-slide .container > div:last-child img {
         object-position: center center;
     }
+
+    .home-carousel .home-slide {
+        align-items: flex-start;
+    }
+
+    .home-carousel .home-slide .container {
+        padding-top: 80px;
+        padding-bottom: 40px;
+    }
 }
 
 @media (max-width: 600px) {
