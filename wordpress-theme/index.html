@@ -46,6 +46,21 @@
             font-size: 28px !important;
         }
         
+        /* Home slides: same title and body size for both slides */
+        .home-slides .hero-title,
+        .home-slides .section-title {
+            font-size: clamp(28px, 4vw, 40px) !important;
+        }
+        .home-slides .hero-subtitle,
+        .home-slides .section-content {
+            font-size: 16px !important;
+        }
+        /* Reduce gap between header and home content */
+        .home-slides .home-slide.hero-section {
+            padding-top: 32px !important;
+            padding-bottom: 60px !important;
+        }
+        
         @media (max-width: 900px) {
             .hero-section .container {
                 grid-template-columns: 1fr !important;
