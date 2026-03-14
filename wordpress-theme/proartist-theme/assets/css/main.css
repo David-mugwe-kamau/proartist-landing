@@ -695,6 +695,10 @@ body {
         object-position: center center;
     }
 
+    .home-carousel-track {
+        touch-action: pan-y;
+    }
+
     .home-carousel .home-slide {
         align-items: flex-start;
     }

@@ -163,7 +163,7 @@
             track.addEventListener('touchend', function(e) {
                 const dx = e.changedTouches[0].clientX - touchStartX;
                 const dy = e.changedTouches[0].clientY - touchStartY;
-                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+                if (Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 50) {
                     pauseAndResume();
                     if (dx > 0) goToSlide(currentIndex - 1);
                     else goToSlide(currentIndex + 1);
