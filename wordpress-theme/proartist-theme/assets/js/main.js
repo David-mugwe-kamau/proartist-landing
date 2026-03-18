@@ -156,11 +156,16 @@
 
             // Swipe: touch
             let touchStartX = 0, touchStartY = 0;
+            let ignoreSwipe = false;
             track.addEventListener('touchstart', function(e) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
+                // If the user starts the gesture from the footer, do not switch home slides.
+                // This prevents the footer area from being affected by the carousel translate transform.
+                ignoreSwipe = !!(e.target && e.target.closest && e.target.closest('.site-footer'));
             }, { passive: true });
             track.addEventListener('touchend', function(e) {
+                if (ignoreSwipe) return;
                 const dx = e.changedTouches[0].clientX - touchStartX;
                 const dy = e.changedTouches[0].clientY - touchStartY;
                 if (Math.abs(dx) > Math.abs(dy) * 1.5 && Math.abs(dx) > 50) {
