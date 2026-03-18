@@ -628,6 +628,10 @@ body {
         padding-top: calc(14px + env(safe-area-inset-top));
     }
 
+    .home-carousel {
+        z-index: 50;
+    }
+
     .menu-toggle {
         display: flex;
     }
@@ -677,6 +681,8 @@ body {
     .site-footer {
         padding-top: 60px;
         padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        position: relative;
+        z-index: 100;
     }
 
     .primary-menu a {
