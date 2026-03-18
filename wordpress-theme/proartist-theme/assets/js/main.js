@@ -160,9 +160,20 @@
             track.addEventListener('touchstart', function(e) {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
-                // If the user starts the gesture from the footer, do not switch home slides.
-                // This prevents the footer area from being affected by the carousel translate transform.
-                ignoreSwipe = !!(e.target && e.target.closest && e.target.closest('.site-footer'));
+                // If the user starts the gesture inside the footer area, do not switch home slides.
+                // This prevents the footer from being affected by the carousel translate transform.
+                const footer = document.querySelector('.site-footer');
+                if (footer && footer.getBoundingClientRect) {
+                    const rect = footer.getBoundingClientRect();
+                    ignoreSwipe = (
+                        touchStartX >= rect.left &&
+                        touchStartX <= rect.right &&
+                        touchStartY >= rect.top &&
+                        touchStartY <= rect.bottom
+                    );
+                } else {
+                    ignoreSwipe = false;
+                }
             }, { passive: true });
             track.addEventListener('touchend', function(e) {
                 if (ignoreSwipe) return;
