@@ -627,8 +627,18 @@ body {
 
 @media (max-width: 768px) {
     .site-header {
-        padding: 14px 0;
-        padding-top: calc(14px + env(safe-area-inset-top, 0px));
+        padding: 10px 0;
+        padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    }
+
+    .site-header .container {
+        align-items: center;
+        min-height: 0;
+    }
+
+    .site-header .logo-link {
+        font-size: 20px;
+        line-height: 1.15;
     }
 
     .home-carousel {
@@ -637,6 +647,7 @@ body {
 
     .menu-toggle {
         display: flex;
+        padding: 8px;
     }
     
     .primary-menu {
