@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ProArtist Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #ffdb00;
+            --black: #000000;
+            --white: #ffffff;
+            --muted: #616161;
+            --bg: #f6f6f6;
+            --border: #e8e8e8;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; }
+        body { font-family: "Montserrat", system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--black); line-height: 1.5; overflow-x: hidden; }
+        .admin-shell { min-height: 100vh; display: grid; grid-template-columns: 280px 1fr; }
+        .sidebar { background: var(--white); border-right: 1px solid var(--border); padding: 20px 16px; }
+        .brand { display: flex; align-items: center; gap: 0; margin-bottom: 22px; padding: 10px 12px; border-radius: 12px; background: var(--brand); }
+        .brand strong { font-size: 22px; font-weight: 800; }
+        .brand span { font-size: 22px; font-weight: 500; }
+        .sidebar h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin: 8px 0 10px; }
+        .nav-list { list-style: none; display: grid; gap: 8px; }
+        .nav-btn { width: 100%; border: 1px solid transparent; background: transparent; text-align: left; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; color: var(--black); cursor: pointer; min-height: 44px; touch-action: manipulation; }
+        .nav-btn.active { background: var(--brand); border-color: #f0ce00; }
+        .content { padding: 24px; max-width: 100%; overflow-x: hidden; min-width: 0; }
+        .dashboard-hero, .card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+        .dashboard-hero { padding: 16px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .dashboard-hero h2 { font-size: clamp(20px, 2.4vw, 28px); margin-bottom: 4px; line-height: 1.2; }
+        .dashboard-hero p { color: #2a2a2a; font-size: 14px; }
+        .dashboard-logo { width: 84px; height: 84px; object-fit: contain; }
+        .dashboard-tips { margin-top: 12px; font-size: 13px; color: var(--muted); padding-left: 1.1em; }
+        .dashboard-tips li { margin-bottom: 6px; }
+        .topbar {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0 0 16px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .topbar > div:first-child { min-width: 0; flex: 1; }
+        .topbar h1 { font-size: clamp(20px, 2.2vw, 28px); line-height: 1.2; word-wrap: break-word; }
+        .topbar p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+        .topbar-actions { display: inline-flex; align-items: center; gap: 10px; }
+        .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; background: #f6fff2; color: #246b1f; border: 1px solid #d5efca; border-radius: 999px; padding: 8px 12px; }
+        .status.warn { background: #fff8e5; color: #8a5a00; border-color: #f5d27a; }
+        .status.error { background: #fff1f1; color: #8c1d1d; border-color: #f1b9b9; }
+        .dot { width: 8px; height: 8px; border-radius: 999px; background: #2ea62c; }
+        .editor-grid { display: grid; grid-template-columns: 1fr 340px; gap: 18px; }
+        .card-head { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+        .card-head h3 { font-size: 16px; margin-bottom: 4px; }
+        .card-head p { font-size: 13px; color: var(--muted); }
+        .card-body { padding: 16px 18px 18px; display: grid; gap: 14px; }
+        .field { display: grid; gap: 8px; }
+        label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #444; }
+        input, textarea { width: 100%; border: 1px solid #d9d9d9; border-radius: 10px; background: #fff; padding: 12px; font-family: inherit; font-size: 14px; color: var(--black); }
+        textarea { min-height: 108px; resize: vertical; }
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 4px; }
+        .btn { border: 1px solid var(--black); border-radius: 999px; padding: 11px 16px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; background: var(--white); touch-action: manipulation; min-height: 44px; align-items: center; display: inline-flex; justify-content: center; }
+        .btn-primary { background: var(--black); color: var(--brand); border-color: var(--black); }
+        .btn-secondary { background: var(--brand); color: var(--black); border-color: #f0ce00; }
+        .blog-block-image-upload-btn { background: var(--black); color: #ffffff; border-color: var(--black); }
+        .blog-block-gallery-upload-btn { background: var(--black); color: #ffffff; border-color: var(--black); }
+        .helper { font-size: 12px; color: var(--muted); }
+        .meta-list { list-style: none; display: grid; gap: 10px; }
+        .meta-list li { border: 1px dashed #d6d6d6; border-radius: 10px; padding: 10px; }
+        .meta-list strong { display: block; font-size: 12px; text-transform: uppercase; color: #505050; margin-bottom: 3px; }
+        .meta-list span { font-size: 13px; color: #202020; word-break: break-word; overflow-wrap: anywhere; }
+        .is-hidden { display: none !important; }
+        .blog-block-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            margin: 8px 0 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+        .blog-block-title:first-of-type { margin-top: 0; }
+        .blog-card-block {
+            padding: 12px 0 4px;
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+        .blog-card-block h4 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .is-hidden-block-field { display: none !important; }
+        .draft-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+        .draft-item {
+            border: 1px solid #e3e3e3;
+            border-radius: 10px;
+            padding: 10px;
+            background: #fff;
+            display: grid;
+            gap: 6px;
+        }
+        .draft-item-title { font-size: 13px; font-weight: 700; word-break: break-word; overflow-wrap: anywhere; }
+        .draft-item-meta { font-size: 12px; color: var(--muted); word-break: break-word; overflow-wrap: anywhere; }
+        .draft-actions { display: flex; gap: 8px; }
+        .audit-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+        .audit-item {
+            border: 1px solid #e3e3e3;
+            border-radius: 10px;
+            padding: 10px;
+            background: #fff;
+            display: grid;
+            gap: 6px;
+        }
+        .audit-item-top {
+            display: grid;
+            grid-template-columns: 64px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .audit-thumb {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #f2f2f2;
+            display: block;
+        }
+        .audit-item-path {
+            font-size: 12px;
+            font-weight: 700;
+            word-break: break-all;
+        }
+        .audit-item-meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .analytics-stat {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            background: #fff;
+        }
+        .analytics-stat strong {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #505050;
+            margin-bottom: 3px;
+        }
+        .analytics-stat span {
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .analytics-page-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .analytics-page-item {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 10px;
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            min-width: 0;
+        }
+        .analytics-page-item span:first-child { min-width: 0; word-break: break-word; overflow-wrap: anywhere; }
+        .analytics-page-count {
+            font-weight: 800;
+        }
+        .analytics-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: end;
+            margin-bottom: 8px;
+        }
+        .analytics-filters .field {
+            min-width: 170px;
+            margin: 0;
+        }
+        .analytics-filters input[type="date"] {
+            padding: 10px 12px;
+        }
+
+        .manual-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .manual-overlay .manual-overlay-panel {
+            width: min(100%, 520px);
+            max-height: min(85vh, 640px);
+            overflow-y: auto;
+            margin: 0;
+        }
+        #content-editor-card { min-width: 0; }
+        .editor-grid { min-width: 0; }
+        .editor-action-bar {
+            position: sticky;
+            bottom: 0;
+            z-index: 4;
+            margin-top: 8px;
+            padding-top: 12px;
+            padding-bottom: 2px;
+            background: linear-gradient(to top, #ffffff 65%, rgba(255, 255, 255, 0));
+            border-top: 1px solid var(--border);
+        }
+        @media (max-width: 1024px) {
+            .admin-shell { grid-template-columns: 1fr; }
+            .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+            .editor-grid { grid-template-columns: 1fr; }
+            .dashboard-hero { flex-direction: column; align-items: flex-start; }
+            .analytics-grid { grid-template-columns: 1fr; }
+            .analytics-filters .field { min-width: min(100%, 170px); flex: 1 1 140px; }
+            .topbar { flex-wrap: wrap; }
+            .topbar-actions { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <div class="brand"><strong>Pro</strong><span>Artist</span></div>
+            <h2>Sections</h2>
+            <ul class="nav-list">
+                <li><button class="nav-btn active" type="button" data-nav="dashboard">Dashboard</button></li>
+                <li><button class="nav-btn" type="button" data-nav="home">Home</button></li>
+                <li><button class="nav-btn" type="button" data-nav="investors">Investors</button></li>
+                <li><button class="nav-btn" type="button" data-nav="brands">Brands</button></li>
+                <li><button class="nav-btn" type="button" data-nav="jobs">Jobs</button></li>
+                <li><button class="nav-btn" type="button" data-nav="blog">Blog</button></li>
+                <li><button class="nav-btn" type="button" data-nav="analytics">Analytics</button></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <section id="dash-welcome" class="dashboard-hero">
+                <div>
+                    <h2>Welcome to ProArtist Admin</h2>
+                    <p>Hi Admin, manage content updates and keep your website fresh.</p>
+                    <ul class="dashboard-tips">
+                        <li>Use the sidebar to open each section.</li>
+                        <li>Save Draft or Publish saves to Supabase (<code>site_content</code>).</li>
+                        <li>First time for a section? Saving creates the row automatically.</li>
+                    </ul>
+                    <div class="btn-row" style="margin-top:10px;">
+                        <button id="dashboard-manual-btn" class="btn" type="button">Open Manual</button>
+                    </div>
+                </div>
+                <img class="dashboard-logo" src="proartist-theme/assets/images/africa.png" alt="ProArtist Africa logo mark">
+            </section>
+
+            <div id="dash-manual" class="manual-overlay is-hidden">
+                <section class="card manual-overlay-panel">
+                    <div class="card-head">
+                        <h3>Manual</h3>
+                        <p>How to use the working sections: Blog and Analytics.</p>
+                    </div>
+                    <div class="card-body">
+                        <p class="helper"><strong>Blog</strong></p>
+                        <ul class="dashboard-tips" style="margin-top:0;">
+                            <li>Open <code>Blog</code> to edit hero, blocks, and media.</li>
+                            <li>Use <code>Save Draft</code> while working, then <code>Publish Changes</code> when ready.</li>
+                            <li>Use <code>Blog Drafts</code> to reopen or delete drafts.</li>
+                            <li>Use <code>Blog Storage Audit</code> to scan and clean unused files carefully.</li>
+                        </ul>
+                        <p class="helper"><strong>Analytics</strong></p>
+                        <ul class="dashboard-tips" style="margin-top:0;">
+                            <li>Open <code>Analytics</code> to read site views and page-level insights.</li>
+                            <li>Use date filters to review a selected period.</li>
+                            <li>Use <code>Reset View Counters</code> only when you intentionally want to clear stats.</li>
+                        </ul>
+                        <div class="btn-row" style="padding-top:0;">
+                            <button id="dashboard-manual-close-btn" class="btn" type="button">Close Manual</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <header class="topbar">
+                <div>
+                    <h1 id="topbar-title">Dashboard</h1>
+                    <p id="topbar-desc">Overview</p>
+                </div>
+                <div class="topbar-actions">
+                    <div id="status-pill" class="status"><span class="dot"></span>Ready</div>
+                    <button id="logout-btn" class="btn" type="button">Log Out</button>
+                </div>
+            </header>
+
+            <div id="editor-workspace" class="is-hidden">
+                <section class="editor-grid">
+                    <article id="content-editor-card" class="card">
+                        <div class="card-head">
+                            <h3 id="editor-heading">Page content</h3>
+                            <p id="editor-subheading">Edit text fields below.</p>
+                        </div>
+                        <div class="card-body">
+                            <div id="editor-body-default">
+                                <div class="field">
+                                    <label for="hero-title" id="label-field-a">Title / headline</label>
+                                    <input id="hero-title" type="text" value="">
+                                </div>
+                                <div class="field">
+                                    <label for="hero-subtitle" id="label-field-b">Subtitle / body</label>
+                                    <textarea id="hero-subtitle"></textarea>
+                                </div>
+                                <div class="field">
+                                    <label for="btn-1" id="label-field-c">Button / link A</label>
+                                    <input id="btn-1" type="text" value="">
+                                </div>
+                                <div class="field">
+                                    <label for="btn-2" id="label-field-d">Button / link B</label>
+                                    <input id="btn-2" type="text" value="">
+                                </div>
+                            </div>
+
+                            <div id="editor-body-blog" class="is-hidden">
+                                <p class="blog-block-title">Page hero</p>
+                                <div class="field">
+                                    <label for="blog-hero-title">Hero title</label>
+                                    <input id="blog-hero-title" type="text" placeholder="Line 1 (use second line below or newline in title for two lines)">
+                                </div>
+                                <div class="field">
+                                    <label for="blog-hero-title-line2">Hero title — line 2 (optional)</label>
+                                    <input id="blog-hero-title-line2" type="text" placeholder="Second line of headline">
+                                </div>
+                                <div class="field">
+                                    <label for="blog-hero-subtitle">Hero intro</label>
+                                    <textarea id="blog-hero-subtitle" rows="3"></textarea>
+                                </div>
+
+                                <p class="blog-block-title">Blog image</p>
+                                <div id="blog-cards-editor">
+                                    <div class="blog-card-block" data-card-index="0">
+                                        <h4 style="display:none;">Card 1</h4>
+                                        <div class="field" style="display:none;"><label for="blog-c0-title">Title</label><input id="blog-c0-title" type="text"></div>
+                                        <div class="field" style="display:none;"><label for="blog-c0-excerpt">Excerpt</label><textarea id="blog-c0-excerpt" rows="3"></textarea></div>
+                                        <div class="field">
+                                            <label for="blog-c0-image">Image URL</label>
+                                            <input id="blog-c0-image" type="text" placeholder="Storage or public URL">
+                                            <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+                                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                                    <label for="blog-c0-file" style="margin-bottom:0;">Upload</label>
+                                                    <input id="blog-c0-file" type="file" accept="image/*">
+                                                </div>
+                                                <button class="btn btn-secondary" id="blog-c0-upload-btn" type="button" style="margin-top:22px;">Upload</button>
+                                                <button class="btn" id="blog-c0-delete-btn" type="button" style="margin-top:22px;">Delete</button>
+                                                <img id="blog-c0-preview" alt="Preview" style="width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="blog-card-block" data-card-index="1" style="display:none;">
+                                        <h4 style="display:none;">Card 2</h4>
+                                        <div class="field"><label for="blog-c1-title">Title</label><input id="blog-c1-title" type="text"></div>
+                                        <div class="field"><label for="blog-c1-excerpt">Excerpt</label><textarea id="blog-c1-excerpt" rows="3"></textarea></div>
+                                        <div class="field">
+                                            <label for="blog-c1-image">Image URL</label>
+                                            <input id="blog-c1-image" type="text">
+                                            <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+                                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                                    <label for="blog-c1-file" style="margin-bottom:0;">Upload</label>
+                                                    <input id="blog-c1-file" type="file" accept="image/*">
+                                                </div>
+                                                <button class="btn btn-secondary" id="blog-c1-upload-btn" type="button" style="margin-top:22px;">Upload</button>
+                                                <button class="btn" id="blog-c1-delete-btn" type="button" style="margin-top:22px;">Delete</button>
+                                                <img id="blog-c1-preview" alt="Preview" style="width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="blog-card-block" data-card-index="2" style="display:none;">
+                                        <h4 style="display:none;">Card 3</h4>
+                                        <div class="field"><label for="blog-c2-title">Title</label><input id="blog-c2-title" type="text"></div>
+                                        <div class="field"><label for="blog-c2-excerpt">Excerpt</label><textarea id="blog-c2-excerpt" rows="3"></textarea></div>
+                                        <div class="field">
+                                            <label for="blog-c2-image">Image URL</label>
+                                            <input id="blog-c2-image" type="text">
+                                            <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
+                                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                                    <label for="blog-c2-file" style="margin-bottom:0;">Upload</label>
+                                                    <input id="blog-c2-file" type="file" accept="image/*">
+                                                </div>
+                                                <button class="btn btn-secondary" id="blog-c2-upload-btn" type="button" style="margin-top:22px;">Upload</button>
+                                                <button class="btn" id="blog-c2-delete-btn" type="button" style="margin-top:22px;">Delete</button>
+                                                <img id="blog-c2-preview" alt="Preview" style="width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="blog-block-title" style="margin-top:14px;">Flexible blog blocks (optional)</p>
+                                <div id="blog-flex-editor"></div>
+                                <div class="btn-row" style="padding-top:0;">
+                                    <button id="blog-add-block-btn" class="btn" type="button">Add Block</button>
+                                    <button id="blog-add-text-btn" class="btn" type="button">Add Text</button>
+                                    <button id="blog-add-image-btn" class="btn" type="button">Add Image</button>
+                                    <button id="blog-add-split-left-btn" class="btn" type="button">Add Split Left</button>
+                                    <button id="blog-add-split-right-btn" class="btn" type="button">Add Split Right</button>
+                                    <button id="blog-add-split-center-btn" class="btn" type="button">Add Split Center</button>
+                                    <button id="blog-add-gallery-btn" class="btn" type="button">Add Gallery</button>
+                                </div>
+                                <p class="helper">If blocks are added, `preview-blog.html` renders these blocks instead of the default single-image section.</p>
+                            </div>
+
+                            <div class="editor-action-bar">
+                                <div class="btn-row">
+                                    <button id="save-draft-btn" class="btn btn-secondary" type="button">Save Draft</button>
+                                    <button id="publish-btn" class="btn btn-primary" type="button">Publish Changes</button>
+                                </div>
+                            </div>
+                            <p id="helper-text" class="helper">Changes save to Supabase table <code>site_content</code> for this section.</p>
+                        </div>
+                    </article>
+
+                    <aside id="page-meta-card" class="card">
+                        <div class="card-head">
+                            <h3>Page Meta</h3>
+                            <p>Publishing information for this section.</p>
+                        </div>
+                        <div class="card-body">
+                            <ul class="meta-list">
+                                <li><strong>Section key</strong><span id="meta-section-key">—</span></li>
+                                <li><strong>Status</strong><span id="meta-status">—</span></li>
+                                <li><strong>Last updated</strong><span id="meta-updated">—</span></li>
+                            </ul>
+                        </div>
+                    </aside>
+
+                    <article id="analytics-panel" class="card is-hidden">
+                        <div class="card-head">
+                            <h3>Analytics Overview</h3>
+                            <p>Read-only project insights from Supabase.</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="analytics-filters">
+                                <div class="field">
+                                    <label for="an-from-date">From date</label>
+                                    <input id="an-from-date" type="date">
+                                </div>
+                                <div class="field">
+                                    <label for="an-to-date">To date</label>
+                                    <input id="an-to-date" type="date">
+                                </div>
+                                <button id="an-apply-range-btn" class="btn" type="button">Apply Range</button>
+                            </div>
+                            <p id="an-range-summary" class="helper">Range: all dates</p>
+                            <div class="analytics-grid">
+                                <div class="analytics-stat"><strong>Engagements (Site Views)</strong><span id="an-site-views">—</span></div>
+                                <div class="analytics-stat"><strong>Views (Last 7 Days)</strong><span id="an-site-views-7d">—</span></div>
+                                <div class="analytics-stat"><strong>Top Viewed Page</strong><span id="an-top-page">—</span></div>
+                                <div class="analytics-stat"><strong>Views (Last 30 Days)</strong><span id="an-site-views-30d">—</span></div>
+                                <div class="analytics-stat"><strong>Blog Drafts</strong><span id="an-blog-drafts">—</span></div>
+                                <div class="analytics-stat"><strong>Published Blog Row</strong><span id="an-blog-published">—</span></div>
+                                <div class="analytics-stat"><strong>Blog Storage Files</strong><span id="an-storage-files">—</span></div>
+                                <div class="analytics-stat"><strong>Storage Used</strong><span id="an-storage-size">—</span></div>
+                            </div>
+                            <div class="btn-row" style="padding-top:0;">
+                                <button id="an-reset-views-btn" class="btn" type="button">Reset View Counters</button>
+                            </div>
+                            <p class="helper" style="margin-top:8px;">Views by page (main previews)</p>
+                            <ul id="an-page-list" class="analytics-page-list">
+                                <li class="helper">No page view data yet.</li>
+                            </ul>
+                            <p class="helper">Use Blog section for detailed draft/storage actions. Analytics is view-only.</p>
+                        </div>
+                    </article>
+
+                    <aside id="blog-drafts-card" class="card is-hidden">
+                        <div class="card-head">
+                            <h3>Blog Drafts</h3>
+                            <p>Open a saved draft to continue editing.</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-row" style="padding-top:0;">
+                                <button id="blog-refresh-drafts-btn" class="btn" type="button">Refresh</button>
+                            </div>
+                            <ul id="blog-drafts-list" class="draft-list">
+                                <li class="helper">No drafts yet.</li>
+                            </ul>
+                        </div>
+                    </aside>
+
+                    <aside id="blog-storage-card" class="card is-hidden">
+                        <div class="card-head">
+                            <h3>Blog Storage Audit</h3>
+                            <p>Find files in Storage not used by published blog or drafts.</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-row" style="padding-top:0;">
+                                <button id="blog-storage-scan-btn" class="btn" type="button">Scan Unused Files</button>
+                            </div>
+                            <p id="blog-storage-summary" class="helper">Run a scan to check usage.</p>
+                            <ul id="blog-storage-unused-list" class="audit-list">
+                                <li class="helper">No scan yet.</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            var _h = window.location.hash;
+            var _s = window.location.search;
+            if (/type=recovery/i.test(_h) || /type=recovery/i.test(_s)) {
+                window.location.replace("login.html" + _s + _h);
+                return;
+            }
+
+            const SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
+
+            /** nav id → site_content.section_key (null = dashboard only) */
+            const NAV_TO_KEY = {
+                dashboard: null,
+                home: "home_hero",
+                investors: "investors",
+                brands: "brands",
+                jobs: "jobs",
+                blog: "blog",
+                analytics: "analytics"
+            };
+
+            const TOPBAR = {
+                dashboard: { title: "Dashboard", desc: "Overview" },
+                home: { title: "Home", desc: "Edit home hero and buttons" },
+                investors: { title: "Investors", desc: "Investors page copy" },
+                brands: { title: "Brands", desc: "Brands page copy" },
+                jobs: { title: "Jobs", desc: "Jobs page copy" },
+                blog: { title: "Blog", desc: "Hero, image, and optional flexible blocks" },
+                analytics: { title: "Analytics", desc: "Analytics labels and links" }
+            };
+
+            const COMING_SOON_NAV = new Set(["home", "investors", "brands", "jobs"]);
+
+            const EDITOR_LABELS = {
+                home_hero: {
+                    heading: "Home Hero Content",
+                    sub: "Edit hero title, subtitle and button labels.",
+                    a: "Hero Title",
+                    b: "Hero Subtitle",
+                    c: "Primary Button",
+                    d: "Secondary Button"
+                },
+                investors: {
+                    heading: "Investors Content",
+                    sub: "Headline, intro, and call-to-action labels.",
+                    a: "Headline",
+                    b: "Intro / body",
+                    c: "Primary CTA",
+                    d: "Secondary CTA"
+                },
+                brands: {
+                    heading: "Brands Content",
+                    sub: "Headline, intro, and call-to-action labels.",
+                    a: "Headline",
+                    b: "Intro / body",
+                    c: "Primary CTA",
+                    d: "Secondary CTA"
+                },
+                jobs: {
+                    heading: "Jobs Content",
+                    sub: "Headline, intro, and call-to-action labels.",
+                    a: "Headline",
+                    b: "Intro / body",
+                    c: "Primary CTA",
+                    d: "Secondary CTA"
+                },
+                blog: {
+                    heading: "Blog page",
+                    sub: "Hero + image with optional flexible blocks (matches preview-blog.html).",
+                    a: "—",
+                    b: "—",
+                    c: "—",
+                    d: "—"
+                },
+                analytics: {
+                    heading: "Analytics Content",
+                    sub: "Use this section for analytics titles, summaries and links.",
+                    a: "Analytics Title",
+                    b: "Analytics Summary",
+                    c: "Primary Link Label",
+                    d: "Primary Link URL"
+                }
+            };
+
+            let activeNav = "dashboard";
+            let currentSectionKey = null;
+            let lastMetaStatus = "—";
+
+            const dashWelcome = document.getElementById("dash-welcome");
+            const dashManual = document.getElementById("dash-manual");
+            const dashManualBtn = document.getElementById("dashboard-manual-btn");
+            const dashManualCloseBtn = document.getElementById("dashboard-manual-close-btn");
+            const editorWorkspace = document.getElementById("editor-workspace");
+            const topbarTitle = document.getElementById("topbar-title");
+            const topbarDesc = document.getElementById("topbar-desc");
+            const statusPill = document.getElementById("status-pill");
+            const helperText = document.getElementById("helper-text");
+            const titleInput = document.getElementById("hero-title");
+            const subtitleInput = document.getElementById("hero-subtitle");
+            const primaryBtnInput = document.getElementById("btn-1");
+            const secondaryBtnInput = document.getElementById("btn-2");
+            const saveDraftBtn = document.getElementById("save-draft-btn");
+            const publishBtn = document.getElementById("publish-btn");
+            const logoutBtn = document.getElementById("logout-btn");
+            const editorHeading = document.getElementById("editor-heading");
+            const editorSubheading = document.getElementById("editor-subheading");
+            const labelA = document.getElementById("label-field-a");
+            const labelB = document.getElementById("label-field-b");
+            const labelC = document.getElementById("label-field-c");
+            const labelD = document.getElementById("label-field-d");
+            const metaSectionKey = document.getElementById("meta-section-key");
+            const metaStatus = document.getElementById("meta-status");
+            const metaUpdated = document.getElementById("meta-updated");
+            const blogDraftsCard = document.getElementById("blog-drafts-card");
+            const blogDraftsList = document.getElementById("blog-drafts-list");
+            const blogRefreshDraftsBtn = document.getElementById("blog-refresh-drafts-btn");
+            const blogStorageCard = document.getElementById("blog-storage-card");
+            const blogStorageScanBtn = document.getElementById("blog-storage-scan-btn");
+            const blogStorageSummary = document.getElementById("blog-storage-summary");
+            const blogStorageUnusedList = document.getElementById("blog-storage-unused-list");
+            const contentEditorCard = document.getElementById("content-editor-card");
+            const pageMetaCard = document.getElementById("page-meta-card");
+            const analyticsPanel = document.getElementById("analytics-panel");
+            const anSiteViews = document.getElementById("an-site-views");
+            const anSiteViews7d = document.getElementById("an-site-views-7d");
+            const anSiteViews30d = document.getElementById("an-site-views-30d");
+            const anTopPage = document.getElementById("an-top-page");
+            const anBlogDrafts = document.getElementById("an-blog-drafts");
+            const anBlogPublished = document.getElementById("an-blog-published");
+            const anStorageFiles = document.getElementById("an-storage-files");
+            const anStorageSize = document.getElementById("an-storage-size");
+            const anPageList = document.getElementById("an-page-list");
+            const anResetViewsBtn = document.getElementById("an-reset-views-btn");
+            const anFromDate = document.getElementById("an-from-date");
+            const anToDate = document.getElementById("an-to-date");
+            const anApplyRangeBtn = document.getElementById("an-apply-range-btn");
+            const anRangeSummary = document.getElementById("an-range-summary");
+            const editorBodyDefault = document.getElementById("editor-body-default");
+            const editorBodyBlog = document.getElementById("editor-body-blog");
+            const blogHeroTitle = document.getElementById("blog-hero-title");
+            const blogHeroTitleLine2 = document.getElementById("blog-hero-title-line2");
+            const blogHeroSubtitle = document.getElementById("blog-hero-subtitle");
+            const blogFlexEditor = document.getElementById("blog-flex-editor");
+            const blogAddBlockBtn = document.getElementById("blog-add-block-btn");
+            const blogAddTextBtn = document.getElementById("blog-add-text-btn");
+            const blogAddImageBtn = document.getElementById("blog-add-image-btn");
+            const blogAddSplitLeftBtn = document.getElementById("blog-add-split-left-btn");
+            const blogAddSplitRightBtn = document.getElementById("blog-add-split-right-btn");
+            const blogAddSplitCenterBtn = document.getElementById("blog-add-split-center-btn");
+            const blogAddGalleryBtn = document.getElementById("blog-add-gallery-btn");
+
+            const BLOG_KEY = "blog";
+            const BLOG_IMAGE_BUCKET = "blog-images";
+            const BLOG_MAX_BLOCKS = 8;
+            const BLOG_DRAFTS_TABLE = "blog_drafts";
+            let currentBlogDraftId = null;
+            const DEFAULT_BLOG_HERO = {
+                title: "Learn More About The\nGrooming Industry",
+                subtitle: "Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business."
+            };
+            const DEFAULT_BLOG_CARDS = [
+                { title: "Pro-Franchising 101: What You Need to Know", excerpt: "Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.", image: "proartist-theme/assets/images/blog-image.jpg" },
+                { title: "Pro-Franchising 101: What You Need to Know", excerpt: "Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.", image: "proartist-theme/assets/images/blog-image.jpg" },
+                { title: "Pro-Franchising 101: What You Need to Know", excerpt: "Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.", image: "proartist-theme/assets/images/blog-image.jpg" }
+            ];
+            var blogBlocks = [];
+
+            function setBlogEditorVisible(on) {
+                editorBodyDefault.classList.toggle("is-hidden", on);
+                editorBodyBlog.classList.toggle("is-hidden", !on);
+            }
+
+            function parseBlogCardsJson(raw) {
+                if (!raw || typeof raw !== "string") return null;
+                try {
+                    var o = JSON.parse(raw);
+                    if (o && o.cards && Array.isArray(o.cards) && o.cards.length) return o.cards;
+                } catch (e1) {}
+                return null;
+            }
+
+            function resolveBlogEditorImageUrl(url) {
+                var raw = String(url || "").trim();
+                if (!raw) return "";
+                if (/^https?:\/\//i.test(raw)) return raw;
+                if (raw.indexOf("storage/v1/object/public/") !== -1) return raw;
+                if (raw.indexOf("/") !== -1) {
+                    return SUPABASE_URL + "/storage/v1/object/public/" + BLOG_IMAGE_BUCKET + "/" + raw.replace(/^\/+/, "");
+                }
+                return raw;
+            }
+
+            function parseBlogBlocks(raw) {
+                if (!raw || typeof raw !== "string") return [];
+                try {
+                    var o = JSON.parse(raw);
+                    if (Array.isArray(o)) return o;
+                    if (o && Array.isArray(o.blocks)) return o.blocks;
+                } catch (e1) {}
+                return [];
+            }
+
+            function normalizeBlock(b) {
+                b = b || {};
+                return {
+                    type: b.type || "text",
+                    title: b.title || "",
+                    subtitle: b.subtitle || "",
+                    text: b.text || "",
+                    linkLabel: b.linkLabel || "",
+                    linkUrl: b.linkUrl || "",
+                    imageUrl: b.imageUrl || "",
+                    imagePosition: b.imagePosition || "left",
+                    galleryUrls: Array.isArray(b.galleryUrls) ? b.galleryUrls : []
+                };
+            }
+
+            function updateBlockFieldVisibility(blockEl) {
+                var typeEl = blockEl.querySelector(".blog-block-type");
+                var type = typeEl ? typeEl.value : "text";
+                var titleField = blockEl.querySelector(".blog-field-title");
+                var subtitleField = blockEl.querySelector(".blog-field-subtitle");
+                var textField = blockEl.querySelector(".blog-field-text");
+                var linkField = blockEl.querySelector(".blog-field-link");
+                var imageField = blockEl.querySelector(".blog-field-image");
+                var posField = blockEl.querySelector(".blog-field-pos");
+                var galleryField = blockEl.querySelector(".blog-field-gallery");
+                var posEl = blockEl.querySelector(".blog-block-pos");
+                var pos = posEl ? posEl.value : "left";
+
+                function show(el, on) {
+                    if (!el) return;
+                    el.classList.toggle("is-hidden-block-field", !on);
+                }
+
+                if (type === "text") {
+                    show(titleField, true);
+                    show(subtitleField, true);
+                    show(textField, true);
+                    show(linkField, true);
+                    show(imageField, false);
+                    show(posField, false);
+                    show(galleryField, false);
+                } else if (type === "image") {
+                    show(titleField, true);
+                    show(subtitleField, true);
+                    show(textField, false);
+                    show(linkField, true);
+                    show(imageField, true);
+                    show(posField, false);
+                    show(galleryField, false);
+                } else if (type === "split") {
+                    show(titleField, true);
+                    show(subtitleField, true);
+                    show(textField, true);
+                    show(linkField, true);
+                    show(imageField, true);
+                    show(posField, true);
+                    show(galleryField, false);
+                } else if (type === "gallery") {
+                    show(titleField, true);
+                    show(subtitleField, true);
+                    show(textField, pos !== "center");
+                    show(linkField, true);
+                    show(imageField, true);
+                    show(posField, true);
+                    show(galleryField, true);
+                }
+            }
+
+            function renderBlogBlocksEditor() {
+                if (!blogFlexEditor) return;
+                if (!blogBlocks.length) {
+                    blogFlexEditor.innerHTML = '<div class="helper" style="margin-bottom:8px;">No blocks yet. Click "Add Block".</div>';
+                    return;
+                }
+                blogFlexEditor.innerHTML = blogBlocks.map(function (b, i) {
+                    var safeType = b.type || "text";
+                    var safePos = b.imagePosition || "left";
+                    var galleryText = (b.galleryUrls || []).join("\n");
+                    return '' +
+                        '<div class="blog-card-block" data-block-index="' + i + '">' +
+                        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+                        '<strong style="font-size:13px;">Block ' + (i + 1) + '</strong>' +
+                        '<div style="display:flex; gap:8px;">' +
+                        '<button type="button" class="btn blog-block-delete">Delete</button>' +
+                        '</div></div>' +
+                        '<div class="field"><label>Block type</label>' +
+                        '<select class="blog-block-type" style="width:100%; border:1px solid #d9d9d9; border-radius:10px; padding:12px;">' +
+                        '<option value="text" ' + (safeType === "text" ? 'selected' : '') + '>Text</option>' +
+                        '<option value="image" ' + (safeType === "image" ? 'selected' : '') + '>Image</option>' +
+                        '<option value="split" ' + (safeType === "split" ? 'selected' : '') + '>Split (image + text)</option>' +
+                        '<option value="gallery" ' + (safeType === "gallery" ? 'selected' : '') + '>Image Gallery</option>' +
+                        '</select></div>' +
+                        '<div class="field blog-field-title"><label>Title (optional)</label><input class="blog-block-title-input" type="text" value="' + (b.title || '').replace(/"/g, '&quot;') + '"></div>' +
+                        '<div class="field blog-field-subtitle"><label>Subtitle (optional)</label><input class="blog-block-subtitle-input" type="text" value="' + (b.subtitle || '').replace(/"/g, '&quot;') + '"></div>' +
+                        '<div class="field blog-field-text"><label>Text (optional)</label><textarea class="blog-block-text-input" rows="3">' + (b.text || '') + '</textarea></div>' +
+                        '<div class="field blog-field-link"><label>Add link button (optional)</label><input class="blog-block-link-label-input" type="text" value="' + (b.linkLabel || '').replace(/"/g, '&quot;') + '" placeholder="Button label, e.g. Read More"></div>' +
+                        '<div class="field blog-field-link"><label>Link URL (optional)</label><input class="blog-block-link-url-input" type="text" value="' + (b.linkUrl || '').replace(/"/g, '&quot;') + '" placeholder="https://... or internal html/page"></div>' +
+                        '<div class="field blog-field-image"><label>Image URL</label><input class="blog-block-image-input" type="text" value="' + (b.imageUrl || '').replace(/"/g, '&quot;') + '" placeholder="https://... or storage public URL"></div>' +
+                        '<div class="field blog-field-image">' +
+                        '<label>Upload image from device</label>' +
+                        '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
+                        '<input class="blog-block-image-file" type="file" accept="image/*">' +
+                        '<button type="button" class="btn blog-block-image-upload-btn">Upload Image</button>' +
+                        '</div>' +
+                        '<div class="blog-block-image-preview-wrap" style="margin-top:10px;">' +
+                        (b.imageUrl ? '<img class="blog-block-image-preview" src="' + resolveBlogEditorImageUrl(b.imageUrl).replace(/"/g, '&quot;') + '" alt="Preview" style="width:78px; height:78px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">' : '') +
+                        '</div></div>' +
+                        '<div class="field blog-field-pos"><label>Layout position (split/gallery)</label>' +
+                        '<select class="blog-block-pos" style="width:100%; border:1px solid #d9d9d9; border-radius:10px; padding:12px;">' +
+                        '<option value="left" ' + (safePos === "left" ? 'selected' : '') + '>Image Left</option>' +
+                        '<option value="right" ' + (safePos === "right" ? 'selected' : '') + '>Image Right</option>' +
+                        '<option value="center" ' + (safePos === "center" ? 'selected' : '') + '>Image Center (text below)</option>' +
+                        '</select></div>' +
+                        '<div class="field blog-field-gallery"><label>Gallery image URLs (one per line)</label><textarea class="blog-block-gallery-input" rows="4" placeholder="https://...">' + galleryText + '</textarea></div>' +
+                        '<div class="field blog-field-gallery">' +
+                        '<label>Upload gallery images from device</label>' +
+                        '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
+                        '<input class="blog-block-gallery-files" type="file" accept="image/*" multiple>' +
+                        '<button type="button" class="btn blog-block-gallery-upload-btn">Upload Selected</button>' +
+                        '</div>' +
+                        '<div class="blog-block-gallery-preview-wrap" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">' +
+                        ((b.galleryUrls || []).slice(0, 6).map(function (u) {
+                            var su = resolveBlogEditorImageUrl(u || '').replace(/"/g, '&quot;');
+                            return '<img src="' + su + '" alt="" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#fff;">';
+                        }).join("")) +
+                        '</div></div>' +
+                        '<div class="btn-row" style="padding-top:0;">' +
+                        ((safeType === "image" || safeType === "split" || safeType === "gallery") ? '<button type="button" class="btn blog-block-add-gallery-after">Add image gallery</button>' : '') +
+                        '</div>' +
+                        '</div>';
+                }).join("");
+
+                blogFlexEditor.querySelectorAll(".blog-card-block").forEach(function (el) {
+                    var idx = Number(el.getAttribute("data-block-index"));
+                    var del = el.querySelector(".blog-block-delete");
+                    var typeEl = el.querySelector(".blog-block-type");
+                    var posEl = el.querySelector(".blog-block-pos");
+                    var imageInputEl = el.querySelector(".blog-block-image-input");
+                    var imageUploadBtn = el.querySelector(".blog-block-image-upload-btn");
+                    var galleryUploadBtn = el.querySelector(".blog-block-gallery-upload-btn");
+                    var addGalleryAfterBtn = el.querySelector(".blog-block-add-gallery-after");
+                    if (typeEl) typeEl.addEventListener("change", function () {
+                        updateBlockFieldVisibility(el);
+                    });
+                    if (posEl) posEl.addEventListener("change", function () {
+                        updateBlockFieldVisibility(el);
+                    });
+                    if (imageInputEl) imageInputEl.addEventListener("input", function () {
+                        var previewWrap = el.querySelector(".blog-block-image-preview-wrap");
+                        if (!previewWrap) return;
+                        var v = resolveBlogEditorImageUrl(imageInputEl.value);
+                        if (!v) {
+                            previewWrap.innerHTML = "";
+                            return;
+                        }
+                        previewWrap.innerHTML = '<img class="blog-block-image-preview" src="' + v.replace(/"/g, '&quot;') + '" alt="Preview" style="width:78px; height:78px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">';
+                    });
+                    if (del) del.addEventListener("click", function () {
+                        blogBlocks.splice(idx, 1);
+                        renderBlogBlocksEditor();
+                    });
+                    if (imageUploadBtn) imageUploadBtn.addEventListener("click", function () {
+                        uploadBlockImage(idx);
+                    });
+                    if (galleryUploadBtn) galleryUploadBtn.addEventListener("click", function () {
+                        uploadBlockGalleryImages(idx);
+                    });
+                    if (addGalleryAfterBtn) addGalleryAfterBtn.addEventListener("click", function () {
+                        blogBlocks = collectBlogBlocksFromEditor();
+                        if (blogBlocks.length >= BLOG_MAX_BLOCKS) {
+                            setStatus("Max blog blocks reached", "warn");
+                            setHelper("You can add up to " + BLOG_MAX_BLOCKS + " blocks.");
+                            return;
+                        }
+                        blogBlocks.splice(idx + 1, 0, normalizeBlock({ type: "gallery", galleryUrls: [] }));
+                        renderBlogBlocksEditor();
+                    });
+                    updateBlockFieldVisibility(el);
+                });
+            }
+
+            function collectBlogBlocksFromEditor() {
+                if (!blogFlexEditor) return [];
+                var out = [];
+                blogFlexEditor.querySelectorAll(".blog-card-block").forEach(function (el) {
+                    var typeEl = el.querySelector(".blog-block-type");
+                    var titleEl = el.querySelector(".blog-block-title-input");
+                    var subtitleEl = el.querySelector(".blog-block-subtitle-input");
+                    var textEl = el.querySelector(".blog-block-text-input");
+                    var linkLabelEl = el.querySelector(".blog-block-link-label-input");
+                    var linkUrlEl = el.querySelector(".blog-block-link-url-input");
+                    var imageEl = el.querySelector(".blog-block-image-input");
+                    var posEl = el.querySelector(".blog-block-pos");
+                    var galleryEl = el.querySelector(".blog-block-gallery-input");
+                    var galleryUrls = (galleryEl && galleryEl.value ? galleryEl.value : "")
+                        .split(/\r?\n/)
+                        .map(function (s) { return s.trim(); })
+                        .filter(Boolean);
+                    var safeType = typeEl ? typeEl.value : "text";
+                    var safePos = posEl ? posEl.value : "left";
+                    out.push(normalizeBlock({
+                        type: typeEl ? typeEl.value : "text",
+                        title: titleEl ? titleEl.value.trim() : "",
+                        subtitle: subtitleEl ? subtitleEl.value.trim() : "",
+                        text: (safeType === "gallery" && safePos === "center") ? "" : (textEl ? textEl.value.trim() : ""),
+                        linkLabel: linkLabelEl ? linkLabelEl.value.trim() : "",
+                        linkUrl: linkUrlEl ? linkUrlEl.value.trim() : "",
+                        imageUrl: imageEl ? imageEl.value.trim() : "",
+                        imagePosition: safePos,
+                        galleryUrls: galleryUrls
+                    }));
+                });
+                return out.slice(0, BLOG_MAX_BLOCKS);
+            }
+
+            function fillBlogForm(data) {
+                data = data || {};
+                var titleStr = (data.title && String(data.title).trim()) ? data.title : DEFAULT_BLOG_HERO.title;
+                var lines = titleStr.split(/\n/);
+                blogHeroTitle.value = lines[0] ? lines[0].trim() : "";
+                blogHeroTitleLine2.value = lines.length > 1 ? lines.slice(1).join("\n").trim() : "";
+                blogHeroSubtitle.value = (data.subtitle && String(data.subtitle).trim()) ? data.subtitle : DEFAULT_BLOG_HERO.subtitle;
+                var cards = parseBlogCardsJson(data.button_primary);
+                if (!cards || cards.length < 3) cards = DEFAULT_BLOG_CARDS.slice();
+                for (var i = 0; i < 3; i++) {
+                    var c = cards[i] || DEFAULT_BLOG_CARDS[i];
+                    document.getElementById("blog-c" + i + "-title").value = c.title || "";
+                    document.getElementById("blog-c" + i + "-excerpt").value = c.excerpt || "";
+                    var imgUrl = c.image || "";
+                    document.getElementById("blog-c" + i + "-image").value = imgUrl;
+                    var preview = document.getElementById("blog-c" + i + "-preview");
+                    if (preview) {
+                        preview.alt = c.title || "Preview";
+                        if (imgUrl) {
+                            preview.src = imgUrl;
+                            preview.style.display = "block";
+                        } else {
+                            preview.src = "";
+                            preview.style.display = "none";
+                        }
+                    }
+                }
+                blogBlocks = parseBlogBlocks(data.button_secondary).slice(0, BLOG_MAX_BLOCKS).map(normalizeBlock);
+                renderBlogBlocksEditor();
+            }
+
+            function collectBlogPayload() {
+                var line1 = blogHeroTitle.value.trim();
+                var line2 = blogHeroTitleLine2.value.trim();
+                var titleCombined = line2 ? line1 + "\n" + line2 : line1;
+                blogBlocks = collectBlogBlocksFromEditor();
+                var cards = [];
+                for (var j = 0; j < 3; j++) {
+                    cards.push({
+                        title: document.getElementById("blog-c" + j + "-title").value.trim(),
+                        excerpt: document.getElementById("blog-c" + j + "-excerpt").value.trim(),
+                        image: document.getElementById("blog-c" + j + "-image").value.trim()
+                    });
+                }
+                return {
+                    title: titleCombined,
+                    subtitle: blogHeroSubtitle.value.trim(),
+                    button_primary: JSON.stringify({ cards: cards }),
+                    button_secondary: JSON.stringify({ version: "blog_v2", blocks: blogBlocks })
+                };
+            }
+
+            function getBlogDraftPayload() {
+                var payload = collectBlogPayload();
+                return {
+                    section_key: BLOG_KEY,
+                    title: payload.title || "Untitled draft",
+                    payload_json: {
+                        title: payload.title,
+                        subtitle: payload.subtitle,
+                        button_primary: payload.button_primary,
+                        button_secondary: payload.button_secondary
+                    },
+                    status: "draft",
+                    updated_at: new Date().toISOString()
+                };
+            }
+
+            function applyBlogPayloadToForm(payload) {
+                if (!payload) return;
+                fillBlogForm({
+                    title: payload.title || "",
+                    subtitle: payload.subtitle || "",
+                    button_primary: payload.button_primary || "",
+                    button_secondary: payload.button_secondary || ""
+                });
+            }
+
+            async function loadBlogDraftsList() {
+                if (!blogDraftsList) return;
+                const { data, error } = await client
+                    .from(BLOG_DRAFTS_TABLE)
+                    .select("id,title,status,updated_at,published_at")
+                    .eq("section_key", BLOG_KEY)
+                    .order("updated_at", { ascending: false })
+                    .limit(30);
+
+                if (error) {
+                    blogDraftsList.innerHTML = '<li class="helper">Could not load drafts: ' + (error.message || "error") + '</li>';
+                    return;
+                }
+                if (!data || !data.length) {
+                    blogDraftsList.innerHTML = '<li class="helper">No drafts yet.</li>';
+                    return;
+                }
+
+                blogDraftsList.innerHTML = data.map(function (d) {
+                    var title = d.title || "Untitled draft";
+                    var when = d.updated_at ? new Date(d.updated_at).toLocaleString() : "—";
+                    var isCurrent = currentBlogDraftId && currentBlogDraftId === d.id;
+                    return '' +
+                        '<li class="draft-item" data-draft-id="' + d.id + '">' +
+                        '<div class="draft-item-title">' + title.replace(/</g, "&lt;").replace(/>/g, "&gt;") + (isCurrent ? " (open)" : "") + '</div>' +
+                        '<div class="draft-item-meta">Status: ' + (d.status || "draft") + ' • Updated: ' + when + '</div>' +
+                        '<div class="draft-actions"><button type="button" class="btn draft-open-btn">Open</button><button type="button" class="btn draft-delete-btn">Delete</button></div>' +
+                        '</li>';
+                }).join("");
+
+                blogDraftsList.querySelectorAll(".draft-open-btn").forEach(function (btn) {
+                    btn.addEventListener("click", async function () {
+                        var li = btn.closest(".draft-item");
+                        if (!li) return;
+                        var id = li.getAttribute("data-draft-id");
+                        if (!id) return;
+                        const { data, error } = await client
+                            .from(BLOG_DRAFTS_TABLE)
+                            .select("id,payload_json")
+                            .eq("id", id)
+                            .single();
+                        if (error || !data) {
+                            setStatus("Could not open draft", "error");
+                            setHelper(error ? error.message : "Draft missing.");
+                            return;
+                        }
+                        currentBlogDraftId = data.id;
+                        applyBlogPayloadToForm(data.payload_json || {});
+                        setStatus("Draft opened", null);
+                        setHelper("Opened draft. You can edit and save again.");
+                        loadBlogDraftsList();
+                    });
+                });
+
+                blogDraftsList.querySelectorAll(".draft-delete-btn").forEach(function (btn) {
+                    btn.addEventListener("click", async function () {
+                        var li = btn.closest(".draft-item");
+                        if (!li) return;
+                        var id = li.getAttribute("data-draft-id");
+                        if (!id) return;
+                        if (!window.confirm("Delete this draft? This cannot be undone.")) return;
+                        const { error } = await client
+                            .from(BLOG_DRAFTS_TABLE)
+                            .delete()
+                            .eq("id", id);
+                        if (error) {
+                            setStatus("Could not delete draft", "error");
+                            setHelper(error.message || "Delete failed.");
+                            return;
+                        }
+                        if (currentBlogDraftId === id) currentBlogDraftId = null;
+                        setStatus("Draft deleted", null);
+                        setHelper("Draft removed.");
+                        loadBlogDraftsList();
+                    });
+                });
+            }
+
+            function extractStoragePathFromPublicUrl(url) {
+                if (!url || typeof url !== "string") return null;
+                try {
+                    var marker = "/storage/v1/object/public/" + BLOG_IMAGE_BUCKET + "/";
+                    var u = new URL(url, window.location.href);
+                    var idx = u.pathname.indexOf(marker);
+                    if (idx === -1) return null;
+                    return u.pathname.substring(idx + marker.length);
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function normalizeBlogStoragePath(input) {
+                var raw = String(input || "").trim();
+                if (!raw) return null;
+                var fromPublic = extractStoragePathFromPublicUrl(raw);
+                if (fromPublic) return fromPublic.replace(/^\/+/, "");
+                // Support direct bucket paths like "blog/..../file.jpg"
+                var cleaned = raw.replace(/^\/+/, "");
+                var bucketPrefix = BLOG_IMAGE_BUCKET + "/";
+                if (cleaned.indexOf(bucketPrefix) === 0) cleaned = cleaned.substring(bucketPrefix.length);
+                // Basic guard so normal external URLs are not treated as storage paths
+                if (/^https?:\/\//i.test(cleaned)) return null;
+                return cleaned;
+            }
+
+            function formatBytes(n) {
+                var bytes = Number(n || 0);
+                if (!bytes || bytes < 1024) return (bytes || 0) + " B";
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+                return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+            }
+
+            function normalizeTrackedPagePath(pagePath) {
+                var p = String(pagePath || "").trim();
+                if (!p) return "";
+                // Drop query/hash if present
+                p = p.split("?")[0].split("#")[0];
+                // Keep only last segment so /foo/bar/preview-home.html maps correctly
+                var parts = p.split("/").filter(Boolean);
+                if (!parts.length) return "/";
+                return "/" + parts[parts.length - 1];
+            }
+
+            function getAnalyticsRange() {
+                var fromRaw = anFromDate && anFromDate.value ? anFromDate.value : "";
+                var toRaw = anToDate && anToDate.value ? anToDate.value : "";
+                if (!fromRaw && !toRaw) return null;
+                // Use UTC day boundaries so selected day ranges are stable.
+                var start = fromRaw ? new Date(fromRaw + "T00:00:00.000Z").getTime() : null;
+                var end = toRaw ? new Date(toRaw + "T23:59:59.999Z").getTime() : null;
+                if (start && end && end < start) return { error: "invalid" };
+                return { start: start, end: end, fromRaw: fromRaw, toRaw: toRaw };
+            }
+
+            function collectImageUrlsFromPayload(payload, usedSet) {
+                payload = payload || {};
+                var cards = parseBlogCardsJson(payload.button_primary) || [];
+                cards.forEach(function (c) {
+                    var u = c && c.image ? String(c.image).trim() : "";
+                    var path = normalizeBlogStoragePath(u);
+                    if (path) usedSet.add(path);
+                });
+                var blocks = parseBlogBlocks(payload.button_secondary) || [];
+                blocks.forEach(function (b) {
+                    var imageUrl = b && b.imageUrl ? String(b.imageUrl).trim() : "";
+                    var imagePath = normalizeBlogStoragePath(imageUrl);
+                    if (imagePath) usedSet.add(imagePath);
+                    var galleryUrls = Array.isArray(b && b.galleryUrls) ? b.galleryUrls : [];
+                    galleryUrls.forEach(function (u) {
+                        var su = u ? String(u).trim() : "";
+                        var p = normalizeBlogStoragePath(su);
+                        if (p) usedSet.add(p);
+                    });
+                });
+            }
+
+            async function listAllStorageObjects(prefix) {
+                var collected = [];
+                var offset = 0;
+                while (true) {
+                    const { data, error } = await client.storage
+                        .from(BLOG_IMAGE_BUCKET)
+                        .list(prefix || "", { limit: 100, offset: offset, sortBy: { column: "name", order: "asc" } });
+                    if (error) return { error: error };
+                    if (!data || !data.length) break;
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i];
+                        var fullPath = prefix ? (prefix + "/" + item.name) : item.name;
+                        if (item && item.id === null) {
+                            const child = await listAllStorageObjects(fullPath);
+                            if (child.error) return child;
+                            collected = collected.concat(child.data || []);
+                        } else {
+                            collected.push({
+                                path: fullPath,
+                                size: item && item.metadata ? item.metadata.size : 0,
+                                updated_at: item ? item.updated_at : null
+                            });
+                        }
+                    }
+                    if (data.length < 100) break;
+                    offset += data.length;
+                }
+                return { data: collected };
+            }
+
+            async function loadAnalyticsSummary() {
+                if (!analyticsPanel) return;
+                if (anSiteViews) anSiteViews.textContent = "…";
+                if (anSiteViews7d) anSiteViews7d.textContent = "…";
+                if (anSiteViews30d) anSiteViews30d.textContent = "…";
+                if (anTopPage) anTopPage.textContent = "…";
+                if (anBlogDrafts) anBlogDrafts.textContent = "…";
+                if (anBlogPublished) anBlogPublished.textContent = "…";
+                if (anStorageFiles) anStorageFiles.textContent = "…";
+                if (anStorageSize) anStorageSize.textContent = "…";
+                if (anPageList) anPageList.innerHTML = '<li class="helper">Loading page views...</li>';
+                if (anRangeSummary) anRangeSummary.textContent = "Range: calculating...";
+
+                const viewsRowsRes = await client.from("page_views").select("page_path,created_at").order("created_at", { ascending: false }).limit(5000);
+                const draftsRes = await client.from(BLOG_DRAFTS_TABLE).select("*", { count: "exact", head: true }).eq("section_key", BLOG_KEY);
+                const pubRes = await client.from("site_content").select("updated_at").eq("section_key", BLOG_KEY).maybeSingle();
+                const listed = await listAllStorageObjects("");
+
+                if (viewsRowsRes && viewsRowsRes.error) {
+                    setStatus("Analytics load issue", "warn");
+                    setHelper("Could not read page views: " + (viewsRowsRes.error.message || "unknown error"));
+                }
+
+                var viewsRows = (viewsRowsRes && viewsRowsRes.data) ? viewsRowsRes.data : [];
+                var range = getAnalyticsRange();
+                if (range && range.error === "invalid") {
+                    setStatus("Invalid range", "warn");
+                    setHelper("To date must be on or after From date.");
+                    if (anSiteViews) anSiteViews.textContent = "—";
+                    if (anTopPage) anTopPage.textContent = "—";
+                    if (anPageList) anPageList.innerHTML = '<li class="helper">Invalid date range.</li>';
+                    if (anRangeSummary) anRangeSummary.textContent = "Range: invalid";
+                    return;
+                }
+                var scopedRows = viewsRows.filter(function (r) {
+                    if (!range) return true;
+                    var ts = r && r.created_at ? new Date(r.created_at).getTime() : 0;
+                    if (range.start && ts < range.start) return false;
+                    if (range.end && ts > range.end) return false;
+                    return true;
+                });
+                var siteViews = scopedRows.length;
+                var sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+                var views7d = viewsRows.filter(function (r) {
+                    var ts = r && r.created_at ? new Date(r.created_at).getTime() : 0;
+                    return ts >= sevenDaysAgo;
+                }).length;
+                var thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+                var views30d = viewsRows.filter(function (r) {
+                    var ts = r && r.created_at ? new Date(r.created_at).getTime() : 0;
+                    return ts >= thirtyDaysAgo;
+                }).length;
+                var pageCounts = {};
+                scopedRows.forEach(function (r) {
+                    var p = r && r.page_path ? String(r.page_path) : "";
+                    if (!p) return;
+                    var normalized = normalizeTrackedPagePath(p);
+                    if (!normalized) return;
+                    pageCounts[normalized] = (pageCounts[normalized] || 0) + 1;
+                });
+                var topPage = "—";
+                var topCount = 0;
+                Object.keys(pageCounts).forEach(function (p) {
+                    if (pageCounts[p] > topCount) {
+                        topPage = p;
+                        topCount = pageCounts[p];
+                    }
+                });
+                var draftCount = draftsRes && typeof draftsRes.count === "number" ? draftsRes.count : 0;
+                var published = pubRes && pubRes.data ? "Yes" : "No";
+                var files = (listed && listed.data) ? listed.data : [];
+                var storageFiles = files.length;
+                var totalSize = files.reduce(function (sum, f) { return sum + Number((f && f.size) || 0); }, 0);
+
+                if (anSiteViews) anSiteViews.textContent = String(siteViews);
+                if (anSiteViews7d) anSiteViews7d.textContent = String(views7d);
+                if (anSiteViews30d) anSiteViews30d.textContent = String(views30d);
+                if (anTopPage) {
+                    var topLabel = topPage === "/" ? "home" : topPage.replace("/", "");
+                    anTopPage.textContent = topCount > 0 ? (topLabel + " (" + topCount + ")") : "—";
+                }
+                if (anBlogDrafts) anBlogDrafts.textContent = String(draftCount);
+                if (anBlogPublished) anBlogPublished.textContent = published;
+                if (anStorageFiles) anStorageFiles.textContent = String(storageFiles);
+                if (anStorageSize) anStorageSize.textContent = formatBytes(totalSize);
+                if (anPageList) {
+                    var targetPages = [
+                        "/preview-home.html",
+                        "/preview-investors.html",
+                        "/preview-about.html",
+                        "/preview-brands.html",
+                        "/preview-jobs.html",
+                        "/preview-blog.html"
+                    ];
+                    var rows = targetPages.map(function (p) {
+                        return {
+                            page: p.replace("/", ""),
+                            count: pageCounts[p] || 0
+                        };
+                    }).sort(function (a, b) { return b.count - a.count; });
+                    if (!rows.length) {
+                        anPageList.innerHTML = '<li class="helper">No page view data yet.</li>';
+                    } else {
+                        anPageList.innerHTML = rows.map(function (r) {
+                            return '<li class="analytics-page-item"><span>' + r.page + '</span><span class="analytics-page-count">' + r.count + '</span></li>';
+                        }).join("");
+                    }
+                }
+                if (anRangeSummary) {
+                    if (!range) anRangeSummary.textContent = "Range: all dates";
+                    else if (range.fromRaw && range.toRaw) anRangeSummary.textContent = "Range: " + range.fromRaw + " to " + range.toRaw;
+                    else if (range.fromRaw) anRangeSummary.textContent = "Range: from " + range.fromRaw;
+                    else anRangeSummary.textContent = "Range: up to " + range.toRaw;
+                }
+                if (range) setHelper("Analytics filtered by selected date range.");
+            }
+
+            async function resetViewCounters() {
+                var ok = window.confirm("Reset all tracked view counters? This cannot be undone.");
+                if (!ok) return;
+                var typed = window.prompt("Type RESET to confirm:");
+                if (typed !== "RESET") {
+                    setStatus("Reset cancelled", "warn");
+                    setHelper("View counters were not changed.");
+                    return;
+                }
+                setStatus("Resetting views...", "warn");
+                setHelper("Clearing page view events.");
+                const { error } = await client.from("page_views").delete().gt("id", 0);
+                if (error) {
+                    setStatus("Reset failed", "error");
+                    setHelper(error.message || "Could not reset counters.");
+                    return;
+                }
+                setStatus("Views reset", null);
+                setHelper("All page view counters were cleared.");
+                await loadAnalyticsSummary();
+            }
+
+            async function scanBlogUnusedStorageFiles() {
+                if (!blogStorageUnusedList || !blogStorageSummary) return;
+                setStatus("Scanning storage...", "warn");
+                setHelper("Comparing blog references with Storage files.");
+                blogStorageSummary.textContent = "Scanning...";
+                blogStorageUnusedList.innerHTML = '<li class="helper">Scanning...</li>';
+
+                const usedUrls = new Set();
+
+                const publishedRes = await client
+                    .from("site_content")
+                    .select("button_primary,button_secondary")
+                    .eq("section_key", BLOG_KEY)
+                    .maybeSingle();
+                if (publishedRes.error) {
+                    setStatus("Scan failed", "error");
+                    setHelper(publishedRes.error.message || "Could not read published blog row.");
+                    blogStorageSummary.textContent = "Scan failed.";
+                    return;
+                }
+                if (publishedRes.data) collectImageUrlsFromPayload(publishedRes.data, usedUrls);
+
+                const draftsRes = await client
+                    .from(BLOG_DRAFTS_TABLE)
+                    .select("payload_json")
+                    .eq("section_key", BLOG_KEY)
+                    .limit(300);
+                if (draftsRes.error) {
+                    setStatus("Scan failed", "error");
+                    setHelper(draftsRes.error.message || "Could not read drafts.");
+                    blogStorageSummary.textContent = "Scan failed.";
+                    return;
+                }
+                (draftsRes.data || []).forEach(function (d) {
+                    collectImageUrlsFromPayload((d && d.payload_json) || {}, usedUrls);
+                });
+
+                const listed = await listAllStorageObjects("");
+                if (listed.error) {
+                    setStatus("Scan failed", "error");
+                    setHelper(listed.error.message || "Could not list storage files.");
+                    blogStorageSummary.textContent = "Scan failed.";
+                    return;
+                }
+
+                var objects = listed.data || [];
+                var unused = objects.filter(function (obj) {
+                    var path = String((obj && obj.path) || "").replace(/^\/+/, "");
+                    return path && !usedUrls.has(path);
+                });
+
+                blogStorageSummary.textContent = "Found " + unused.length + " unused of " + objects.length + " total file(s).";
+                if (!unused.length) {
+                    blogStorageUnusedList.innerHTML = '<li class="helper">No unused files found.</li>';
+                    setStatus("Scan complete", null);
+                    setHelper("No unused blog files found in Storage.");
+                    return;
+                }
+
+                blogStorageUnusedList.innerHTML = unused.map(function (obj) {
+                    var when = obj.updated_at ? new Date(obj.updated_at).toLocaleString() : "—";
+                    var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(obj.path);
+                    var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
+                    return '' +
+                        '<li class="audit-item" data-storage-path="' + obj.path.replace(/"/g, "&quot;") + '">' +
+                        '<div class="audit-item-top">' +
+                        '<img class="audit-thumb" src="' + publicUrl.replace(/"/g, "&quot;") + '" alt="Unused file preview">' +
+                        '<div class="audit-item-path">' + obj.path.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</div>' +
+                        '</div>' +
+                        '<div class="audit-item-meta">Size: ' + formatBytes(obj.size) + ' • Updated: ' + when + '</div>' +
+                        '<div class="draft-actions"><button type="button" class="btn audit-delete-btn">Delete file</button></div>' +
+                        '</li>';
+                }).join("");
+
+                blogStorageUnusedList.querySelectorAll(".audit-delete-btn").forEach(function (btn) {
+                    btn.addEventListener("click", async function () {
+                        var li = btn.closest(".audit-item");
+                        if (!li) return;
+                        var path = li.getAttribute("data-storage-path");
+                        if (!path) return;
+                        if (!window.confirm("Delete this unused storage file? This cannot be undone.")) return;
+                        const { error } = await client.storage.from(BLOG_IMAGE_BUCKET).remove([path]);
+                        if (error) {
+                            setStatus("Delete failed", "error");
+                            setHelper(error.message || "Could not delete file.");
+                            return;
+                        }
+                        li.remove();
+                        setStatus("File deleted", null);
+                        setHelper("Unused storage file removed.");
+                        var remaining = blogStorageUnusedList.querySelectorAll(".audit-item").length;
+                        if (!remaining) blogStorageUnusedList.innerHTML = '<li class="helper">No unused files found.</li>';
+                        blogStorageSummary.textContent = "Remaining unused files: " + remaining + ".";
+                    });
+                });
+
+                setStatus("Scan complete", null);
+                setHelper("Review unused files before deletion.");
+            }
+
+            async function uploadBlogCardImage(cardIndex) {
+                var fileInput = document.getElementById("blog-c" + cardIndex + "-file");
+                var imgInput = document.getElementById("blog-c" + cardIndex + "-image");
+                var preview = document.getElementById("blog-c" + cardIndex + "-preview");
+                if (!fileInput || !imgInput) return;
+
+                var file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+                if (!file) {
+                    setStatus("Choose an image file first", "warn");
+                    setHelper("Use Upload to add an image to Supabase Storage.");
+                    return;
+                }
+
+                setStatus("Uploading image...", "warn");
+                setHelper("");
+
+                var uuid = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : String(Date.now());
+                var safeName = (file.name || "image").replace(/[^\w.\-]+/g, "_");
+                var key = "blog/" + cardIndex + "/" + uuid + "_" + safeName;
+
+                var { error } = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, {
+                    upsert: true,
+                    contentType: file.type || "application/octet-stream"
+                });
+
+                if (error) {
+                    setStatus("Upload failed", "error");
+                    setHelper(error.message || "Could not upload.");
+                    return;
+                }
+
+                var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
+                var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
+
+                if (publicUrl) {
+                    imgInput.value = publicUrl;
+                    if (preview) {
+                        preview.src = publicUrl;
+                        preview.style.display = "block";
+                    }
+                    setStatus("Uploaded", null);
+                    setHelper("Image added. Click Save Draft/Publish to store it in Blog content.");
+                } else {
+                    setStatus("Uploaded, but public URL missing", "warn");
+                    setHelper("Please retry or check Storage bucket settings.");
+                }
+            }
+
+            async function deleteBlogCardImage(cardIndex) {
+                var imgInput = document.getElementById("blog-c" + cardIndex + "-image");
+                var preview = document.getElementById("blog-c" + cardIndex + "-preview");
+                if (!imgInput) return;
+
+                var url = (imgInput.value || "").trim();
+                if (!url) {
+                    if (preview) {
+                        preview.src = "";
+                        preview.style.display = "none";
+                    }
+                    setStatus("Cleared", null);
+                    return;
+                }
+
+                var path = extractStoragePathFromPublicUrl(url);
+                if (!path) {
+                    // Not a Storage-managed URL (could be default repo image). We just clear the link in the form.
+                    imgInput.value = "";
+                    if (preview) {
+                        preview.src = "";
+                        preview.style.display = "none";
+                    }
+                    setStatus("Link cleared (not deleted from Storage)", "warn");
+                    setHelper("Only Storage images can be deleted from Supabase.");
+                    return;
+                }
+
+                setStatus("Deleting image...", "warn");
+                setHelper("");
+                var { error } = await client.storage.from(BLOG_IMAGE_BUCKET).remove([path]);
+                if (error) {
+                    setStatus("Delete failed", "error");
+                    setHelper(error.message || "Could not delete.");
+                    return;
+                }
+
+                imgInput.value = "";
+                if (preview) {
+                    preview.src = "";
+                    preview.style.display = "none";
+                }
+                setStatus("Deleted", null);
+                setHelper("Image removed from Storage. Save Draft/Publish to update the Blog content.");
+            }
+
+            async function uploadSingleBlogStorageFile(file, keyPrefix) {
+                if (!file) return { error: { message: "No file selected." } };
+                var uuid = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : String(Date.now());
+                var safeName = (file.name || "image").replace(/[^\w.\-]+/g, "_");
+                var key = keyPrefix + "/" + uuid + "_" + safeName;
+                var upRes = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, {
+                    upsert: true,
+                    contentType: file.type || "application/octet-stream"
+                });
+                if (upRes.error) return { error: upRes.error };
+                var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
+                var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
+                if (!publicUrl) return { error: { message: "Uploaded but missing public URL." } };
+                return { publicUrl: publicUrl };
+            }
+
+            async function uploadBlockImage(blockIndex) {
+                if (!blogFlexEditor) return;
+                var blockEl = blogFlexEditor.querySelector('.blog-card-block[data-block-index="' + blockIndex + '"]');
+                if (!blockEl) return;
+                var fileInput = blockEl.querySelector(".blog-block-image-file");
+                var imageInput = blockEl.querySelector(".blog-block-image-input");
+                var typeEl = blockEl.querySelector(".blog-block-type");
+                var blockType = typeEl ? typeEl.value : "image";
+                var file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+                if (!file || !imageInput) {
+                    setStatus("Choose an image first", "warn");
+                    setHelper("Pick a file before uploading.");
+                    return;
+                }
+                setStatus("Uploading image...", "warn");
+                var res = await uploadSingleBlogStorageFile(file, "blog/blocks/" + blockIndex + "/single");
+                if (res.error) {
+                    setStatus("Upload failed", "error");
+                    setHelper(res.error.message || "Could not upload.");
+                    return;
+                }
+                if (blockType === "gallery") {
+                    var galleryTextarea = blockEl.querySelector(".blog-block-gallery-input");
+                    var existingGallery = (galleryTextarea && galleryTextarea.value ? galleryTextarea.value : "")
+                        .split(/\r?\n/)
+                        .map(function (s) { return s.trim(); })
+                        .filter(Boolean);
+                    if (existingGallery.indexOf(res.publicUrl) === -1) existingGallery.push(res.publicUrl);
+                    if (galleryTextarea) galleryTextarea.value = existingGallery.join("\n");
+                    imageInput.value = "";
+                    var galleryPreviewWrap = blockEl.querySelector(".blog-block-gallery-preview-wrap");
+                    if (galleryPreviewWrap) {
+                        galleryPreviewWrap.innerHTML = existingGallery.slice(0, 6).map(function (u) {
+                            var su = resolveBlogEditorImageUrl(u || '').replace(/"/g, '&quot;');
+                            return '<img src="' + su + '" alt="" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#fff;">';
+                        }).join("");
+                    }
+                } else {
+                    imageInput.value = res.publicUrl;
+                }
+                var previewWrap = blockEl.querySelector(".blog-block-image-preview-wrap");
+                if (previewWrap) {
+                    previewWrap.innerHTML = '<img class="blog-block-image-preview" src="' + res.publicUrl + '" alt="Preview" style="width:78px; height:78px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">';
+                }
+                if (fileInput) fileInput.value = "";
+                setStatus("Uploaded", null);
+                setHelper("Image uploaded. Save Draft/Publish to persist.");
+            }
+
+            async function uploadBlockGalleryImages(blockIndex) {
+                if (!blogFlexEditor) return;
+                var blockEl = blogFlexEditor.querySelector('.blog-card-block[data-block-index="' + blockIndex + '"]');
+                if (!blockEl) return;
+                var filesInput = blockEl.querySelector(".blog-block-gallery-files");
+                var galleryTextarea = blockEl.querySelector(".blog-block-gallery-input");
+                var files = filesInput && filesInput.files ? Array.from(filesInput.files) : [];
+                if (!files.length || !galleryTextarea) {
+                    setStatus("Choose gallery images first", "warn");
+                    setHelper("Pick one or more files before uploading.");
+                    return;
+                }
+                setStatus("Uploading gallery images...", "warn");
+                var uploaded = [];
+                for (var i = 0; i < files.length; i++) {
+                    var res = await uploadSingleBlogStorageFile(files[i], "blog/blocks/" + blockIndex + "/gallery");
+                    if (res.error) {
+                        setStatus("Upload failed", "error");
+                        setHelper(res.error.message || "Could not upload one of the files.");
+                        return;
+                    }
+                    uploaded.push(res.publicUrl);
+                }
+                var existing = (galleryTextarea.value || "")
+                    .split(/\r?\n/)
+                    .map(function (s) { return s.trim(); })
+                    .filter(Boolean);
+                var all = existing.concat(uploaded);
+                galleryTextarea.value = all.join("\n");
+                var previewWrap = blockEl.querySelector(".blog-block-gallery-preview-wrap");
+                if (previewWrap) {
+                    previewWrap.innerHTML = all.slice(0, 6).map(function (u) {
+                        var su = resolveBlogEditorImageUrl(u || '').replace(/"/g, '&quot;');
+                        return '<img src="' + su + '" alt="" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#fff;">';
+                    }).join("");
+                }
+                if (filesInput) filesInput.value = "";
+                setStatus("Uploaded", null);
+                setHelper("Gallery image(s) uploaded. Save Draft/Publish to persist.");
+            }
+
+            function setStatus(text, mode) {
+                statusPill.classList.remove("warn", "error");
+                if (mode === "warn") statusPill.classList.add("warn");
+                if (mode === "error") statusPill.classList.add("error");
+                statusPill.innerHTML = '<span class="dot"></span>' + text;
+            }
+            function setHelper(text) { helperText.textContent = text; }
+
+            function disableButtons(disabled) {
+                saveDraftBtn.disabled = disabled;
+                publishBtn.disabled = disabled;
+            }
+
+            function applyEditorLabels(sectionKey) {
+                if (sectionKey === BLOG_KEY) {
+                    editorHeading.textContent = EDITOR_LABELS.blog.heading;
+                    editorSubheading.textContent = EDITOR_LABELS.blog.sub;
+                    return;
+                }
+                const L = EDITOR_LABELS[sectionKey] || EDITOR_LABELS.home_hero;
+                editorHeading.textContent = L.heading;
+                editorSubheading.textContent = L.sub;
+                labelA.textContent = L.a;
+                labelB.textContent = L.b;
+                labelC.textContent = L.c;
+                labelD.textContent = L.d;
+            }
+
+            function updateMeta(sectionKey, updatedAtIso) {
+                metaSectionKey.textContent = sectionKey || "—";
+                metaStatus.textContent = lastMetaStatus;
+                if (updatedAtIso) {
+                    metaUpdated.textContent = new Date(updatedAtIso).toLocaleString();
+                } else {
+                    metaUpdated.textContent = "Not saved yet";
+                }
+            }
+
+            const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            });
+
+            // Wire Blog image upload/delete controls (cards 0..2)
+            (function wireBlogImageTools() {
+                for (var i = 0; i < 3; i++) {
+                    var up = document.getElementById("blog-c" + i + "-upload-btn");
+                    var del = document.getElementById("blog-c" + i + "-delete-btn");
+                    if (up) up.addEventListener("click", function (idx) {
+                        return function () { uploadBlogCardImage(idx); };
+                    }(i));
+                    if (del) del.addEventListener("click", function (idx) {
+                        return function () { deleteBlogCardImage(idx); };
+                    }(i));
+                }
+            })();
+
+            if (blogAddBlockBtn) {
+                blogAddBlockBtn.addEventListener("click", function () {
+                    blogBlocks = collectBlogBlocksFromEditor();
+                    if (blogBlocks.length >= BLOG_MAX_BLOCKS) {
+                        setStatus("Max blog blocks reached", "warn");
+                        setHelper("You can add up to " + BLOG_MAX_BLOCKS + " blocks.");
+                        return;
+                    }
+                    blogBlocks.push(normalizeBlock({ type: "text" }));
+                    renderBlogBlocksEditor();
+                });
+            }
+
+            function addBlogBlockTemplate(blockObj) {
+                blogBlocks = collectBlogBlocksFromEditor();
+                if (blogBlocks.length >= BLOG_MAX_BLOCKS) {
+                    setStatus("Max blog blocks reached", "warn");
+                    setHelper("You can add up to " + BLOG_MAX_BLOCKS + " blocks.");
+                    return;
+                }
+                blogBlocks.push(normalizeBlock(blockObj || { type: "text" }));
+                renderBlogBlocksEditor();
+            }
+
+            if (blogAddTextBtn) blogAddTextBtn.addEventListener("click", function () {
+                addBlogBlockTemplate({ type: "text", title: "", text: "" });
+            });
+            if (blogAddImageBtn) blogAddImageBtn.addEventListener("click", function () {
+                addBlogBlockTemplate({ type: "image", title: "", imageUrl: "" });
+            });
+            if (blogAddSplitLeftBtn) blogAddSplitLeftBtn.addEventListener("click", function () {
+                addBlogBlockTemplate({ type: "split", title: "", text: "", imageUrl: "", imagePosition: "left" });
+            });
+            if (blogAddSplitRightBtn) blogAddSplitRightBtn.addEventListener("click", function () {
+                addBlogBlockTemplate({ type: "split", title: "", text: "", imageUrl: "", imagePosition: "right" });
+            });
+            if (blogAddSplitCenterBtn) blogAddSplitCenterBtn.addEventListener("click", function () {
+                addBlogBlockTemplate({ type: "split", title: "", text: "", imageUrl: "", imagePosition: "center" });
+            });
+            if (blogAddGalleryBtn) blogAddGalleryBtn.addEventListener("click", function () {
+                addBlogBlockTemplate({ type: "gallery", title: "", galleryUrls: [] });
+            });
+
+            client.auth.onAuthStateChange(function (event) {
+                if (event === "PASSWORD_RECOVERY") {
+                    window.location.replace("login.html");
+                }
+            });
+
+            async function ensureAuthenticated() {
+                const { data } = await client.auth.getUser();
+                const user = data && data.user ? data.user : null;
+                if (!user) {
+                    window.location.href = "login.html";
+                    return null;
+                }
+                return user;
+            }
+
+            async function loadContentForSection(sectionKey) {
+                setStatus("Loading...", "warn");
+                setHelper("Fetching from Supabase…");
+
+                if (sectionKey === "analytics") {
+                    setBlogEditorVisible(false);
+                    if (contentEditorCard) contentEditorCard.classList.add("is-hidden");
+                    if (pageMetaCard) pageMetaCard.classList.add("is-hidden");
+                    if (blogDraftsCard) blogDraftsCard.classList.add("is-hidden");
+                    if (blogStorageCard) blogStorageCard.classList.add("is-hidden");
+                    if (analyticsPanel) analyticsPanel.classList.remove("is-hidden");
+                    await loadAnalyticsSummary();
+                    setStatus("Analytics loaded", null);
+                    setHelper("Read-only analytics view.");
+                    metaSectionKey.textContent = "analytics";
+                    metaStatus.textContent = "Read-only";
+                    metaUpdated.textContent = "Live";
+                    return;
+                }
+
+                if (analyticsPanel) analyticsPanel.classList.add("is-hidden");
+                if (contentEditorCard) contentEditorCard.classList.remove("is-hidden");
+                if (pageMetaCard) pageMetaCard.classList.remove("is-hidden");
+                const { data, error } = await client
+                    .from("site_content")
+                    .select("title, subtitle, button_primary, button_secondary, updated_at")
+                    .eq("section_key", sectionKey)
+                    .maybeSingle();
+
+                if (error) {
+                    setStatus("Load failed", "error");
+                    setHelper("Could not load: " + error.message);
+                    return;
+                }
+
+                if (sectionKey === BLOG_KEY) {
+                    setBlogEditorVisible(true);
+                    if (blogDraftsCard) blogDraftsCard.classList.remove("is-hidden");
+                    if (blogStorageCard) blogStorageCard.classList.remove("is-hidden");
+                    fillBlogForm(data || {});
+                    currentBlogDraftId = null;
+                    loadBlogDraftsList();
+                    var updatedB = data && data.updated_at ? data.updated_at : null;
+                    lastMetaStatus = data ? "In database" : "Defaults (not saved)";
+                    updateMeta(sectionKey, updatedB);
+                    setStatus("Draft loaded", null);
+                    setHelper(updatedB ? "Last synced: " + new Date(updatedB).toLocaleString() : "Defaults shown — Save to store in Supabase. Public blog preview loads this row.");
+                    return;
+                }
+
+                setBlogEditorVisible(false);
+                if (blogDraftsCard) blogDraftsCard.classList.add("is-hidden");
+                if (blogStorageCard) blogStorageCard.classList.add("is-hidden");
+                titleInput.value = (data && data.title) ? data.title : "";
+                subtitleInput.value = (data && data.subtitle) ? data.subtitle : "";
+                primaryBtnInput.value = (data && data.button_primary) ? data.button_primary : "";
+                secondaryBtnInput.value = (data && data.button_secondary) ? data.button_secondary : "";
+
+                const updated = data && data.updated_at ? data.updated_at : null;
+                lastMetaStatus = data ? "In database" : "New (defaults)";
+                updateMeta(sectionKey, updated);
+                setStatus("Draft loaded", null);
+                setHelper(updated ? "Last synced: " + new Date(updated).toLocaleString() : "No row yet — save to create.");
+            }
+
+            async function saveContent(mode) {
+                const user = await ensureAuthenticated();
+                if (!user || !currentSectionKey) return;
+                disableButtons(true);
+                setStatus(mode === "publish" ? "Publishing..." : "Saving...", "warn");
+
+                if (currentSectionKey === BLOG_KEY && mode === "draft") {
+                    var d = getBlogDraftPayload();
+                    var draftPayload = {
+                        section_key: d.section_key,
+                        title: d.title,
+                        payload_json: d.payload_json,
+                        status: "draft",
+                        updated_at: d.updated_at
+                    };
+                    let draftError = null;
+                    if (currentBlogDraftId) {
+                        const res = await client
+                            .from(BLOG_DRAFTS_TABLE)
+                            .update(draftPayload)
+                            .eq("id", currentBlogDraftId)
+                            .select("id")
+                            .single();
+                        draftError = res.error || null;
+                    } else {
+                        const res = await client
+                            .from(BLOG_DRAFTS_TABLE)
+                            .insert(draftPayload)
+                            .select("id")
+                            .single();
+                        draftError = res.error || null;
+                        if (res.data && res.data.id) currentBlogDraftId = res.data.id;
+                    }
+                    if (draftError) {
+                        setStatus("Save failed", "error");
+                        setHelper("Save error: " + draftError.message);
+                        lastMetaStatus = "Error";
+                        updateMeta(currentSectionKey, null);
+                        disableButtons(false);
+                        return;
+                    }
+                    lastMetaStatus = "Draft saved";
+                    updateMeta(currentSectionKey, d.updated_at);
+                    setStatus("Draft saved", null);
+                    setHelper("Draft stored. Open from Blog Drafts card.");
+                    disableButtons(false);
+                    loadBlogDraftsList();
+                    return;
+                }
+
+                var payload;
+                if (currentSectionKey === BLOG_KEY) {
+                    var b = collectBlogPayload();
+                    payload = {
+                        section_key: BLOG_KEY,
+                        title: b.title,
+                        subtitle: b.subtitle,
+                        button_primary: b.button_primary,
+                        button_secondary: b.button_secondary,
+                        updated_at: new Date().toISOString()
+                    };
+                } else {
+                    payload = {
+                        section_key: currentSectionKey,
+                        title: titleInput.value.trim(),
+                        subtitle: subtitleInput.value.trim(),
+                        button_primary: primaryBtnInput.value.trim(),
+                        button_secondary: secondaryBtnInput.value.trim(),
+                        updated_at: new Date().toISOString()
+                    };
+                }
+
+                const { error } = await client.from("site_content").upsert(payload, { onConflict: "section_key" });
+                if (error) {
+                    setStatus("Save failed", "error");
+                    setHelper("Save error: " + error.message);
+                    lastMetaStatus = "Error";
+                    updateMeta(currentSectionKey, null);
+                    disableButtons(false);
+                    return;
+                }
+
+                if (currentSectionKey === BLOG_KEY && currentBlogDraftId) {
+                    await client
+                        .from(BLOG_DRAFTS_TABLE)
+                        .update({
+                            status: "published",
+                            published_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq("id", currentBlogDraftId);
+                    loadBlogDraftsList();
+                }
+
+                lastMetaStatus = mode === "publish" ? "Published" : "Draft saved";
+                updateMeta(currentSectionKey, payload.updated_at);
+                setStatus(lastMetaStatus, null);
+                setHelper("Saved at " + new Date().toLocaleString());
+                disableButtons(false);
+            }
+
+            function switchSection(navId) {
+                activeNav = navId;
+                document.querySelectorAll(".nav-btn").forEach(function (btn) {
+                    btn.classList.toggle("active", btn.getAttribute("data-nav") === navId);
+                });
+
+                const t = TOPBAR[navId] || TOPBAR.dashboard;
+                topbarTitle.textContent = t.title;
+                topbarDesc.textContent = t.desc;
+
+                const key = NAV_TO_KEY[navId];
+                currentSectionKey = key;
+
+                if (navId === "dashboard") {
+                    dashWelcome.classList.remove("is-hidden");
+                    if (dashManual) dashManual.classList.add("is-hidden");
+                    editorWorkspace.classList.add("is-hidden");
+                    if (analyticsPanel) analyticsPanel.classList.add("is-hidden");
+                    if (contentEditorCard) contentEditorCard.classList.remove("is-hidden");
+                    if (pageMetaCard) pageMetaCard.classList.remove("is-hidden");
+                    setStatus("Ready", null);
+                    setHelper("Choose a section in the sidebar to edit content.");
+                    metaSectionKey.textContent = "—";
+                    metaStatus.textContent = "—";
+                    metaUpdated.textContent = "—";
+                    return;
+                }
+
+                if (COMING_SOON_NAV.has(navId)) {
+                    dashWelcome.classList.add("is-hidden");
+                    editorWorkspace.classList.add("is-hidden");
+                    if (analyticsPanel) analyticsPanel.classList.add("is-hidden");
+                    if (contentEditorCard) contentEditorCard.classList.remove("is-hidden");
+                    if (pageMetaCard) pageMetaCard.classList.remove("is-hidden");
+                    setStatus("Coming soon", "warn");
+                    setHelper(t.title + " section is coming soon.");
+                    metaSectionKey.textContent = key || "-";
+                    metaStatus.textContent = "Coming soon";
+                    metaUpdated.textContent = "-";
+                    return;
+                }
+
+                dashWelcome.classList.add("is-hidden");
+                if (dashManual) dashManual.classList.add("is-hidden");
+                editorWorkspace.classList.remove("is-hidden");
+                if (key !== BLOG_KEY) setBlogEditorVisible(false);
+                applyEditorLabels(key);
+                loadContentForSection(key);
+            }
+
+            document.querySelectorAll(".nav-btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    const navId = btn.getAttribute("data-nav");
+                    if (navId) switchSection(navId);
+                });
+            });
+
+            saveDraftBtn.addEventListener("click", function () { saveContent("draft"); });
+            publishBtn.addEventListener("click", function () { saveContent("publish"); });
+            if (dashManualBtn) {
+                dashManualBtn.addEventListener("click", function () {
+                    if (activeNav !== "dashboard") return;
+                    if (!dashManual) return;
+                    var opening = dashManual.classList.contains("is-hidden");
+                    dashManual.classList.toggle("is-hidden", !opening);
+                    if (opening) {
+                        setStatus("Manual opened", null);
+                        setHelper("Manual is open. Use Blog and Analytics instructions below.");
+                    }
+                });
+            }
+            if (dashManualCloseBtn) {
+                dashManualCloseBtn.addEventListener("click", function () {
+                    if (!dashManual) return;
+                    dashManual.classList.add("is-hidden");
+                    if (activeNav === "dashboard") {
+                        setStatus("Ready", null);
+                        setHelper("Choose a section in the sidebar to edit content.");
+                    }
+                });
+            }
+            if (blogRefreshDraftsBtn) {
+                blogRefreshDraftsBtn.addEventListener("click", function () {
+                    if (currentSectionKey === BLOG_KEY) loadBlogDraftsList();
+                });
+            }
+            if (blogStorageScanBtn) {
+                blogStorageScanBtn.addEventListener("click", function () {
+                    if (currentSectionKey === BLOG_KEY) scanBlogUnusedStorageFiles();
+                });
+            }
+            if (anResetViewsBtn) {
+                anResetViewsBtn.addEventListener("click", function () {
+                    if (currentSectionKey === "analytics") resetViewCounters();
+                });
+            }
+            if (anApplyRangeBtn) {
+                anApplyRangeBtn.addEventListener("click", function () {
+                    if (currentSectionKey === "analytics") loadAnalyticsSummary();
+                });
+            }
+            logoutBtn.addEventListener("click", async function () {
+                await client.auth.signOut();
+                window.location.href = "login.html";
+            });
+
+            ensureAuthenticated().then(function (user) {
+                if (!user) return;
+                switchSection("dashboard");
+            });
+        })();
+    </script>
+</body>
+</html>

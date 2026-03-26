@@ -6,6 +6,41 @@
 
 (function() {
     'use strict';
+
+    // Lightweight page-view tracking (once per page per tab session).
+    // Sends anonymous page view events to Supabase for admin analytics.
+    (function trackPageView() {
+        var SUPABASE_URL = 'https://qckpjmoajhskxrfcsvpa.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c';
+        if (!window.fetch || !window.sessionStorage) return;
+        try {
+            var pagePath = window.location.pathname || '/';
+            var pageKey = 'pa_view_logged::' + pagePath;
+            if (sessionStorage.getItem(pageKey) === '1') return;
+            sessionStorage.setItem(pageKey, '1');
+            fetch(SUPABASE_URL + '/rest/v1/page_views', {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({
+                    page_path: pagePath,
+                    page_url: window.location.href || null,
+                    referrer: document.referrer || null
+                })
+            }).then(function(res) {
+                // If insert fails, allow retry on next page load.
+                if (!res || !res.ok) {
+                    try { sessionStorage.removeItem(pageKey); } catch (e2) {}
+                }
+            }).catch(function() {
+                try { sessionStorage.removeItem(pageKey); } catch (e3) {}
+            });
+        } catch (e) {}
+    })();
     
     // Mobile Menu Toggle
     const menuToggle = document.querySelector('.menu-toggle');
@@ -287,6 +322,82 @@
             }
         });
     }
+
+    // Global settings loader (from site_content: settings)
+    (function applyGlobalSettings() {
+        if (typeof window.supabase === 'undefined') return;
+        var SUPABASE_URL = 'https://qckpjmoajhskxrfcsvpa.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c';
+        var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        client
+            .from('site_content')
+            .select('title,subtitle,button_primary,button_secondary')
+            .eq('section_key', 'settings')
+            .maybeSingle()
+            .then(function(res) {
+                var data = res && res.data ? res.data : null;
+                if (!data) return;
+
+                var siteTitle = data.title ? String(data.title).trim() : '';
+                var contactEmail = data.button_primary ? String(data.button_primary).trim() : '';
+                var settingsObj = null;
+                var instagramUrl = '';
+                var phoneRaw = '';
+                try {
+                    settingsObj = data.button_secondary ? JSON.parse(String(data.button_secondary)) : null;
+                } catch (e0) {
+                    settingsObj = null;
+                }
+                if (settingsObj && typeof settingsObj === 'object') {
+                    instagramUrl = settingsObj.instagram_url ? String(settingsObj.instagram_url).trim() : '';
+                    phoneRaw = settingsObj.phone ? String(settingsObj.phone).trim() : '';
+                } else {
+                    instagramUrl = data.button_secondary ? String(data.button_secondary).trim() : '';
+                }
+                if (!phoneRaw && data.subtitle) {
+                    // Backward compatibility for older saved phone values.
+                    var maybePhone = String(data.subtitle).trim();
+                    if (/^\+?[\d\s\-()]{7,}$/.test(maybePhone)) phoneRaw = maybePhone;
+                }
+                var phoneDigits = phoneRaw ? phoneRaw.replace(/[^\d]/g, '') : '';
+
+                if (siteTitle) {
+                    if (document.title.indexOf(' - ') >= 0) {
+                        var parts = document.title.split(' - ');
+                        document.title = siteTitle + ' - ' + parts.slice(1).join(' - ');
+                    } else {
+                        document.title = siteTitle;
+                    }
+                }
+
+                if (contactEmail) {
+                    document.querySelectorAll('a[href^="mailto:"]').forEach(function(a) {
+                        a.href = 'mailto:' + contactEmail;
+                        a.textContent = contactEmail;
+                    });
+                }
+
+                if (phoneRaw) {
+                    document.querySelectorAll('a[href^="tel:"]').forEach(function(a) {
+                        a.href = 'tel:' + phoneRaw;
+                        a.textContent = phoneRaw;
+                    });
+                }
+
+                if (phoneDigits) {
+                    document.querySelectorAll('a[href*="wa.me/"]').forEach(function(a) {
+                        a.href = 'https://wa.me/' + phoneDigits;
+                    });
+                }
+
+                if (instagramUrl) {
+                    document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a) {
+                        a.href = instagramUrl;
+                    });
+                }
+            })
+            .catch(function() {});
+    })();
 
 })();
 

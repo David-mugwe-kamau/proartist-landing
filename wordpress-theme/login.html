@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ProArtist Admin — Sign in</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #ffdb00;
+            --black: #000000;
+            --white: #ffffff;
+            --muted: #616161;
+            --bg: #f3f3f3;
+            --border: #e8e8e8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        body {
+            font-family: "Montserrat", system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+        .card {
+            width: 100%;
+            max-width: 360px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px 24px 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            background: var(--brand);
+            border-radius: 10px;
+            padding: 6px 12px;
+            margin-bottom: 20px;
+        }
+        .brand strong { font-size: 22px; font-weight: 800; }
+        .brand span { font-size: 22px; font-weight: 500; }
+        h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--black);
+        }
+        .stack { display: flex; flex-direction: column; gap: 14px; }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            padding: 11px 12px;
+            font-family: inherit;
+            font-size: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #bbb;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            width: 100%;
+            margin-top: 4px;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            background: var(--brand);
+            color: var(--black);
+        }
+        .btn-primary:active { filter: brightness(0.97); }
+        .link-row {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .link {
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .link:hover { color: var(--black); }
+        .msg {
+            min-height: 1.25em;
+            font-size: 13px;
+            margin-top: 12px;
+            line-height: 1.4;
+            color: var(--muted);
+        }
+        .msg.warn { color: #8a5a00; }
+        .msg.error { color: #8c1d1d; }
+        .msg.ok { color: #246b1f; }
+        .recovery-panel {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+        .recovery-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .recovery-hint { font-size: 12px; color: var(--muted); margin-bottom: 14px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="brand"><strong>Pro</strong><span>Artist</span></div>
+        <h1>Sign in</h1>
+        <div class="stack">
+            <div>
+                <label for="login-email">Email</label>
+                <input id="login-email" type="email" placeholder="you@example.com" autocomplete="username" inputmode="email">
+            </div>
+            <div>
+                <label for="admin-password">Password</label>
+                <input id="admin-password" type="password" placeholder="Password" autocomplete="current-password">
+            </div>
+            <button id="login-btn" class="btn-primary" type="button">Log in</button>
+        </div>
+        <div class="link-row">
+            <button id="forgot-btn" class="link" type="button">Forgot password?</button>
+        </div>
+
+        <div id="recovery-panel" class="recovery-panel" hidden>
+            <p class="recovery-title">Set a new password</p>
+            <p class="recovery-hint">You opened the reset link from your email. Choose a new password below.</p>
+            <div class="stack">
+                <div>
+                    <label for="new-password">New password</label>
+                    <input id="new-password" type="password" placeholder="At least 6 characters" autocomplete="new-password" minlength="6">
+                </div>
+                <div>
+                    <label for="confirm-password">Confirm password</label>
+                    <input id="confirm-password" type="password" placeholder="Repeat password" autocomplete="new-password" minlength="6">
+                </div>
+                <button id="save-password-btn" class="btn-primary" type="button">Save new password</button>
+            </div>
+        </div>
+
+        <p id="msg" class="msg" aria-live="polite"></p>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            /** Capture before Supabase strips hash — password-reset links include type=recovery */
+            var recoverySnap =
+                /type=recovery/i.test(window.location.hash) ||
+                /type=recovery/i.test(window.location.search);
+
+            const SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
+            const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
+
+            const msgEl = document.getElementById("msg");
+            const emailInput = document.getElementById("login-email");
+            const passwordInput = document.getElementById("admin-password");
+            const loginBtn = document.getElementById("login-btn");
+            const forgotBtn = document.getElementById("forgot-btn");
+            const recoveryPanel = document.getElementById("recovery-panel");
+            const newPasswordInput = document.getElementById("new-password");
+            const confirmPasswordInput = document.getElementById("confirm-password");
+            const savePasswordBtn = document.getElementById("save-password-btn");
+
+            function setMsg(text, mode) {
+                msgEl.textContent = text || "";
+                msgEl.classList.remove("warn", "error", "ok");
+                if (mode) msgEl.classList.add(mode);
+            }
+
+            const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true
+                }
+            });
+
+            function showRecoveryPanel(show) {
+                recoveryPanel.hidden = !show;
+            }
+
+            var allowAutoRedirectToAdmin = !recoverySnap;
+
+            function friendlyLoginError(error) {
+                const raw = (error && error.message) ? error.message : "Could not sign in.";
+                const code = error && error.code ? String(error.code) : "";
+                if (code === "email_not_confirmed" || /email not confirmed/i.test(raw)) {
+                    return "Confirm your email first. In Supabase: Authentication → Users → select user → confirm, or resend confirmation.";
+                }
+                if (/invalid login|invalid credentials|invalid_grant/i.test(raw) || error.status === 400) {
+                    return "Wrong email or password. Use Forgot password? or set the password in Supabase (Users → user → reset).";
+                }
+                return raw;
+            }
+
+            async function checkExistingSession() {
+                if (recoverySnap) return;
+                await new Promise(function (r) { setTimeout(r, 600); });
+                if (!allowAutoRedirectToAdmin) return;
+                const { data } = await client.auth.getUser();
+                if (data && data.user) window.location.href = "admin.html";
+            }
+
+            client.auth.onAuthStateChange(function (event) {
+                if (event === "PASSWORD_RECOVERY") {
+                    allowAutoRedirectToAdmin = false;
+                    showRecoveryPanel(true);
+                    setMsg("Choose a new password below.", "warn");
+                }
+            });
+
+            if (recoverySnap) {
+                showRecoveryPanel(true);
+                setMsg("Choose a new password below.", "warn");
+            }
+
+            savePasswordBtn.addEventListener("click", async function () {
+                const a = newPasswordInput.value;
+                const b = confirmPasswordInput.value;
+                if (a.length < 6) {
+                    setMsg("Password must be at least 6 characters.", "warn");
+                    return;
+                }
+                if (a !== b) {
+                    setMsg("Passwords do not match.", "warn");
+                    return;
+                }
+                setMsg("Saving…", "warn");
+                const { error } = await client.auth.updateUser({ password: a });
+                if (error) {
+                    setMsg(error.message, "error");
+                    return;
+                }
+                setMsg("Password updated. You can go to Admin.", "ok");
+                showRecoveryPanel(false);
+                window.location.href = "admin.html";
+            });
+
+            loginBtn.addEventListener("click", async function () {
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!email) {
+                    setMsg("Enter your work email.", "warn");
+                    return;
+                }
+                if (!password) {
+                    setMsg("Enter your password.", "warn");
+                    return;
+                }
+
+                setMsg("Signing in…", "warn");
+                const { error } = await client.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    setMsg(friendlyLoginError(error), "error");
+                    return;
+                }
+
+                setMsg("Redirecting…", "ok");
+                window.location.href = "admin.html";
+            });
+
+            forgotBtn.addEventListener("click", async function () {
+                const email = emailInput.value.trim();
+                if (!email) {
+                    setMsg("Enter the email for the account, then tap Forgot password again.", "warn");
+                    return;
+                }
+                setMsg("Sending reset email…", "warn");
+                const { error } = await client.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + window.location.pathname
+                });
+                if (error) {
+                    setMsg(error.message, "error");
+                    return;
+                }
+                setMsg("Check your email for a reset link.", "ok");
+            });
+
+            emailInput.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") loginBtn.click();
+            });
+            passwordInput.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") loginBtn.click();
+            });
+
+            checkExistingSession();
+        })();
+    </script>
+</body>
+</html>
