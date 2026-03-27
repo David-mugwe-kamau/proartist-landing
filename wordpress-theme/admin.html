@@ -717,6 +717,7 @@
                         <div class="card-body">
                             <div class="btn-row" style="padding-top:0;">
                                 <button id="blog-storage-scan-btn" class="btn" type="button">Scan Unused Files</button>
+                                <button id="blog-clean-nonmain-cards-btn" class="btn" type="button">Clean Non-Main Cards</button>
                             </div>
                             <p id="blog-storage-summary" class="helper">Run a scan to check usage.</p>
                             <ul id="blog-storage-unused-list" class="audit-list">
@@ -856,6 +857,7 @@
             const blogRefreshDraftsBtn = document.getElementById("blog-refresh-drafts-btn");
             const blogStorageCard = document.getElementById("blog-storage-card");
             const blogStorageScanBtn = document.getElementById("blog-storage-scan-btn");
+            const blogCleanNonMainCardsBtn = document.getElementById("blog-clean-nonmain-cards-btn");
             const blogStorageSummary = document.getElementById("blog-storage-summary");
             const blogStorageUnusedList = document.getElementById("blog-storage-unused-list");
             const contentEditorCard = document.getElementById("content-editor-card");
@@ -1658,6 +1660,58 @@
                 setHelper("Review unused files before deletion.");
             }
 
+            async function cleanNonMainBlogCards() {
+                if (!blogStorageSummary) return;
+                var ok = window.confirm("Clean non-main published cards? This keeps Card 1 and clears Cards 2-3 in the published Blog row.");
+                if (!ok) return;
+
+                setStatus("Cleaning cards...", "warn");
+                setHelper("Keeping only the published main card.");
+
+                const publishedRes = await client
+                    .from("site_content")
+                    .select("button_primary")
+                    .eq("section_key", BLOG_KEY)
+                    .maybeSingle();
+
+                if (publishedRes.error) {
+                    setStatus("Clean failed", "error");
+                    setHelper(publishedRes.error.message || "Could not read published blog row.");
+                    return;
+                }
+
+                var cards = parseBlogCardsJson(publishedRes.data && publishedRes.data.button_primary) || [];
+                var first = cards[0] || {};
+                var cleanedCards = [
+                    {
+                        title: first && first.title ? String(first.title).trim() : "",
+                        excerpt: first && first.excerpt ? String(first.excerpt).trim() : "",
+                        image: first && first.image ? String(first.image).trim() : ""
+                    },
+                    { title: "", excerpt: "", image: "" },
+                    { title: "", excerpt: "", image: "" }
+                ];
+
+                const updateRes = await client
+                    .from("site_content")
+                    .update({
+                        button_primary: JSON.stringify({ cards: cleanedCards }),
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq("section_key", BLOG_KEY);
+
+                if (updateRes.error) {
+                    setStatus("Clean failed", "error");
+                    setHelper(updateRes.error.message || "Could not update published blog row.");
+                    return;
+                }
+
+                blogStorageSummary.textContent = "Published cards cleaned: kept Card 1, cleared Cards 2-3.";
+                setStatus("Cards cleaned", null);
+                setHelper("Non-main published cards removed.");
+                await loadContentForSection(BLOG_KEY);
+            }
+
             async function uploadBlogCardImage(cardIndex) {
                 var fileInput = document.getElementById("blog-c" + cardIndex + "-file");
                 var imgInput = document.getElementById("blog-c" + cardIndex + "-image");
@@ -2273,6 +2327,11 @@
             if (blogStorageScanBtn) {
                 blogStorageScanBtn.addEventListener("click", function () {
                     if (currentSectionKey === BLOG_KEY) scanBlogUnusedStorageFiles();
+                });
+            }
+            if (blogCleanNonMainCardsBtn) {
+                blogCleanNonMainCardsBtn.addEventListener("click", function () {
+                    if (currentSectionKey === BLOG_KEY) cleanNonMainBlogCards();
                 });
             }
             if (anResetViewsBtn) {
