@@ -47,7 +47,9 @@
             justify-content: space-between;
             gap: 12px;
         }
-        .topbar > div:first-child { min-width: 0; flex: 1; }
+        .topbar-main { min-width: 0; flex: 1; display: flex; align-items: flex-start; gap: 12px; }
+        .topbar-mobile-brand { display: none; }
+        .topbar-title-wrap { min-width: 0; flex: 1; }
         .topbar h1 { font-size: clamp(20px, 2.2vw, 28px); line-height: 1.2; word-wrap: break-word; }
         .topbar p { font-size: 13px; color: var(--muted); margin-top: 4px; }
         .topbar-actions { display: inline-flex; align-items: center; gap: 10px; }
@@ -289,10 +291,34 @@
             main.content > #editor-workspace {
                 order: 3;
             }
-            main.content > header.topbar > div:first-child {
-                flex: none;
+            main.content > header.topbar .topbar-main {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
                 width: 100%;
                 min-width: 0;
+                gap: 10px;
+                padding: 10px 12px;
+                border: 1px solid #f0ce00;
+                border-radius: 12px;
+                background: var(--brand);
+            }
+            main.content > header.topbar .topbar-mobile-brand {
+                display: inline-flex;
+                align-items: baseline;
+                gap: 0;
+                font-size: 18px;
+                line-height: 1;
+                color: var(--black);
+            }
+            main.content > header.topbar .topbar-mobile-brand strong {
+                font-weight: 800;
+            }
+            main.content > header.topbar .topbar-mobile-brand span {
+                font-weight: 500;
+            }
+            main.content > header.topbar .topbar-title-wrap {
+                display: none;
             }
             main.content > header.topbar h1 {
                 font-size: clamp(18px, 5vw, 24px);
@@ -314,6 +340,13 @@
             main.content > header.topbar .status {
                 flex-shrink: 1;
                 min-width: 0;
+            }
+            main.content > header.topbar .topbar-main .nav-menu-toggle {
+                border: 0;
+                border-radius: 8px;
+                background: transparent;
+                width: 40px;
+                min-height: 40px;
             }
             .sidebar {
                 order: 2;
@@ -447,16 +480,19 @@
             </div>
 
             <header class="topbar">
-                <div>
-                    <h1 id="topbar-title">Dashboard</h1>
-                    <p id="topbar-desc">Overview</p>
+                <div class="topbar-main">
+                    <div class="topbar-mobile-brand" aria-hidden="true"><strong>Pro</strong><span>Artist</span></div>
+                    <div class="topbar-title-wrap">
+                        <h1 id="topbar-title">Dashboard</h1>
+                        <p id="topbar-desc">Overview</p>
+                    </div>
+                    <button type="button" class="nav-menu-toggle" id="nav-menu-toggle" aria-expanded="false" aria-controls="admin-sidebar" aria-label="Open sections menu">
+                        <span class="nav-menu-toggle-bars" aria-hidden="true"></span>
+                    </button>
                 </div>
                 <div class="topbar-actions">
                     <div id="status-pill" class="status"><span class="dot"></span>Ready</div>
                     <button id="logout-btn" class="btn" type="button">Log Out</button>
-                    <button type="button" class="nav-menu-toggle" id="nav-menu-toggle" aria-expanded="false" aria-controls="admin-sidebar" aria-label="Open sections menu">
-                        <span class="nav-menu-toggle-bars" aria-hidden="true"></span>
-                    </button>
                 </div>
             </header>
 
