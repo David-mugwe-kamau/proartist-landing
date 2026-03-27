@@ -431,17 +431,26 @@
                     p.textContent = subtitleText;
                 }
             }
-
             function renderCards(cards) {
                 var imgEl = document.getElementById("blog-main-image");
+                var defaultWrap = document.querySelector(".blog-main-image-wrap");
                 if (!imgEl || !cards || cards.length < 1) return;
 
                 var c = cards[0] || {};
-                var img = esc(resolveBlogImageUrl(c.image || "proartist-theme/assets/images/blog-image.jpg"));
-                var title = esc(c.title || "");
+                var imageRaw = c && c.image ? String(c.image).trim() : "";
+                if (!imageRaw) {
+                    if (defaultWrap) defaultWrap.style.display = "none";
+                    return;
+                }
 
+                var img = esc(resolveBlogImageUrl(imageRaw));
+                imgEl.alt = "";
+                imgEl.style.display = "block";
+                imgEl.onerror = function () {
+                    imgEl.style.display = "none";
+                    if (defaultWrap) defaultWrap.style.display = "none";
+                };
                 imgEl.src = img;
-                if (title) imgEl.alt = title;
             }
 
             function renderBlocks(blocks) {
