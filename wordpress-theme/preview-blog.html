@@ -80,6 +80,7 @@
         .blog-main-image-wrap {
             padding: 0 0 60px;
             background: #ffffff;
+            perspective: 1200px;
         }
         .blog-main-image {
             width: 100%;
@@ -89,11 +90,25 @@
             object-fit: contain;
             background: #ffffff;
             display: block;
+            transform: scale(1.02) translateZ(0);
+            transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+        }
+        .blog-main-image:hover {
+            transform: scale(1.05) translateZ(20px);
         }
 
         @media (max-width: 600px) {
             .blog-main-image {
                 min-height: 180px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .blog-main-image {
+                transition: none;
+                transform: none;
+            }
+            .blog-main-image:hover {
+                transform: none;
             }
         }
 
