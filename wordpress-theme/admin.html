@@ -913,7 +913,9 @@
             }
 
             function parseBlogCardsJson(raw) {
-                if (!raw || typeof raw !== "string") return null;
+                if (!raw) return null;
+                if (typeof raw === "object" && raw.cards && Array.isArray(raw.cards) && raw.cards.length) return raw.cards;
+                if (typeof raw !== "string") return null;
                 try {
                     var o = JSON.parse(raw);
                     if (o && o.cards && Array.isArray(o.cards) && o.cards.length) return o.cards;
@@ -933,7 +935,13 @@
             }
 
             function parseBlogBlocks(raw) {
-                if (!raw || typeof raw !== "string") return [];
+                if (!raw) return [];
+                if (typeof raw === "object") {
+                    if (Array.isArray(raw)) return raw;
+                    if (raw.blocks && Array.isArray(raw.blocks)) return raw.blocks;
+                    return [];
+                }
+                if (typeof raw !== "string") return [];
                 try {
                     var o = JSON.parse(raw);
                     if (Array.isArray(o)) return o;
@@ -1165,7 +1173,13 @@
                 blogHeroTitleLine2.value = lines.length > 1 ? lines.slice(1).join("\n").trim() : "";
                 blogHeroSubtitle.value = (data.subtitle && String(data.subtitle).trim()) ? data.subtitle : DEFAULT_BLOG_HERO.subtitle;
                 var cards = parseBlogCardsJson(data.button_primary);
-                if (!cards || cards.length < 3) cards = DEFAULT_BLOG_CARDS.slice();
+                if (!cards || !cards.length) {
+                    cards = DEFAULT_BLOG_CARDS.slice();
+                } else {
+                    while (cards.length < 3) {
+                        cards.push({ title: "", excerpt: "", image: "" });
+                    }
+                }
                 for (var i = 0; i < 3; i++) {
                     var c = cards[i] || DEFAULT_BLOG_CARDS[i];
                     document.getElementById("blog-c" + i + "-title").value = c.title || "";
@@ -1175,8 +1189,9 @@
                     var preview = document.getElementById("blog-c" + i + "-preview");
                     if (preview) {
                         preview.alt = c.title || "Preview";
-                        if (imgUrl) {
-                            preview.src = imgUrl;
+                        var resolvedImg = resolveBlogEditorImageUrl(imgUrl);
+                        if (resolvedImg) {
+                            preview.src = resolvedImg;
                             preview.style.display = "block";
                         } else {
                             preview.src = "";
@@ -1753,7 +1768,7 @@
                         preview.style.display = "block";
                     }
                     setStatus("Uploaded", null);
-                    setHelper("Image added. Click Save Draft/Publish to store it in Blog content.");
+                    setHelper("Image uploaded to Storage. You must click Publish Changes for it to appear on the blog page.");
                 } else {
                     setStatus("Uploaded, but public URL missing", "warn");
                     setHelper("Please retry or check Storage bucket settings.");
@@ -1868,7 +1883,7 @@
                 }
                 if (fileInput) fileInput.value = "";
                 setStatus("Uploaded", null);
-                setHelper("Image uploaded. Save Draft/Publish to persist.");
+                setHelper("Image uploaded. Click Publish Changes for it to appear on the blog page.");
             }
 
             async function uploadBlockGalleryImages(blockIndex) {
@@ -1909,7 +1924,7 @@
                 }
                 if (filesInput) filesInput.value = "";
                 setStatus("Uploaded", null);
-                setHelper("Gallery image(s) uploaded. Save Draft/Publish to persist.");
+                setHelper("Gallery uploaded. Click Publish Changes for images to appear on the blog page.");
             }
 
             function setStatus(text, mode) {
@@ -2193,8 +2208,16 @@
                 lastMetaStatus = mode === "publish" ? "Published" : "Draft saved";
                 updateMeta(currentSectionKey, payload.updated_at);
                 setStatus(lastMetaStatus, null);
-                setHelper("Saved at " + new Date().toLocaleString());
+                setHelper(mode === "publish"
+                    ? "Published at " + new Date().toLocaleString() + ". Open preview-blog.html and hard-refresh (Ctrl+F5)."
+                    : "Saved at " + new Date().toLocaleString());
                 disableButtons(false);
+                if (currentSectionKey === BLOG_KEY && mode === "publish") {
+                    await loadContentForSection(BLOG_KEY);
+                    lastMetaStatus = "Published";
+                    metaStatus.textContent = "Published";
+                    metaUpdated.textContent = new Date(payload.updated_at).toLocaleString();
+                }
             }
 
             function switchSection(navId) {

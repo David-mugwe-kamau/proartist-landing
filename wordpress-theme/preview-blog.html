@@ -286,7 +286,7 @@
         }
     </style>
 </head>
-<body>
+<body class="pa-supabase-page">
     <header class="site-header">
         <div class="container">
             <div class="site-branding">
@@ -409,7 +409,9 @@
             }
 
             function parseCards(raw) {
-                if (!raw || typeof raw !== "string") return null;
+                if (!raw) return null;
+                if (typeof raw === "object" && raw.cards && Array.isArray(raw.cards)) return raw.cards;
+                if (typeof raw !== "string") return null;
                 try {
                     var o = JSON.parse(raw);
                     if (o && o.cards && Array.isArray(o.cards)) return o.cards;
@@ -418,7 +420,13 @@
             }
 
             function parseBlocks(raw) {
-                if (!raw || typeof raw !== "string") return [];
+                if (!raw) return [];
+                if (typeof raw === "object") {
+                    if (Array.isArray(raw)) return raw;
+                    if (raw.blocks && Array.isArray(raw.blocks)) return raw.blocks;
+                    return [];
+                }
+                if (typeof raw !== "string") return [];
                 try {
                     var o = JSON.parse(raw);
                     // Handle double-encoded JSON text
@@ -438,6 +446,26 @@
                     }
                 } catch (e) {}
                 return [];
+            }
+
+            function filterVisibleBlocks(blocks) {
+                return (blocks || []).filter(function (b) {
+                    b = b || {};
+                    var type = b.type ? String(b.type) : "text";
+                    var title = b.title ? String(b.title).trim() : "";
+                    var subtitle = b.subtitle ? String(b.subtitle).trim() : "";
+                    var text = b.text ? String(b.text).trim() : "";
+                    var linkLabel = b.linkLabel ? String(b.linkLabel).trim() : "";
+                    var linkUrl = b.linkUrl ? String(b.linkUrl).trim() : "";
+                    var imageUrl = b.imageUrl ? String(b.imageUrl).trim() : "";
+                    var galleryUrls = Array.isArray(b.galleryUrls)
+                        ? b.galleryUrls.filter(function (u) { return u && String(u).trim(); })
+                        : [];
+                    if (type === "image") return !!imageUrl;
+                    if (type === "gallery") return galleryUrls.length > 0;
+                    if (type === "split") return !!imageUrl || !!text || !!title || !!subtitle || (linkLabel && linkUrl);
+                    return !!title || !!subtitle || !!text || (linkLabel && linkUrl);
+                });
             }
 
             function renderHero(titleText, subtitleText) {
@@ -464,7 +492,7 @@
                     return;
                 }
 
-                var img = esc(resolveBlogImageUrl(imageRaw));
+                var img = resolveBlogImageUrl(imageRaw);
                 imgEl.alt = "";
                 imgEl.style.display = "block";
                 imgEl.onerror = function () {
@@ -595,6 +623,62 @@
 
             if (typeof window.supabase !== "undefined" && SUPABASE_URL.indexOf("PASTE_") !== 0) {
                 var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+                function applyFooterSettings(data) {
+                    if (!data) return;
+                    var contactEmail = data.button_primary ? String(data.button_primary).trim() : "";
+                    var settingsObj = null;
+                    var instagramUrl = "";
+                    var phoneRaw = "";
+                    try {
+                        settingsObj = data.button_secondary ? JSON.parse(String(data.button_secondary)) : null;
+                    } catch (e0) {
+                        settingsObj = null;
+                    }
+                    if (settingsObj && typeof settingsObj === "object") {
+                        instagramUrl = settingsObj.instagram_url ? String(settingsObj.instagram_url).trim() : "";
+                        phoneRaw = settingsObj.phone ? String(settingsObj.phone).trim() : "";
+                    } else {
+                        instagramUrl = data.button_secondary ? String(data.button_secondary).trim() : "";
+                    }
+                    if (!phoneRaw && data.subtitle) {
+                        var maybePhone = String(data.subtitle).trim();
+                        if (/^\+?[\d\s\-()]{7,}$/.test(maybePhone)) phoneRaw = maybePhone;
+                    }
+                    var phoneDigits = phoneRaw ? phoneRaw.replace(/[^\d]/g, "") : "";
+                    if (contactEmail) {
+                        document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) {
+                            a.href = "mailto:" + contactEmail;
+                            a.textContent = contactEmail;
+                        });
+                    }
+                    if (phoneRaw) {
+                        document.querySelectorAll('a[href^="tel:"]').forEach(function (a) {
+                            a.href = "tel:" + phoneRaw;
+                            a.textContent = phoneRaw;
+                        });
+                    }
+                    if (phoneDigits) {
+                        document.querySelectorAll('a[href*="wa.me/"]').forEach(function (a) {
+                            a.href = "https://wa.me/" + phoneDigits;
+                        });
+                    }
+                    if (instagramUrl) {
+                        document.querySelectorAll('a[href*="instagram.com"]').forEach(function (a) {
+                            a.href = instagramUrl;
+                        });
+                    }
+                }
+
+                client
+                    .from("site_content")
+                    .select("title, subtitle, button_primary, button_secondary")
+                    .eq("section_key", "settings")
+                    .maybeSingle()
+                    .then(function (res) {
+                        if (!res.error && res.data) applyFooterSettings(res.data);
+                    });
+
                 client
                     .from("site_content")
                     .select("title, subtitle, button_primary, button_secondary")
@@ -607,8 +691,8 @@
                         renderHero(data.title, data.subtitle);
                         var cards = parseCards(data.button_primary);
                         if (cards && cards.length >= 1) renderCards(cards);
-                        var blocks = parseBlocks(data.button_secondary);
-                        if (blocks && blocks.length) renderBlocks(blocks);
+                        var blocks = filterVisibleBlocks(parseBlocks(data.button_secondary));
+                        if (blocks.length) renderBlocks(blocks);
                     });
             }
         })();

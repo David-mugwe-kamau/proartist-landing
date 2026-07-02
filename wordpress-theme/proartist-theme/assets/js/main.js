@@ -326,6 +326,7 @@
     // Global settings loader (from site_content: settings)
     (function applyGlobalSettings() {
         if (typeof window.supabase === 'undefined') return;
+        if (document.body && document.body.classList.contains('pa-supabase-page')) return;
         var SUPABASE_URL = 'https://qckpjmoajhskxrfcsvpa.supabase.co';
         var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c';
         var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
