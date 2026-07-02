@@ -897,8 +897,8 @@
             const BLOG_DRAFTS_TABLE = "blog_drafts";
             let currentBlogDraftId = null;
             const DEFAULT_BLOG_HERO = {
-                title: "Learn More About The\nGrooming Industry",
-                subtitle: "Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business."
+                title: "",
+                subtitle: ""
             };
             const DEFAULT_BLOG_CARDS = [
                 { title: "", excerpt: "", image: "" },
@@ -1088,8 +1088,6 @@
                     var typeEl = el.querySelector(".blog-block-type");
                     var posEl = el.querySelector(".blog-block-pos");
                     var imageInputEl = el.querySelector(".blog-block-image-input");
-                    var imageUploadBtn = el.querySelector(".blog-block-image-upload-btn");
-                    var galleryUploadBtn = el.querySelector(".blog-block-gallery-upload-btn");
                     var addGalleryAfterBtn = el.querySelector(".blog-block-add-gallery-after");
                     if (typeEl) typeEl.addEventListener("change", function () {
                         updateBlockFieldVisibility(el);
@@ -1110,12 +1108,6 @@
                     if (del) del.addEventListener("click", function () {
                         blogBlocks.splice(idx, 1);
                         renderBlogBlocksEditor();
-                    });
-                    if (imageUploadBtn) imageUploadBtn.addEventListener("click", function () {
-                        uploadBlockImage(idx);
-                    });
-                    if (galleryUploadBtn) galleryUploadBtn.addEventListener("click", function () {
-                        uploadBlockGalleryImages(idx);
                     });
                     if (addGalleryAfterBtn) addGalleryAfterBtn.addEventListener("click", function () {
                         blogBlocks = collectBlogBlocksFromEditor();
@@ -1973,17 +1965,29 @@
                 }
             });
 
-            // Wire Blog image upload/delete controls (cards 0..2)
+            // Wire Blog image upload/delete via delegation (stable after form reloads)
             (function wireBlogImageTools() {
-                for (var i = 0; i < 3; i++) {
-                    var up = document.getElementById("blog-c" + i + "-upload-btn");
-                    var del = document.getElementById("blog-c" + i + "-delete-btn");
-                    if (up) up.addEventListener("click", function (idx) {
-                        return function () { uploadBlogCardImage(idx); };
-                    }(i));
-                    if (del) del.addEventListener("click", function (idx) {
-                        return function () { deleteBlogCardImage(idx); };
-                    }(i));
+                var blogCardsEditor = document.getElementById("blog-cards-editor");
+                if (blogCardsEditor) {
+                    blogCardsEditor.addEventListener("click", function (e) {
+                        var btn = e.target && e.target.closest ? e.target.closest("button[id^='blog-c'][id$='-upload-btn'], button[id^='blog-c'][id$='-delete-btn']") : null;
+                        if (!btn || !btn.id) return;
+                        var match = btn.id.match(/^blog-c(\d+)-(upload|delete)-btn$/);
+                        if (!match) return;
+                        var idx = Number(match[1]);
+                        if (match[2] === "upload") uploadBlogCardImage(idx);
+                        else deleteBlogCardImage(idx);
+                    });
+                }
+                if (blogFlexEditor) {
+                    blogFlexEditor.addEventListener("click", function (e) {
+                        var blockEl = e.target && e.target.closest ? e.target.closest(".blog-card-block[data-block-index]") : null;
+                        if (!blockEl) return;
+                        var idx = Number(blockEl.getAttribute("data-block-index"));
+                        if (isNaN(idx)) return;
+                        if (e.target.closest(".blog-block-image-upload-btn")) uploadBlockImage(idx);
+                        else if (e.target.closest(".blog-block-gallery-upload-btn")) uploadBlockGalleryImages(idx);
+                    });
                 }
             })();
 

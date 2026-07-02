@@ -314,23 +314,19 @@
         <!-- Hero Section -->
         <section class="hero-section" style="padding: 60px 0 24px; background: #ffffff;">
             <div class="container" style="max-width: 1200px; text-align: center;">
-                <h1 id="blog-hero-title" class="hero-title" style="text-align: center; margin-bottom: 24px; line-height: 1.2; font-weight: 800; color: #000000; font-size: clamp(32px, 5vw, 48px);">
-                    Learn More About The<br />Grooming Industry
-                </h1>
-                <p id="blog-hero-subtitle" class="hero-subtitle" style="text-align: center; margin-bottom: 12px; color: #000000; font-size: 16px; max-width: 700px; margin-left: auto; margin-right: auto;">
-                    Welcome to the ProArtist Knowledge Hub - simplified insights for investors and anyone exploring the grooming business.
-                </p>
+                <h1 id="blog-hero-title" class="hero-title" style="text-align: center; margin-bottom: 24px; line-height: 1.2; font-weight: 800; color: #000000; font-size: clamp(32px, 5vw, 48px);"></h1>
+                <p id="blog-hero-subtitle" class="hero-subtitle" style="text-align: center; margin-bottom: 12px; color: #000000; font-size: 16px; max-width: 700px; margin-left: auto; margin-right: auto;"></p>
             </div>
         </section>
 
-        <!-- Single image under hero (optional: sourced from Supabase first blog card) -->
-        <section class="blog-main-image-wrap">
+        <!-- Hero image from Supabase (blog card 0) — hidden until loaded -->
+        <section class="blog-main-image-wrap" style="display: none;">
             <div class="container" style="max-width: 1200px;">
                 <img
                     id="blog-main-image"
                     class="blog-main-image"
-                    src="proartist-theme/assets/images/blog-image.jpg"
-                    alt="Blog"
+                    src=""
+                    alt=""
                 />
             </div>
         </section>
@@ -468,6 +464,20 @@
                 });
             }
 
+            function blocksIncludeHeroImage(blocks) {
+                return (blocks || []).some(function (b) {
+                    b = b || {};
+                    var type = b.type ? String(b.type) : "text";
+                    var imageUrl = b.imageUrl ? String(b.imageUrl).trim() : "";
+                    var galleryUrls = Array.isArray(b.galleryUrls)
+                        ? b.galleryUrls.filter(function (u) { return u && String(u).trim(); })
+                        : [];
+                    if (type === "image" || type === "split") return !!imageUrl;
+                    if (type === "gallery") return galleryUrls.length > 0;
+                    return false;
+                });
+            }
+
             function renderHero(titleText, subtitleText) {
                 var h = document.getElementById("blog-hero-title");
                 var p = document.getElementById("blog-hero-subtitle");
@@ -483,21 +493,27 @@
             function renderCards(cards) {
                 var imgEl = document.getElementById("blog-main-image");
                 var defaultWrap = document.querySelector(".blog-main-image-wrap");
-                if (!imgEl || !cards || cards.length < 1) return;
+                if (!imgEl || !defaultWrap || !cards || cards.length < 1) return;
 
                 var c = cards[0] || {};
                 var imageRaw = c && c.image ? String(c.image).trim() : "";
                 if (!imageRaw) {
-                    if (defaultWrap) defaultWrap.style.display = "none";
+                    defaultWrap.style.display = "none";
+                    imgEl.removeAttribute("src");
                     return;
                 }
 
                 var img = resolveBlogImageUrl(imageRaw);
                 imgEl.alt = "";
                 imgEl.style.display = "block";
+                defaultWrap.style.display = "block";
                 imgEl.onerror = function () {
                     imgEl.style.display = "none";
-                    if (defaultWrap) defaultWrap.style.display = "none";
+                    defaultWrap.style.display = "none";
+                };
+                imgEl.onload = function () {
+                    defaultWrap.style.display = "block";
+                    imgEl.style.display = "block";
                 };
                 imgEl.src = img;
             }
@@ -565,7 +581,9 @@
                 if (root.innerHTML.trim()) {
                     wrap.style.display = "block";
                     var defaultImageWrap = document.querySelector(".blog-main-image-wrap");
-                    if (defaultImageWrap) defaultImageWrap.style.display = "none";
+                    if (defaultImageWrap && blocksIncludeHeroImage(blocks)) {
+                        defaultImageWrap.style.display = "none";
+                    }
                     initBlogGalleryCarousels();
                 } else {
                     wrap.style.display = "none";
@@ -688,10 +706,10 @@
                         var data = res.data;
                         var err = res.error;
                         if (err || !data) return;
+                        var blocks = filterVisibleBlocks(parseBlocks(data.button_secondary));
                         renderHero(data.title, data.subtitle);
                         var cards = parseCards(data.button_primary);
                         if (cards && cards.length >= 1) renderCards(cards);
-                        var blocks = filterVisibleBlocks(parseBlocks(data.button_secondary));
                         if (blocks.length) renderBlocks(blocks);
                     });
             }
