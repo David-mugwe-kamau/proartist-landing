@@ -431,7 +431,7 @@
                 var grid = document.getElementById("blog-posts-grid");
                 if (!grid) return;
                 if (!posts || !posts.length) {
-                    grid.innerHTML = '<div class="blog-empty"><h2>Coming soon</h2><p>No articles published yet. Check back soon.</p></div>';
+                    grid.innerHTML = '';
                     return;
                 }
                 grid.innerHTML = posts.map(function (post, i) {
