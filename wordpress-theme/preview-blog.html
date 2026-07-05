@@ -65,7 +65,6 @@
 
         /* -- Hero background image (optional) -- */
         .blog-hero.has-bg-image {
-            background-image: var(--hero-bg);
             background-size: cover;
             background-position: center;
             position: relative;
@@ -513,12 +512,12 @@
                             try { if (row.button_secondary) heroExtras = JSON.parse(String(row.button_secondary)); } catch (e) {}
                             if (heroExtras) {
                                 if (heroExtras.hero_image_url) {
-                                    var heroEl = document.querySelector(".blog-hero");
-                                    if (heroEl) {
-                                        heroEl.classList.add("has-bg-image");
-                                        heroEl.style.setProperty("--hero-bg", "url(\"" + heroExtras.hero_image_url.replace(/"/g, "%22") + "\")");
+                                        var heroEl = document.querySelector(".blog-hero");
+                                        if (heroEl) {
+                                            heroEl.classList.add("has-bg-image");
+                                            heroEl.style.backgroundImage = "url('" + heroExtras.hero_image_url.replace(/'/g, "%27") + "')";
+                                        }
                                     }
-                                }
                                 var ctaWrap = document.getElementById("blog-hero-cta-wrap");
                                 if (ctaWrap && heroExtras.cta_label) {
                                     var ctaHref = heroExtras.cta_url ? esc(heroExtras.cta_url) : "#blog-posts-grid";
