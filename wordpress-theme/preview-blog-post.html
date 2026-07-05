@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ProArtist Africa - Article</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="proartist-theme/assets/css/main.css">
+    <style>
+        html, body { overflow-x: hidden; }
+        body { background: #ffffff; font-family: "Montserrat", system-ui, sans-serif; }
+        .site-main { animation: pageFadeIn 0.8s ease forwards; }
+        @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .site-main { animation: none; } }
+
+        @media (min-width: 769px) {
+            .primary-menu { display: flex !important; list-style: none; gap: 30px; margin: 0; padding: 0; }
+        }
+        .primary-menu a { text-transform: uppercase; font-weight: 600; font-size: 14px; letter-spacing: 0.05em; }
+
+        /* ── Back link ── */
+        .post-back {
+            padding: 24px 0 0;
+        }
+        .post-back a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            text-decoration: none;
+        }
+        .post-back a:hover { text-decoration: underline; }
+        .post-back a::before { content: "←"; }
+
+        /* ── Post header ── */
+        .post-header {
+            padding: 32px 0 24px;
+        }
+        .post-date {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #888;
+            margin-bottom: 12px;
+        }
+        .post-title {
+            font-size: clamp(26px, 4.5vw, 48px);
+            font-weight: 800;
+            line-height: 1.15;
+            color: #000;
+            margin-bottom: 16px;
+        }
+        .post-excerpt {
+            font-size: 17px;
+            color: #555;
+            line-height: 1.6;
+            max-width: 700px;
+        }
+
+        /* ── Cover image ── */
+        .post-cover {
+            width: 100%;
+            max-height: 480px;
+            object-fit: cover;
+            border-radius: 14px;
+            display: block;
+            margin-bottom: 48px;
+            background: #f0f0f0;
+        }
+
+        /* ── Content sections ── */
+        .post-content { max-width: 760px; }
+        .post-section { margin-bottom: 40px; }
+        .post-section-heading {
+            font-size: clamp(20px, 3vw, 28px);
+            font-weight: 700;
+            line-height: 1.25;
+            color: #000;
+            margin-bottom: 14px;
+        }
+        .post-section-body {
+            font-size: 16px;
+            line-height: 1.75;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .post-section-image {
+            width: 100%;
+            max-height: 480px;
+            object-fit: cover;
+            border-radius: 12px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .post-section-caption {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        /* ── Not found / loading states ── */
+        .post-loading, .post-not-found {
+            padding: 80px 0;
+            text-align: center;
+            color: #888;
+        }
+        .post-not-found h2 { font-size: 24px; margin-bottom: 10px; color: #333; }
+        .post-not-found a { color: #000; font-weight: 700; }
+
+        /* ── Theme: Bold ── */
+        body.theme-bold { background: #0a0a0a; }
+        body.theme-bold .site-header { background: #000; border-bottom: 1px solid #222; }
+        body.theme-bold .site-header a, body.theme-bold .primary-menu a { color: #fff; }
+        body.theme-bold .post-back a { color: #ffdb00; }
+        body.theme-bold .post-title { color: #fff; }
+        body.theme-bold .post-date { color: #666; }
+        body.theme-bold .post-excerpt { color: #aaa; }
+        body.theme-bold .post-section-heading { color: #ffdb00; }
+        body.theme-bold .post-section-body { color: #ccc; }
+        body.theme-bold .post-section-caption { color: #666; }
+        body.theme-bold .site-footer { background: #000; border-top: 1px solid #222; }
+        body.theme-bold .site-footer, body.theme-bold .site-footer a,
+        body.theme-bold .site-footer h3, body.theme-bold .site-footer h4 { color: #ccc; }
+        body.theme-bold .footer-bottom { color: #666; }
+
+        /* ── Theme: Magazine ── */
+        body.theme-magazine .post-back a { color: #000; }
+    </style>
+</head>
+<body class="pa-supabase-page theme-minimal">
+    <header class="site-header">
+        <div class="container">
+            <div class="site-branding">
+                <a href="preview-home.html" class="logo-link"><strong>Pro</strong>Artist</a>
+            </div>
+            <nav class="main-navigation">
+                <ul class="primary-menu">
+                    <li><a href="preview-home.html">HOME</a></li>
+                    <li><a href="preview-investors.html">INVESTORS</a></li>
+                    <li><a href="preview-about.html">ABOUT</a></li>
+                    <li><a href="preview-brands.html">BRANDS</a></li>
+                    <li><a href="preview-blog.html">BLOG</a></li>
+                    <li><a href="preview-jobs.html">JOBS</a></li>
+                </ul>
+            </nav>
+            <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <div class="container" style="max-width:860px;">
+
+            <div class="post-back">
+                <a href="preview-blog.html">Back to Blog</a>
+            </div>
+
+            <div id="post-loading" class="post-loading">
+                <p>Loading article&hellip;</p>
+            </div>
+
+            <div id="post-not-found" class="post-not-found" style="display:none;">
+                <h2>Article not found</h2>
+                <p>This article may have been moved or deleted.</p>
+                <p style="margin-top:12px;"><a href="preview-blog.html">Return to the Blog</a></p>
+            </div>
+
+            <article id="post-article" style="display:none;">
+                <header class="post-header">
+                    <div id="post-date" class="post-date"></div>
+                    <h1 id="post-title" class="post-title"></h1>
+                    <p id="post-excerpt" class="post-excerpt"></p>
+                </header>
+                <img id="post-cover" class="post-cover" src="" alt="" style="display:none;">
+                <div id="post-content" class="post-content"></div>
+            </article>
+
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ProArtist Africa</h3>
+                    <p>Building Africa's next big portfolio of hair &amp; beauty investment opportunities.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-menu">
+                        <li><a href="preview-home.html">Home</a></li>
+                        <li><a href="preview-investors.html">Investors</a></li>
+                        <li><a href="preview-about.html">About</a></li>
+                        <li><a href="preview-brands.html">Brands</a></li>
+                        <li><a href="preview-jobs.html">Jobs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: <a href="mailto:info@proartistafrica.africa">info@proartistafrica.africa</a></p>
+                    <p>Phone: <a href="tel:+254740726132">+254 740 726 132</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://wa.me/254740726132" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                        <a href="https://instagram.com/proartistafrica" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="year"></span> ProArtist Africa. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="proartist-theme/assets/js/main.js"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            var yearEl = document.getElementById("year");
+            if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+            var SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
+            var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
+
+            if (typeof window.supabase === "undefined") return;
+            var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            function esc(s) {
+                return String(s == null ? "" : s)
+                    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+            }
+
+            function formatDate(isoStr) {
+                if (!isoStr) return "";
+                try {
+                    return new Date(isoStr).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+                } catch (e) { return ""; }
+            }
+
+            function applyTheme(theme) {
+                document.body.classList.remove("theme-minimal", "theme-magazine", "theme-bold");
+                var t = (theme === "magazine" || theme === "bold") ? theme : "minimal";
+                document.body.classList.add("theme-" + t);
+            }
+
+            function showLoading(on) {
+                var loadEl = document.getElementById("post-loading");
+                if (loadEl) loadEl.style.display = on ? "block" : "none";
+            }
+
+            function showNotFound() {
+                showLoading(false);
+                var notFound = document.getElementById("post-not-found");
+                if (notFound) notFound.style.display = "block";
+            }
+
+            function renderPost(post) {
+                showLoading(false);
+
+                var article = document.getElementById("post-article");
+                if (article) article.style.display = "block";
+
+                var dateEl = document.getElementById("post-date");
+                var titleEl = document.getElementById("post-title");
+                var excerptEl = document.getElementById("post-excerpt");
+                var coverEl = document.getElementById("post-cover");
+                var contentEl = document.getElementById("post-content");
+
+                document.title = (post.title || "Article") + " | ProArtist Africa";
+
+                if (dateEl) {
+                    var d = formatDate(post.published_at || post.updated_at);
+                    dateEl.textContent = d;
+                }
+                if (titleEl) titleEl.textContent = post.title || "";
+                if (excerptEl) {
+                    excerptEl.textContent = post.excerpt || "";
+                    if (!post.excerpt) excerptEl.style.display = "none";
+                }
+                if (coverEl) {
+                    if (post.cover_image_url) {
+                        coverEl.src = post.cover_image_url;
+                        coverEl.alt = post.title || "Cover image";
+                        coverEl.style.display = "block";
+                    }
+                }
+
+                if (contentEl && post.content) {
+                    try {
+                        var parsed = JSON.parse(String(post.content));
+                        var sections = (parsed && Array.isArray(parsed.sections)) ? parsed.sections : [];
+                        if (sections.length) {
+                            contentEl.innerHTML = sections.map(function (sec) {
+                                if (!sec) return "";
+                                if (sec.type === "image") {
+                                    if (!sec.url) return "";
+                                    return '<div class="post-section">' +
+                                        '<img class="post-section-image" src="' + esc(sec.url) + '" alt="' + esc(sec.caption || "") + '" loading="lazy">' +
+                                        (sec.caption ? '<p class="post-section-caption">' + esc(sec.caption) + '</p>' : '') +
+                                        '</div>';
+                                }
+                                var hasHeading = sec.heading && String(sec.heading).trim();
+                                var hasBody = sec.body && String(sec.body).trim();
+                                if (!hasHeading && !hasBody) return "";
+                                return '<div class="post-section">' +
+                                    (hasHeading ? '<h2 class="post-section-heading">' + esc(sec.heading) + '</h2>' : '') +
+                                    (hasBody ? '<p class="post-section-body">' + esc(sec.body) + '</p>' : '') +
+                                    '</div>';
+                            }).filter(Boolean).join("");
+                        }
+                    } catch (e) {
+                        if (post.content) contentEl.innerHTML = '<div class="post-section"><p class="post-section-body">' + esc(post.content) + '</p></div>';
+                    }
+                }
+            }
+
+            function applyFooterSettings(data) {
+                if (!data) return;
+                var contactEmail = data.button_primary ? String(data.button_primary).trim() : "";
+                var settingsObj = null;
+                var instagramUrl = "";
+                var phoneRaw = "";
+                try {
+                    settingsObj = data.button_secondary ? JSON.parse(String(data.button_secondary)) : null;
+                } catch (e) { settingsObj = null; }
+                if (settingsObj && typeof settingsObj === "object") {
+                    instagramUrl = settingsObj.instagram_url ? String(settingsObj.instagram_url).trim() : "";
+                    phoneRaw = settingsObj.phone ? String(settingsObj.phone).trim() : "";
+                } else {
+                    instagramUrl = data.button_secondary ? String(data.button_secondary).trim() : "";
+                }
+                var phoneDigits = phoneRaw ? phoneRaw.replace(/[^\d]/g, "") : "";
+                if (contactEmail) {
+                    document.querySelectorAll('a[href^="mailto:"]').forEach(function (a) {
+                        a.href = "mailto:" + contactEmail; a.textContent = contactEmail;
+                    });
+                }
+                if (phoneRaw) {
+                    document.querySelectorAll('a[href^="tel:"]').forEach(function (a) {
+                        a.href = "tel:" + phoneRaw; a.textContent = phoneRaw;
+                    });
+                }
+                if (phoneDigits) {
+                    document.querySelectorAll('a[href*="wa.me/"]').forEach(function (a) {
+                        a.href = "https://wa.me/" + phoneDigits;
+                    });
+                }
+                if (instagramUrl) {
+                    document.querySelectorAll('a[href*="instagram.com"]').forEach(function (a) {
+                        a.href = instagramUrl;
+                    });
+                }
+            }
+
+            // Read post ID from URL
+            var params = new URLSearchParams(window.location.search);
+            var postId = params.get("id");
+
+            if (!postId) {
+                showNotFound();
+            } else {
+                // Load footer settings and blog theme in parallel
+                client.from("site_content").select("title,subtitle,button_primary,button_secondary")
+                    .eq("section_key", "settings").maybeSingle()
+                    .then(function (res) { if (!res.error && res.data) applyFooterSettings(res.data); });
+
+                client.from("site_content").select("button_primary")
+                    .eq("section_key", "blog").maybeSingle()
+                    .then(function (res) {
+                        if (!res.error && res.data && res.data.button_primary) {
+                            applyTheme(String(res.data.button_primary).trim());
+                        }
+                    });
+
+                // Load the specific post
+                client.from("blog_posts")
+                    .select("id,title,excerpt,content,cover_image_url,published_at,updated_at,status")
+                    .eq("id", postId)
+                    .single()
+                    .then(function (res) {
+                        if (res.error || !res.data) {
+                            showNotFound();
+                            return;
+                        }
+                        renderPost(res.data);
+                    });
+            }
+        })();
+    </script>
+</body>
+</html>

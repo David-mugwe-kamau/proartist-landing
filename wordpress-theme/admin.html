@@ -271,6 +271,45 @@
         .nav-menu-toggle {
             display: none;
         }
+        /* -- Blog CMS redesign -- */
+        .blog-tabs { display: flex; gap: 2px; margin-bottom: 18px; background: #f0f0f0; border-radius: 12px; padding: 4px; }
+        .blog-tab-btn { flex: 1; border: none; background: transparent; border-radius: 9px; padding: 9px 4px; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; min-height: 38px; touch-action: manipulation; transition: background 0.12s, color 0.12s; }
+        .blog-tab-btn.active { background: var(--white); color: var(--black); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .blog-tab-panel { display: block; }
+        .blog-tab-panel.is-hidden { display: none !important; }
+        .blog-theme-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
+        .blog-theme-card { border: 2px solid var(--border); border-radius: 12px; padding: 10px 8px; background: var(--white); cursor: pointer; text-align: center; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; touch-action: manipulation; transition: border-color 0.12s; }
+        .blog-theme-card.active { border-color: var(--black); background: #f9f9f9; }
+        .blog-theme-card span { font-size: 12px; font-weight: 700; }
+        .blog-theme-card small { font-size: 10px; color: var(--muted); font-weight: 500; }
+        .blog-theme-preview { width: 76px; height: 50px; border-radius: 6px; border: 1px solid #e4e4e4; display: flex; flex-direction: column; gap: 3px; padding: 5px; overflow: hidden; background: #fff; }
+        .tp-bar { height: 7px; border-radius: 2px; background: #e8e8e8; }
+        .tp-line { height: 3px; border-radius: 2px; background: #ddd; }
+        .tp-short { width: 65%; }
+        .tp-cards { display: flex; gap: 3px; flex: 1; }
+        .tp-card { flex: 1; border-radius: 2px; background: #eee; min-height: 8px; }
+        .tp-yellow { background: #ffdb00 !important; }
+        .tp-dark-bar { background: #000 !important; }
+        .tp-dark-card { background: #333 !important; }
+        .tp-yellow-card { background: #ffdb00 !important; }
+        .tp-yellow-line-el { background: #ffdb00 !important; }
+        .tp-bg-yellow { background: #fffbe6 !important; border-color: #f5d27a !important; }
+        .tp-bg-dark { background: #111 !important; border-color: #333 !important; }
+        .blog-post-row { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: var(--white); margin-bottom: 8px; gap: 10px; flex-wrap: wrap; }
+        .blog-post-row-main { flex: 1; min-width: 0; }
+        .blog-post-row-title { font-size: 14px; font-weight: 700; word-break: break-word; overflow-wrap: anywhere; margin-bottom: 4px; }
+        .blog-post-row-meta { font-size: 12px; color: var(--muted); }
+        .blog-post-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .blog-post-status { display: inline-block; border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+        .post-status-published { background: #e9f8e9; color: #246b1f; }
+        .post-status-draft { background: #f0f0f0; color: #555; }
+        .blog-section-block { border: 1px dashed var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: #fafafa; display: grid; gap: 10px; }
+        .blog-section-header { display: flex; justify-content: space-between; align-items: center; }
+        .blog-section-header strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; }
+        @media (max-width: 600px) {
+            .blog-theme-picker { grid-template-columns: 1fr 1fr; }
+        }
+
         @media (max-width: 1024px) {
             .admin-shell {
                 display: flex;
@@ -545,90 +584,116 @@
                             </div>
 
                             <div id="editor-body-blog" class="is-hidden">
-                                <p class="blog-block-title">Page hero</p>
-                                <div class="field">
-                                    <label for="blog-hero-title">Hero title</label>
-                                    <input id="blog-hero-title" type="text" placeholder="Line 1 (use second line below or newline in title for two lines)">
-                                </div>
-                                <div class="field">
-                                    <label for="blog-hero-title-line2">Hero title - line 2 (optional)</label>
-                                    <input id="blog-hero-title-line2" type="text" placeholder="Second line of headline">
-                                </div>
-                                <div class="field">
-                                    <label for="blog-hero-subtitle">Hero intro</label>
-                                    <textarea id="blog-hero-subtitle" rows="3"></textarea>
+
+                                <!-- Tab navigation -->
+                                <div class="blog-tabs">
+                                    <button class="blog-tab-btn active" type="button" data-tab="settings">Page Settings</button>
+                                    <button class="blog-tab-btn" type="button" data-tab="posts">Posts</button>
+                                    <button class="blog-tab-btn" type="button" data-tab="editor">Post Editor</button>
                                 </div>
 
-                                <p class="blog-block-title">Blog image (optional)</p>
-                                <div id="blog-cards-editor">
-                                    <div class="blog-card-block" data-card-index="0">
-                                        <h4 style="display:none;">Card 1</h4>
-                                        <div class="field" style="display:none;"><label for="blog-c0-title">Title</label><input id="blog-c0-title" type="text"></div>
-                                        <div class="field" style="display:none;"><label for="blog-c0-excerpt">Excerpt</label><textarea id="blog-c0-excerpt" rows="3"></textarea></div>
-                                        <div class="field">
-                                            <label for="blog-c0-image">Image URL</label>
-                                            <input id="blog-c0-image" type="text" placeholder="Storage or public URL">
-                                            <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
-                                                <div style="display:flex; flex-direction:column; gap:6px;">
-                                                    <label for="blog-c0-file" style="margin-bottom:0;">Upload</label>
-                                                    <input id="blog-c0-file" type="file" accept="image/*">
+                                <!-- Tab: Page Settings -->
+                                <div id="blog-tab-settings" class="blog-tab-panel">
+                                    <div class="field">
+                                        <label for="blog-page-title">Blog page title</label>
+                                        <input id="blog-page-title" type="text" placeholder="e.g. The Knowledge Hub">
+                                    </div>
+                                    <div class="field">
+                                        <label for="blog-page-subtitle">Blog page subtitle</label>
+                                        <textarea id="blog-page-subtitle" rows="3" placeholder="Short intro shown below the title on the blog page."></textarea>
+                                    </div>
+                                    <div class="field">
+                                        <label>Visual theme</label>
+                                        <div class="blog-theme-picker">
+                                            <button class="blog-theme-card" type="button" data-theme="minimal">
+                                                <div class="blog-theme-preview">
+                                                    <div class="tp-bar"></div>
+                                                    <div class="tp-line"></div>
+                                                    <div class="tp-line tp-short"></div>
+                                                    <div class="tp-cards"><div class="tp-card"></div><div class="tp-card"></div><div class="tp-card"></div></div>
                                                 </div>
-                                                <button class="btn btn-secondary" id="blog-c0-upload-btn" type="button" style="margin-top:22px;">Upload</button>
-                                                <button class="btn" id="blog-c0-delete-btn" type="button" style="margin-top:22px;">Delete</button>
-                                                <img id="blog-c0-preview" alt="Preview" style="width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">
-                                            </div>
+                                                <span>Minimal</span>
+                                                <small>Clean &amp; Editorial</small>
+                                            </button>
+                                            <button class="blog-theme-card" type="button" data-theme="magazine">
+                                                <div class="blog-theme-preview tp-bg-yellow">
+                                                    <div class="tp-bar tp-yellow"></div>
+                                                    <div class="tp-line tp-dark-bar"></div>
+                                                    <div class="tp-cards"><div class="tp-card tp-dark-card"></div><div class="tp-card tp-dark-card"></div><div class="tp-card tp-dark-card"></div></div>
+                                                </div>
+                                                <span>Magazine</span>
+                                                <small>Yellow &amp; Branded</small>
+                                            </button>
+                                            <button class="blog-theme-card" type="button" data-theme="bold">
+                                                <div class="blog-theme-preview tp-bg-dark">
+                                                    <div class="tp-bar tp-dark-bar"></div>
+                                                    <div class="tp-line tp-yellow-line-el"></div>
+                                                    <div class="tp-cards"><div class="tp-card tp-yellow-card"></div><div class="tp-card tp-yellow-card"></div><div class="tp-card tp-yellow-card"></div></div>
+                                                </div>
+                                                <span>Bold</span>
+                                                <small>Black &amp; Gold</small>
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="blog-card-block" data-card-index="1" style="display:none;">
-                                        <h4 style="display:none;">Card 2</h4>
-                                        <div class="field"><label for="blog-c1-title">Title</label><input id="blog-c1-title" type="text"></div>
-                                        <div class="field"><label for="blog-c1-excerpt">Excerpt</label><textarea id="blog-c1-excerpt" rows="3"></textarea></div>
-                                        <div class="field">
-                                            <label for="blog-c1-image">Image URL</label>
-                                            <input id="blog-c1-image" type="text">
-                                            <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
-                                                <div style="display:flex; flex-direction:column; gap:6px;">
-                                                    <label for="blog-c1-file" style="margin-bottom:0;">Upload</label>
-                                                    <input id="blog-c1-file" type="file" accept="image/*">
-                                                </div>
-                                                <button class="btn btn-secondary" id="blog-c1-upload-btn" type="button" style="margin-top:22px;">Upload</button>
-                                                <button class="btn" id="blog-c1-delete-btn" type="button" style="margin-top:22px;">Delete</button>
-                                                <img id="blog-c1-preview" alt="Preview" style="width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">
-                                            </div>
-                                        </div>
+                                    <div class="btn-row" style="padding-top:0;">
+                                        <button id="blog-save-settings-btn" class="btn btn-primary" type="button">Save Settings</button>
                                     </div>
-                                    <div class="blog-card-block" data-card-index="2" style="display:none;">
-                                        <h4 style="display:none;">Card 3</h4>
-                                        <div class="field"><label for="blog-c2-title">Title</label><input id="blog-c2-title" type="text"></div>
-                                        <div class="field"><label for="blog-c2-excerpt">Excerpt</label><textarea id="blog-c2-excerpt" rows="3"></textarea></div>
-                                        <div class="field">
-                                            <label for="blog-c2-image">Image URL</label>
-                                            <input id="blog-c2-image" type="text">
-                                            <div style="display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap;">
-                                                <div style="display:flex; flex-direction:column; gap:6px;">
-                                                    <label for="blog-c2-file" style="margin-bottom:0;">Upload</label>
-                                                    <input id="blog-c2-file" type="file" accept="image/*">
-                                                </div>
-                                                <button class="btn btn-secondary" id="blog-c2-upload-btn" type="button" style="margin-top:22px;">Upload</button>
-                                                <button class="btn" id="blog-c2-delete-btn" type="button" style="margin-top:22px;">Delete</button>
-                                                <img id="blog-c2-preview" alt="Preview" style="width:64px; height:64px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">
-                                            </div>
-                                        </div>
+                                    <p id="blog-settings-helper" class="helper">Saves the blog page title, subtitle and theme. Changes appear on the public blog page immediately.</p>
+                                </div>
+
+                                <!-- Tab: Posts list -->
+                                <div id="blog-tab-posts" class="blog-tab-panel is-hidden">
+                                    <div class="btn-row" style="padding-top:0; margin-bottom:16px;">
+                                        <button id="blog-new-post-btn" class="btn btn-primary" type="button">+ New Post</button>
+                                        <button id="blog-refresh-posts-btn" class="btn" type="button">Refresh</button>
+                                    </div>
+                                    <div id="blog-posts-list">
+                                        <p class="helper">Loading posts&hellip;</p>
                                     </div>
                                 </div>
 
-                                <p class="blog-block-title" style="margin-top:14px;">Flexible blog blocks (optional)</p>
-                                <div id="blog-flex-editor"></div>
-                                <div class="btn-row" style="padding-top:0;">
-                                    <button id="blog-add-block-btn" class="btn" type="button">Add Block</button>
-                                    <button id="blog-add-text-btn" class="btn" type="button">Add Text</button>
-                                    <button id="blog-add-image-btn" class="btn" type="button">Add Image</button>
-                                    <button id="blog-add-split-left-btn" class="btn" type="button">Add Split Left</button>
-                                    <button id="blog-add-split-right-btn" class="btn" type="button">Add Split Right</button>
-                                    <button id="blog-add-split-center-btn" class="btn" type="button">Add Split Center</button>
-                                    <button id="blog-add-gallery-btn" class="btn" type="button">Add Gallery</button>
+                                <!-- Tab: Post editor -->
+                                <div id="blog-tab-editor" class="blog-tab-panel is-hidden">
+                                    <div id="blog-editor-placeholder">
+                                        <p class="helper" style="padding:16px 0;">Click <strong>+ New Post</strong> in the Posts tab to write your first article, or click <strong>Edit</strong> on an existing post.</p>
+                                    </div>
+                                    <div id="blog-editor-form" class="is-hidden">
+                                        <div class="field">
+                                            <label for="blog-post-title">Post title</label>
+                                            <input id="blog-post-title" type="text" placeholder="Enter your post title&hellip;">
+                                        </div>
+                                        <div class="field">
+                                            <label for="blog-post-excerpt">Excerpt</label>
+                                            <textarea id="blog-post-excerpt" rows="3" placeholder="Short summary shown on the blog list page (1&ndash;2 sentences)."></textarea>
+                                        </div>
+                                        <p class="blog-block-title">Cover image</p>
+                                        <div class="field">
+                                            <label for="blog-post-cover-url">Image URL (auto-filled after upload)</label>
+                                            <input id="blog-post-cover-url" type="text" placeholder="https://&hellip;">
+                                        </div>
+                                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:4px;">
+                                            <input id="blog-post-cover-file" type="file" accept="image/*">
+                                            <button id="blog-post-cover-upload-btn" class="btn btn-secondary" type="button">Upload Cover</button>
+                                            <button id="blog-post-cover-remove-btn" class="btn" type="button">Remove</button>
+                                        </div>
+                                        <img id="blog-post-cover-preview" alt="Cover preview" style="display:none; width:100%; max-height:200px; object-fit:cover; border-radius:10px; margin-top:8px; border:1px solid var(--border);">
+                                        <p class="blog-block-title" style="margin-top:16px;">Content sections</p>
+                                        <div id="blog-post-sections"></div>
+                                        <div class="btn-row" style="padding-top:4px;">
+                                            <button id="blog-add-text-section-btn" class="btn" type="button">+ Add Text</button>
+                                            <button id="blog-add-image-section-btn" class="btn" type="button">+ Add Image</button>
+                                        </div>
+                                        <div style="border-top:1px solid var(--border); margin-top:16px; padding-top:14px;">
+                                            <div class="btn-row">
+                                                <button id="blog-post-back-btn" class="btn" type="button">Back to Posts</button>
+                                                <button id="blog-post-save-draft-btn" class="btn btn-secondary" type="button">Save Draft</button>
+                                                <button id="blog-post-publish-btn" class="btn btn-primary" type="button">Publish Post</button>
+                                            </div>
+                                            <p id="blog-post-helper" class="helper" style="margin-top:8px;"></p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="helper">If blocks are added, `preview-blog.html` renders these blocks instead of the default single-image section.</p>
+
                             </div>
 
                             <div class="editor-action-bar">
@@ -747,7 +812,7 @@
             const SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
             const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
 
-            /** nav id â†’ site_content.section_key (null = dashboard only) */
+            /** nav id → site_content.section_key (null = dashboard only) */
             const NAV_TO_KEY = {
                 dashboard: null,
                 home: "home_hero",
@@ -853,11 +918,8 @@
             const metaStatus = document.getElementById("meta-status");
             const metaUpdated = document.getElementById("meta-updated");
             const blogDraftsCard = document.getElementById("blog-drafts-card");
-            const blogDraftsList = document.getElementById("blog-drafts-list");
-            const blogRefreshDraftsBtn = document.getElementById("blog-refresh-drafts-btn");
             const blogStorageCard = document.getElementById("blog-storage-card");
             const blogStorageScanBtn = document.getElementById("blog-storage-scan-btn");
-            const blogCleanNonMainCardsBtn = document.getElementById("blog-clean-nonmain-cards-btn");
             const blogStorageSummary = document.getElementById("blog-storage-summary");
             const blogStorageUnusedList = document.getElementById("blog-storage-unused-list");
             const contentEditorCard = document.getElementById("content-editor-card");
@@ -879,38 +941,425 @@
             const anRangeSummary = document.getElementById("an-range-summary");
             const editorBodyDefault = document.getElementById("editor-body-default");
             const editorBodyBlog = document.getElementById("editor-body-blog");
-            const blogHeroTitle = document.getElementById("blog-hero-title");
-            const blogHeroTitleLine2 = document.getElementById("blog-hero-title-line2");
-            const blogHeroSubtitle = document.getElementById("blog-hero-subtitle");
-            const blogFlexEditor = document.getElementById("blog-flex-editor");
-            const blogAddBlockBtn = document.getElementById("blog-add-block-btn");
-            const blogAddTextBtn = document.getElementById("blog-add-text-btn");
-            const blogAddImageBtn = document.getElementById("blog-add-image-btn");
-            const blogAddSplitLeftBtn = document.getElementById("blog-add-split-left-btn");
-            const blogAddSplitRightBtn = document.getElementById("blog-add-split-right-btn");
-            const blogAddSplitCenterBtn = document.getElementById("blog-add-split-center-btn");
-            const blogAddGalleryBtn = document.getElementById("blog-add-gallery-btn");
 
             const BLOG_KEY = "blog";
             const BLOG_IMAGE_BUCKET = "blog-images";
-            const BLOG_MAX_BLOCKS = 8;
-            const BLOG_DRAFTS_TABLE = "blog_drafts";
-            let currentBlogDraftId = null;
-            const DEFAULT_BLOG_HERO = {
-                title: "",
-                subtitle: ""
-            };
-            const DEFAULT_BLOG_CARDS = [
-                { title: "", excerpt: "", image: "" },
-                { title: "", excerpt: "", image: "" },
-                { title: "", excerpt: "", image: "" }
-            ];
-            var blogBlocks = [];
+            const BLOG_POSTS_TABLE = "blog_posts";
+
+            let activeBlogTheme = "minimal";
+            let currentPostId = null;
+            let postSections = [];
 
             function setBlogEditorVisible(on) {
                 editorBodyDefault.classList.toggle("is-hidden", on);
                 editorBodyBlog.classList.toggle("is-hidden", !on);
+                // Hide shared action bar when in blog mode (blog has its own per-tab actions)
+                var sharedBar = document.querySelector(".editor-action-bar");
+                if (sharedBar) sharedBar.style.display = on ? "none" : "";
             }
+
+            // -- Blog CMS: tab navigation ----------------------------------------------
+
+            function switchBlogTab(tabName) {
+                document.querySelectorAll(".blog-tab-btn").forEach(function (btn) {
+                    btn.classList.toggle("active", btn.getAttribute("data-tab") === tabName);
+                });
+                ["settings", "posts", "editor"].forEach(function (key) {
+                    var el = document.getElementById("blog-tab-" + key);
+                    if (el) el.classList.toggle("is-hidden", key !== tabName);
+                });
+                if (tabName === "posts") loadBlogPostsList();
+            }
+
+            // -- Blog CMS: theme picker ------------------------------------------------
+
+            function setActiveBlogTheme(theme) {
+                activeBlogTheme = theme || "minimal";
+                document.querySelectorAll(".blog-theme-card").forEach(function (card) {
+                    card.classList.toggle("active", card.getAttribute("data-theme") === activeBlogTheme);
+                });
+            }
+
+            // -- Blog CMS: page settings -----------------------------------------------
+
+            async function loadBlogPageSettings() {
+                const { data, error } = await client
+                    .from("site_content")
+                    .select("title, subtitle, button_primary, updated_at")
+                    .eq("section_key", BLOG_KEY)
+                    .maybeSingle();
+
+                if (error) {
+                    setStatus("Load failed", "error");
+                    setHelper("Could not load blog settings: " + error.message);
+                    return;
+                }
+
+                var titleEl = document.getElementById("blog-page-title");
+                var subtitleEl = document.getElementById("blog-page-subtitle");
+                if (titleEl) titleEl.value = (data && data.title) ? data.title : "";
+                if (subtitleEl) subtitleEl.value = (data && data.subtitle) ? data.subtitle : "";
+                setActiveBlogTheme((data && data.button_primary) ? data.button_primary : "minimal");
+
+                var updatedAt = data && data.updated_at ? data.updated_at : null;
+                lastMetaStatus = data ? "In database" : "New (not saved yet)";
+                updateMeta(BLOG_KEY, updatedAt);
+                setStatus("Blog loaded", null);
+                setHelper(updatedAt ? "Last saved: " + new Date(updatedAt).toLocaleString() : "Not saved yet. Click Save Settings to publish.");
+            }
+
+            async function saveBlogPageSettings() {
+                const user = await ensureAuthenticated();
+                if (!user) return;
+
+                var titleEl = document.getElementById("blog-page-title");
+                var subtitleEl = document.getElementById("blog-page-subtitle");
+                var settingsHelper = document.getElementById("blog-settings-helper");
+                var title = titleEl ? titleEl.value.trim() : "";
+                var subtitle = subtitleEl ? subtitleEl.value.trim() : "";
+                var theme = activeBlogTheme || "minimal";
+
+                setStatus("Saving settings...", "warn");
+                if (settingsHelper) settingsHelper.textContent = "Saving\u2026";
+
+                var payload = {
+                    section_key: BLOG_KEY,
+                    title: title,
+                    subtitle: subtitle,
+                    button_primary: theme,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await client.from("site_content").upsert(payload, { onConflict: "section_key" });
+                if (error) {
+                    setStatus("Save failed", "error");
+                    if (settingsHelper) settingsHelper.textContent = "Save failed: " + error.message;
+                    return;
+                }
+
+                lastMetaStatus = "Published";
+                updateMeta(BLOG_KEY, payload.updated_at);
+                setStatus("Settings saved", null);
+                if (settingsHelper) settingsHelper.textContent = "Settings saved! The blog page title, subtitle and theme are now live.";
+            }
+
+            // -- Blog CMS: posts list --------------------------------------------------
+
+            async function loadBlogPostsList() {
+                var listEl = document.getElementById("blog-posts-list");
+                if (!listEl) return;
+                listEl.innerHTML = '<p class="helper">Loading posts\u2026</p>';
+
+                const { data, error } = await client
+                    .from(BLOG_POSTS_TABLE)
+                    .select("id, title, status, excerpt, updated_at, published_at")
+                    .order("updated_at", { ascending: false });
+
+                if (error) {
+                    listEl.innerHTML = '<p class="helper" style="color:#c0392b;">Could not load posts: ' + escHtml(error.message) + '</p>';
+                    return;
+                }
+
+                if (!data || !data.length) {
+                    listEl.innerHTML = '<p class="helper">No posts yet. Click <strong>+ New Post</strong> to write your first article.</p>';
+                    return;
+                }
+
+                listEl.innerHTML = data.map(function (post) {
+                    var when = post.updated_at ? new Date(post.updated_at).toLocaleString() : "-";
+                    var statusCls = post.status === "published" ? "post-status-published" : "post-status-draft";
+                    var statusLabel = post.status === "published" ? "Published" : "Draft";
+                    return '<div class="blog-post-row" data-post-id="' + escAttr(post.id) + '">' +
+                        '<div class="blog-post-row-main">' +
+                        '<div class="blog-post-row-title">' + escHtml(post.title || "Untitled") + '</div>' +
+                        '<div class="blog-post-row-meta"><span class="blog-post-status ' + statusCls + '">' + statusLabel + '</span> &middot; ' + when + '</div>' +
+                        '</div>' +
+                        '<div class="blog-post-row-actions">' +
+                        '<button type="button" class="btn blog-post-edit-btn">Edit</button>' +
+                        '<button type="button" class="btn blog-post-delete-btn">Delete</button>' +
+                        '</div></div>';
+                }).join("");
+
+                listEl.querySelectorAll(".blog-post-edit-btn").forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        var row = btn.closest(".blog-post-row");
+                        if (row) openEditPost(row.getAttribute("data-post-id"));
+                    });
+                });
+
+                listEl.querySelectorAll(".blog-post-delete-btn").forEach(function (btn) {
+                    btn.addEventListener("click", async function () {
+                        var row = btn.closest(".blog-post-row");
+                        if (!row) return;
+                        var id = row.getAttribute("data-post-id");
+                        if (!id || !window.confirm("Delete this post? This cannot be undone.")) return;
+                        const { error: delErr } = await client.from(BLOG_POSTS_TABLE).delete().eq("id", id);
+                        if (delErr) {
+                            setStatus("Delete failed", "error");
+                            setHelper(delErr.message || "Could not delete.");
+                            return;
+                        }
+                        setStatus("Post deleted", null);
+                        setHelper("Post removed.");
+                        loadBlogPostsList();
+                    });
+                });
+            }
+
+            // -- Blog CMS: post editor -------------------------------------------------
+
+            function openNewPost() {
+                currentPostId = null;
+                postSections = [];
+                var titleEl = document.getElementById("blog-post-title");
+                var excerptEl = document.getElementById("blog-post-excerpt");
+                var coverUrlEl = document.getElementById("blog-post-cover-url");
+                var coverPreviewEl = document.getElementById("blog-post-cover-preview");
+                var helperEl = document.getElementById("blog-post-helper");
+                if (titleEl) titleEl.value = "";
+                if (excerptEl) excerptEl.value = "";
+                if (coverUrlEl) coverUrlEl.value = "";
+                if (coverPreviewEl) { coverPreviewEl.src = ""; coverPreviewEl.style.display = "none"; }
+                if (helperEl) helperEl.textContent = "New post \u2014 fill in the fields below.";
+                renderPostSections();
+                var placeholder = document.getElementById("blog-editor-placeholder");
+                var form = document.getElementById("blog-editor-form");
+                if (placeholder) placeholder.classList.add("is-hidden");
+                if (form) form.classList.remove("is-hidden");
+                switchBlogTab("editor");
+                setStatus("New post", null);
+                setHelper("Write your post below. Save Draft or Publish when ready.");
+            }
+
+            async function openEditPost(id) {
+                if (!id) return;
+                setStatus("Loading post\u2026", "warn");
+                const { data, error } = await client.from(BLOG_POSTS_TABLE).select("*").eq("id", id).single();
+                if (error || !data) {
+                    setStatus("Load failed", "error");
+                    setHelper(error ? error.message : "Post not found.");
+                    return;
+                }
+                currentPostId = data.id;
+                var titleEl = document.getElementById("blog-post-title");
+                var excerptEl = document.getElementById("blog-post-excerpt");
+                var coverUrlEl = document.getElementById("blog-post-cover-url");
+                var coverPreviewEl = document.getElementById("blog-post-cover-preview");
+                var helperEl = document.getElementById("blog-post-helper");
+                if (titleEl) titleEl.value = data.title || "";
+                if (excerptEl) excerptEl.value = data.excerpt || "";
+                if (coverUrlEl) coverUrlEl.value = data.cover_image_url || "";
+                if (coverPreviewEl) {
+                    if (data.cover_image_url) {
+                        coverPreviewEl.src = data.cover_image_url;
+                        coverPreviewEl.style.display = "block";
+                    } else {
+                        coverPreviewEl.src = "";
+                        coverPreviewEl.style.display = "none";
+                    }
+                }
+                try {
+                    var parsed = data.content ? JSON.parse(data.content) : {};
+                    postSections = (parsed && Array.isArray(parsed.sections)) ? parsed.sections : [];
+                } catch (e) {
+                    postSections = [];
+                }
+                if (helperEl) helperEl.textContent = "Editing: " + (data.status === "published" ? "Published" : "Draft");
+                renderPostSections();
+                var placeholder = document.getElementById("blog-editor-placeholder");
+                var form = document.getElementById("blog-editor-form");
+                if (placeholder) placeholder.classList.add("is-hidden");
+                if (form) form.classList.remove("is-hidden");
+                switchBlogTab("editor");
+                setStatus("Post loaded", null);
+                setHelper("Edit and click Save Draft or Publish Post.");
+            }
+
+            function renderPostSections() {
+                var sectionsEl = document.getElementById("blog-post-sections");
+                if (!sectionsEl) return;
+                if (!postSections.length) {
+                    sectionsEl.innerHTML = '<p class="helper" style="margin-bottom:8px;">No content sections yet. Add a Text or Image section below.</p>';
+                    return;
+                }
+                sectionsEl.innerHTML = postSections.map(function (sec, i) {
+                    if (sec.type === "image") {
+                        return '<div class="blog-section-block" data-section-idx="' + i + '">' +
+                            '<div class="blog-section-header"><strong>Image Section</strong>' +
+                            '<button type="button" class="btn blog-section-delete-btn">Remove</button></div>' +
+                            '<div class="field"><label>Image URL (auto-filled after upload)</label>' +
+                            '<input class="blog-section-image-url" type="text" value="' + escAttr(sec.url || "") + '" placeholder="https://\u2026"></div>' +
+                            '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:6px;">' +
+                            '<input class="blog-section-image-file" type="file" accept="image/*">' +
+                            '<button type="button" class="btn btn-secondary blog-section-image-upload-btn">Upload</button></div>' +
+                            (sec.url ? '<img class="blog-section-image-preview" src="' + escAttr(sec.url) + '" alt="Preview" style="width:100%; max-height:200px; object-fit:cover; border-radius:10px; border:1px solid var(--border);">' : '') +
+                            '<div class="field"><label>Caption (optional)</label>' +
+                            '<input class="blog-section-caption" type="text" value="' + escAttr(sec.caption || "") + '" placeholder="Image caption\u2026"></div>' +
+                            '</div>';
+                    }
+                    return '<div class="blog-section-block" data-section-idx="' + i + '">' +
+                        '<div class="blog-section-header"><strong>Text Section</strong>' +
+                        '<button type="button" class="btn blog-section-delete-btn">Remove</button></div>' +
+                        '<div class="field"><label>Heading (optional)</label>' +
+                        '<input class="blog-section-heading" type="text" value="' + escAttr(sec.heading || "") + '" placeholder="Section heading\u2026"></div>' +
+                        '<div class="field"><label>Body text</label>' +
+                        '<textarea class="blog-section-body" rows="5" placeholder="Write your content here\u2026">' + escHtml(sec.body || "") + '</textarea></div>' +
+                        '</div>';
+                }).join("");
+
+                sectionsEl.querySelectorAll(".blog-section-delete-btn").forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                        var block = btn.closest(".blog-section-block");
+                        if (!block) return;
+                        postSections.splice(Number(block.getAttribute("data-section-idx")), 1);
+                        renderPostSections();
+                    });
+                });
+
+                sectionsEl.querySelectorAll(".blog-section-image-upload-btn").forEach(function (btn) {
+                    btn.addEventListener("click", async function () {
+                        var block = btn.closest(".blog-section-block");
+                        if (!block) return;
+                        var idx = Number(block.getAttribute("data-section-idx"));
+                        var fileInput = block.querySelector(".blog-section-image-file");
+                        var urlInput = block.querySelector(".blog-section-image-url");
+                        var file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+                        if (!file) { setStatus("Choose an image first", "warn"); return; }
+                        setStatus("Uploading\u2026", "warn");
+                        var uuid = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : String(Date.now());
+                        var safeName = (file.name || "image").replace(/[^\w.\-]+/g, "_");
+                        var key = "posts/" + (currentPostId || "new") + "/" + uuid + "_" + safeName;
+                        var upRes = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+                        if (upRes.error) { setStatus("Upload failed", "error"); setHelper(upRes.error.message || "Could not upload."); return; }
+                        var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
+                        var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
+                        if (!publicUrl) { setStatus("Upload ok, URL missing", "warn"); return; }
+                        if (urlInput) urlInput.value = publicUrl;
+                        if (postSections[idx]) postSections[idx] = Object.assign({}, postSections[idx], { url: publicUrl });
+                        setStatus("Uploaded", null);
+                        setHelper("Image uploaded. Save Draft or Publish when ready.");
+                        renderPostSections();
+                    });
+                });
+            }
+
+            function collectPostSections() {
+                var sectionsEl = document.getElementById("blog-post-sections");
+                if (!sectionsEl) return postSections.slice();
+                var out = [];
+                sectionsEl.querySelectorAll(".blog-section-block").forEach(function (block) {
+                    var idx = Number(block.getAttribute("data-section-idx"));
+                    var sec = postSections[idx] || {};
+                    if (sec.type === "image") {
+                        var urlEl = block.querySelector(".blog-section-image-url");
+                        var capEl = block.querySelector(".blog-section-caption");
+                        out.push({ type: "image", url: urlEl ? urlEl.value.trim() : (sec.url || ""), caption: capEl ? capEl.value.trim() : (sec.caption || "") });
+                    } else {
+                        var headEl = block.querySelector(".blog-section-heading");
+                        var bodyEl = block.querySelector(".blog-section-body");
+                        out.push({ type: "text", heading: headEl ? headEl.value.trim() : (sec.heading || ""), body: bodyEl ? bodyEl.value.trim() : (sec.body || "") });
+                    }
+                });
+                return out;
+            }
+
+            async function saveBlogPost(status) {
+                const user = await ensureAuthenticated();
+                if (!user) return;
+
+                var titleEl = document.getElementById("blog-post-title");
+                var excerptEl = document.getElementById("blog-post-excerpt");
+                var coverUrlEl = document.getElementById("blog-post-cover-url");
+                var helperEl = document.getElementById("blog-post-helper");
+                var title = titleEl ? titleEl.value.trim() : "";
+                if (!title) {
+                    setStatus("Title required", "warn");
+                    if (helperEl) helperEl.textContent = "Please add a post title before saving.";
+                    return;
+                }
+
+                var sections = collectPostSections();
+                var now = new Date().toISOString();
+                var payload = {
+                    title: title,
+                    excerpt: excerptEl ? excerptEl.value.trim() : "",
+                    content: JSON.stringify({ sections: sections }),
+                    cover_image_url: coverUrlEl ? coverUrlEl.value.trim() : "",
+                    status: status,
+                    updated_at: now
+                };
+                if (status === "published") payload.published_at = now;
+
+                if (helperEl) helperEl.textContent = status === "published" ? "Publishing\u2026" : "Saving draft\u2026";
+                setStatus(status === "published" ? "Publishing\u2026" : "Saving\u2026", "warn");
+
+                var dbError = null;
+                if (currentPostId) {
+                    const res = await client.from(BLOG_POSTS_TABLE).update(payload).eq("id", currentPostId);
+                    dbError = res.error || null;
+                } else {
+                    payload.slug = slugify(title) + "-" + Date.now();
+                    const res = await client.from(BLOG_POSTS_TABLE).insert(payload).select("id").single();
+                    dbError = res.error || null;
+                    if (!dbError && res.data && res.data.id) currentPostId = res.data.id;
+                }
+
+                if (dbError) {
+                    setStatus("Save failed", "error");
+                    if (helperEl) helperEl.textContent = "Error: " + dbError.message;
+                    return;
+                }
+
+                setStatus(status === "published" ? "Published" : "Draft saved", null);
+                if (helperEl) helperEl.textContent = status === "published"
+                    ? "Post published! It will appear on the blog list page."
+                    : "Draft saved. Click Publish Post when ready to go live.";
+                updateMeta(BLOG_KEY, now);
+                lastMetaStatus = status === "published" ? "Published" : "Draft saved";
+            }
+
+            async function uploadPostCoverImage() {
+                var fileEl = document.getElementById("blog-post-cover-file");
+                var urlEl = document.getElementById("blog-post-cover-url");
+                var previewEl = document.getElementById("blog-post-cover-preview");
+                var file = fileEl && fileEl.files && fileEl.files[0] ? fileEl.files[0] : null;
+                if (!file) { setStatus("Choose a file first", "warn"); return; }
+                setStatus("Uploading cover\u2026", "warn");
+                var uuid = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : String(Date.now());
+                var safeName = (file.name || "cover").replace(/[^\w.\-]+/g, "_");
+                var key = "posts/covers/" + uuid + "_" + safeName;
+                var upRes = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+                if (upRes.error) { setStatus("Upload failed", "error"); setHelper(upRes.error.message || "Could not upload."); return; }
+                var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
+                var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
+                if (!publicUrl) { setStatus("Upload ok, URL missing", "warn"); return; }
+                if (urlEl) urlEl.value = publicUrl;
+                if (previewEl) { previewEl.src = publicUrl; previewEl.style.display = "block"; }
+                if (fileEl) fileEl.value = "";
+                setStatus("Cover uploaded", null);
+                setHelper("Cover image uploaded. Save Draft or Publish when ready.");
+            }
+
+            // -- Utilities -------------------------------------------------------------
+
+            function slugify(text) {
+                return String(text || "").toLowerCase()
+                    .replace(/[^\w\s-]/g, "").replace(/[\s_]+/g, "-")
+                    .replace(/^-+|-+$/g, "").substring(0, 60);
+            }
+
+            function escHtml(str) {
+                return String(str == null ? "" : str)
+                    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+
+            function escAttr(str) {
+                return String(str == null ? "" : str)
+                    .replace(/&/g, "&amp;").replace(/"/g, "&quot;")
+                    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+
+            // -- Storage helpers (kept for storage audit) ------------------------------
 
             function parseBlogCardsJson(raw) {
                 if (!raw) return null;
@@ -923,402 +1372,6 @@
                 return null;
             }
 
-            function resolveBlogEditorImageUrl(url) {
-                var raw = String(url || "").trim();
-                if (!raw) return "";
-                if (/^https?:\/\//i.test(raw)) return raw;
-                if (raw.indexOf("storage/v1/object/public/") !== -1) return raw;
-                if (raw.indexOf("/") !== -1) {
-                    return SUPABASE_URL + "/storage/v1/object/public/" + BLOG_IMAGE_BUCKET + "/" + raw.replace(/^\/+/, "");
-                }
-                return raw;
-            }
-
-            function parseBlogBlocks(raw) {
-                if (!raw) return [];
-                if (typeof raw === "object") {
-                    if (Array.isArray(raw)) return raw;
-                    if (raw.blocks && Array.isArray(raw.blocks)) return raw.blocks;
-                    return [];
-                }
-                if (typeof raw !== "string") return [];
-                try {
-                    var o = JSON.parse(raw);
-                    if (Array.isArray(o)) return o;
-                    if (o && Array.isArray(o.blocks)) return o.blocks;
-                } catch (e1) {}
-                return [];
-            }
-
-            function normalizeBlock(b) {
-                b = b || {};
-                return {
-                    type: b.type || "text",
-                    title: b.title || "",
-                    subtitle: b.subtitle || "",
-                    text: b.text || "",
-                    linkLabel: b.linkLabel || "",
-                    linkUrl: b.linkUrl || "",
-                    imageUrl: b.imageUrl || "",
-                    imagePosition: b.imagePosition || "left",
-                    galleryUrls: Array.isArray(b.galleryUrls) ? b.galleryUrls : []
-                };
-            }
-
-            function updateBlockFieldVisibility(blockEl) {
-                var typeEl = blockEl.querySelector(".blog-block-type");
-                var type = typeEl ? typeEl.value : "text";
-                var titleField = blockEl.querySelector(".blog-field-title");
-                var subtitleField = blockEl.querySelector(".blog-field-subtitle");
-                var textField = blockEl.querySelector(".blog-field-text");
-                var linkField = blockEl.querySelector(".blog-field-link");
-                var imageField = blockEl.querySelector(".blog-field-image");
-                var posField = blockEl.querySelector(".blog-field-pos");
-                var galleryField = blockEl.querySelector(".blog-field-gallery");
-                var posEl = blockEl.querySelector(".blog-block-pos");
-                var pos = posEl ? posEl.value : "left";
-
-                function show(el, on) {
-                    if (!el) return;
-                    el.classList.toggle("is-hidden-block-field", !on);
-                }
-
-                if (type === "text") {
-                    show(titleField, true);
-                    show(subtitleField, true);
-                    show(textField, true);
-                    show(linkField, true);
-                    show(imageField, false);
-                    show(posField, false);
-                    show(galleryField, false);
-                } else if (type === "image") {
-                    show(titleField, true);
-                    show(subtitleField, true);
-                    show(textField, false);
-                    show(linkField, true);
-                    show(imageField, true);
-                    show(posField, false);
-                    show(galleryField, false);
-                } else if (type === "split") {
-                    show(titleField, true);
-                    show(subtitleField, true);
-                    show(textField, true);
-                    show(linkField, true);
-                    show(imageField, true);
-                    show(posField, true);
-                    show(galleryField, false);
-                } else if (type === "gallery") {
-                    show(titleField, true);
-                    show(subtitleField, true);
-                    show(textField, pos !== "center");
-                    show(linkField, true);
-                    show(imageField, true);
-                    show(posField, true);
-                    show(galleryField, true);
-                }
-            }
-
-            function renderBlogBlocksEditor() {
-                if (!blogFlexEditor) return;
-                if (!blogBlocks.length) {
-                    blogFlexEditor.innerHTML = '<div class="helper" style="margin-bottom:8px;">No blocks yet. Click "Add Block".</div>';
-                    return;
-                }
-                blogFlexEditor.innerHTML = blogBlocks.map(function (b, i) {
-                    var safeType = b.type || "text";
-                    var safePos = b.imagePosition || "left";
-                    var galleryText = (b.galleryUrls || []).join("\n");
-                    return '' +
-                        '<div class="blog-card-block" data-block-index="' + i + '">' +
-                        '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
-                        '<strong style="font-size:13px;">Block ' + (i + 1) + '</strong>' +
-                        '<div style="display:flex; gap:8px;">' +
-                        '<button type="button" class="btn blog-block-delete">Delete</button>' +
-                        '</div></div>' +
-                        '<div class="field"><label>Block type</label>' +
-                        '<select class="blog-block-type" style="width:100%; border:1px solid #d9d9d9; border-radius:10px; padding:12px;">' +
-                        '<option value="text" ' + (safeType === "text" ? 'selected' : '') + '>Text</option>' +
-                        '<option value="image" ' + (safeType === "image" ? 'selected' : '') + '>Image</option>' +
-                        '<option value="split" ' + (safeType === "split" ? 'selected' : '') + '>Split (image + text)</option>' +
-                        '<option value="gallery" ' + (safeType === "gallery" ? 'selected' : '') + '>Image Gallery</option>' +
-                        '</select></div>' +
-                        '<div class="field blog-field-title"><label>Title (optional)</label><input class="blog-block-title-input" type="text" value="' + (b.title || '').replace(/"/g, '&quot;') + '"></div>' +
-                        '<div class="field blog-field-subtitle"><label>Subtitle (optional)</label><input class="blog-block-subtitle-input" type="text" value="' + (b.subtitle || '').replace(/"/g, '&quot;') + '"></div>' +
-                        '<div class="field blog-field-text"><label>Text (optional)</label><textarea class="blog-block-text-input" rows="3">' + (b.text || '') + '</textarea></div>' +
-                        '<div class="field blog-field-link"><label>Add link button (optional)</label><input class="blog-block-link-label-input" type="text" value="' + (b.linkLabel || '').replace(/"/g, '&quot;') + '" placeholder="Button label, e.g. Read More"></div>' +
-                        '<div class="field blog-field-link"><label>Link URL (optional)</label><input class="blog-block-link-url-input" type="text" value="' + (b.linkUrl || '').replace(/"/g, '&quot;') + '" placeholder="https://... or internal html/page"></div>' +
-                        '<div class="field blog-field-image"><label>Image URL</label><input class="blog-block-image-input" type="text" value="' + (b.imageUrl || '').replace(/"/g, '&quot;') + '" placeholder="https://... or storage public URL"></div>' +
-                        '<div class="field blog-field-image">' +
-                        '<label>Upload image from device</label>' +
-                        '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
-                        '<input class="blog-block-image-file" type="file" accept="image/*">' +
-                        '<button type="button" class="btn blog-block-image-upload-btn">Upload Image</button>' +
-                        '</div>' +
-                        '<div class="blog-block-image-preview-wrap" style="margin-top:10px;">' +
-                        (b.imageUrl ? '<img class="blog-block-image-preview" src="' + resolveBlogEditorImageUrl(b.imageUrl).replace(/"/g, '&quot;') + '" alt="Preview" style="width:78px; height:78px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">' : '') +
-                        '</div></div>' +
-                        '<div class="field blog-field-pos"><label>Layout position (split/gallery)</label>' +
-                        '<select class="blog-block-pos" style="width:100%; border:1px solid #d9d9d9; border-radius:10px; padding:12px;">' +
-                        '<option value="left" ' + (safePos === "left" ? 'selected' : '') + '>Image Left</option>' +
-                        '<option value="right" ' + (safePos === "right" ? 'selected' : '') + '>Image Right</option>' +
-                        '<option value="center" ' + (safePos === "center" ? 'selected' : '') + '>Image Center (text below)</option>' +
-                        '</select></div>' +
-                        '<div class="field blog-field-gallery"><label>Gallery image URLs (one per line)</label><textarea class="blog-block-gallery-input" rows="4" placeholder="https://...">' + galleryText + '</textarea></div>' +
-                        '<div class="field blog-field-gallery">' +
-                        '<label>Upload gallery images from device</label>' +
-                        '<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">' +
-                        '<input class="blog-block-gallery-files" type="file" accept="image/*" multiple>' +
-                        '<button type="button" class="btn blog-block-gallery-upload-btn">Upload Selected</button>' +
-                        '</div>' +
-                        '<div class="blog-block-gallery-preview-wrap" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">' +
-                        ((b.galleryUrls || []).slice(0, 6).map(function (u) {
-                            var su = resolveBlogEditorImageUrl(u || '').replace(/"/g, '&quot;');
-                            return '<img src="' + su + '" alt="" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#fff;">';
-                        }).join("")) +
-                        '</div></div>' +
-                        '<div class="btn-row" style="padding-top:0;">' +
-                        ((safeType === "image" || safeType === "split" || safeType === "gallery") ? '<button type="button" class="btn blog-block-add-gallery-after">Add image gallery</button>' : '') +
-                        '</div>' +
-                        '</div>';
-                }).join("");
-
-                blogFlexEditor.querySelectorAll(".blog-card-block").forEach(function (el) {
-                    var idx = Number(el.getAttribute("data-block-index"));
-                    var del = el.querySelector(".blog-block-delete");
-                    var typeEl = el.querySelector(".blog-block-type");
-                    var posEl = el.querySelector(".blog-block-pos");
-                    var imageInputEl = el.querySelector(".blog-block-image-input");
-                    var addGalleryAfterBtn = el.querySelector(".blog-block-add-gallery-after");
-                    if (typeEl) typeEl.addEventListener("change", function () {
-                        updateBlockFieldVisibility(el);
-                    });
-                    if (posEl) posEl.addEventListener("change", function () {
-                        updateBlockFieldVisibility(el);
-                    });
-                    if (imageInputEl) imageInputEl.addEventListener("input", function () {
-                        var previewWrap = el.querySelector(".blog-block-image-preview-wrap");
-                        if (!previewWrap) return;
-                        var v = resolveBlogEditorImageUrl(imageInputEl.value);
-                        if (!v) {
-                            previewWrap.innerHTML = "";
-                            return;
-                        }
-                        previewWrap.innerHTML = '<img class="blog-block-image-preview" src="' + v.replace(/"/g, '&quot;') + '" alt="Preview" style="width:78px; height:78px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">';
-                    });
-                    if (del) del.addEventListener("click", function () {
-                        blogBlocks.splice(idx, 1);
-                        renderBlogBlocksEditor();
-                    });
-                    if (addGalleryAfterBtn) addGalleryAfterBtn.addEventListener("click", function () {
-                        blogBlocks = collectBlogBlocksFromEditor();
-                        if (blogBlocks.length >= BLOG_MAX_BLOCKS) {
-                            setStatus("Max blog blocks reached", "warn");
-                            setHelper("You can add up to " + BLOG_MAX_BLOCKS + " blocks.");
-                            return;
-                        }
-                        blogBlocks.splice(idx + 1, 0, normalizeBlock({ type: "gallery", galleryUrls: [] }));
-                        renderBlogBlocksEditor();
-                    });
-                    updateBlockFieldVisibility(el);
-                });
-            }
-
-            function collectBlogBlocksFromEditor() {
-                if (!blogFlexEditor) return [];
-                var out = [];
-                blogFlexEditor.querySelectorAll(".blog-card-block").forEach(function (el) {
-                    var typeEl = el.querySelector(".blog-block-type");
-                    var titleEl = el.querySelector(".blog-block-title-input");
-                    var subtitleEl = el.querySelector(".blog-block-subtitle-input");
-                    var textEl = el.querySelector(".blog-block-text-input");
-                    var linkLabelEl = el.querySelector(".blog-block-link-label-input");
-                    var linkUrlEl = el.querySelector(".blog-block-link-url-input");
-                    var imageEl = el.querySelector(".blog-block-image-input");
-                    var posEl = el.querySelector(".blog-block-pos");
-                    var galleryEl = el.querySelector(".blog-block-gallery-input");
-                    var galleryUrls = (galleryEl && galleryEl.value ? galleryEl.value : "")
-                        .split(/\r?\n/)
-                        .map(function (s) { return s.trim(); })
-                        .filter(Boolean);
-                    var safeType = typeEl ? typeEl.value : "text";
-                    var safePos = posEl ? posEl.value : "left";
-                    out.push(normalizeBlock({
-                        type: typeEl ? typeEl.value : "text",
-                        title: titleEl ? titleEl.value.trim() : "",
-                        subtitle: subtitleEl ? subtitleEl.value.trim() : "",
-                        text: (safeType === "gallery" && safePos === "center") ? "" : (textEl ? textEl.value.trim() : ""),
-                        linkLabel: linkLabelEl ? linkLabelEl.value.trim() : "",
-                        linkUrl: linkUrlEl ? linkUrlEl.value.trim() : "",
-                        imageUrl: imageEl ? imageEl.value.trim() : "",
-                        imagePosition: safePos,
-                        galleryUrls: galleryUrls
-                    }));
-                });
-                return out.slice(0, BLOG_MAX_BLOCKS);
-            }
-
-            function fillBlogForm(data) {
-                data = data || {};
-                var titleStr = (data.title && String(data.title).trim()) ? data.title : DEFAULT_BLOG_HERO.title;
-                var lines = titleStr.split(/\n/);
-                blogHeroTitle.value = lines[0] ? lines[0].trim() : "";
-                blogHeroTitleLine2.value = lines.length > 1 ? lines.slice(1).join("\n").trim() : "";
-                blogHeroSubtitle.value = (data.subtitle && String(data.subtitle).trim()) ? data.subtitle : DEFAULT_BLOG_HERO.subtitle;
-                var cards = parseBlogCardsJson(data.button_primary);
-                if (!cards || !cards.length) {
-                    cards = DEFAULT_BLOG_CARDS.slice();
-                } else {
-                    while (cards.length < 3) {
-                        cards.push({ title: "", excerpt: "", image: "" });
-                    }
-                }
-                for (var i = 0; i < 3; i++) {
-                    var c = cards[i] || DEFAULT_BLOG_CARDS[i];
-                    document.getElementById("blog-c" + i + "-title").value = c.title || "";
-                    document.getElementById("blog-c" + i + "-excerpt").value = c.excerpt || "";
-                    var imgUrl = c.image || "";
-                    document.getElementById("blog-c" + i + "-image").value = imgUrl;
-                    var preview = document.getElementById("blog-c" + i + "-preview");
-                    if (preview) {
-                        preview.alt = c.title || "Preview";
-                        var resolvedImg = resolveBlogEditorImageUrl(imgUrl);
-                        if (resolvedImg) {
-                            preview.src = resolvedImg;
-                            preview.style.display = "block";
-                        } else {
-                            preview.src = "";
-                            preview.style.display = "none";
-                        }
-                    }
-                }
-                blogBlocks = parseBlogBlocks(data.button_secondary).slice(0, BLOG_MAX_BLOCKS).map(normalizeBlock);
-                renderBlogBlocksEditor();
-            }
-
-            function collectBlogPayload() {
-                var line1 = blogHeroTitle.value.trim();
-                var line2 = blogHeroTitleLine2.value.trim();
-                var titleCombined = line2 ? line1 + "\n" + line2 : line1;
-                blogBlocks = collectBlogBlocksFromEditor();
-                var cards = [];
-                for (var j = 0; j < 3; j++) {
-                    cards.push({
-                        title: document.getElementById("blog-c" + j + "-title").value.trim(),
-                        excerpt: document.getElementById("blog-c" + j + "-excerpt").value.trim(),
-                        image: document.getElementById("blog-c" + j + "-image").value.trim()
-                    });
-                }
-                return {
-                    title: titleCombined,
-                    subtitle: blogHeroSubtitle.value.trim(),
-                    button_primary: JSON.stringify({ cards: cards }),
-                    button_secondary: JSON.stringify({ version: "blog_v2", blocks: blogBlocks })
-                };
-            }
-
-            function getBlogDraftPayload() {
-                var payload = collectBlogPayload();
-                return {
-                    section_key: BLOG_KEY,
-                    title: payload.title || "Untitled draft",
-                    payload_json: {
-                        title: payload.title,
-                        subtitle: payload.subtitle,
-                        button_primary: payload.button_primary,
-                        button_secondary: payload.button_secondary
-                    },
-                    status: "draft",
-                    updated_at: new Date().toISOString()
-                };
-            }
-
-            function applyBlogPayloadToForm(payload) {
-                if (!payload) return;
-                fillBlogForm({
-                    title: payload.title || "",
-                    subtitle: payload.subtitle || "",
-                    button_primary: payload.button_primary || "",
-                    button_secondary: payload.button_secondary || ""
-                });
-            }
-
-            async function loadBlogDraftsList() {
-                if (!blogDraftsList) return;
-                const { data, error } = await client
-                    .from(BLOG_DRAFTS_TABLE)
-                    .select("id,title,status,updated_at,published_at")
-                    .eq("section_key", BLOG_KEY)
-                    .order("updated_at", { ascending: false })
-                    .limit(30);
-
-                if (error) {
-                    blogDraftsList.innerHTML = '<li class="helper">Could not load drafts: ' + (error.message || "error") + '</li>';
-                    return;
-                }
-                if (!data || !data.length) {
-                    blogDraftsList.innerHTML = '<li class="helper">No drafts yet.</li>';
-                    return;
-                }
-
-                blogDraftsList.innerHTML = data.map(function (d) {
-                    var title = d.title || "Untitled draft";
-                    var when = d.updated_at ? new Date(d.updated_at).toLocaleString() : "-";
-                    var isCurrent = currentBlogDraftId && currentBlogDraftId === d.id;
-                    return '' +
-                        '<li class="draft-item" data-draft-id="' + d.id + '">' +
-                        '<div class="draft-item-title">' + title.replace(/</g, "&lt;").replace(/>/g, "&gt;") + (isCurrent ? " (open)" : "") + '</div>' +
-                        '<div class="draft-item-meta">Status: ' + (d.status || "draft") + ' - Updated: ' + when + '</div>' +
-                        '<div class="draft-actions"><button type="button" class="btn draft-open-btn">Open</button><button type="button" class="btn draft-delete-btn">Delete</button></div>' +
-                        '</li>';
-                }).join("");
-
-                blogDraftsList.querySelectorAll(".draft-open-btn").forEach(function (btn) {
-                    btn.addEventListener("click", async function () {
-                        var li = btn.closest(".draft-item");
-                        if (!li) return;
-                        var id = li.getAttribute("data-draft-id");
-                        if (!id) return;
-                        const { data, error } = await client
-                            .from(BLOG_DRAFTS_TABLE)
-                            .select("id,payload_json")
-                            .eq("id", id)
-                            .single();
-                        if (error || !data) {
-                            setStatus("Could not open draft", "error");
-                            setHelper(error ? error.message : "Draft missing.");
-                            return;
-                        }
-                        currentBlogDraftId = data.id;
-                        applyBlogPayloadToForm(data.payload_json || {});
-                        setStatus("Draft opened", null);
-                        setHelper("Opened draft. You can edit and save again.");
-                        loadBlogDraftsList();
-                    });
-                });
-
-                blogDraftsList.querySelectorAll(".draft-delete-btn").forEach(function (btn) {
-                    btn.addEventListener("click", async function () {
-                        var li = btn.closest(".draft-item");
-                        if (!li) return;
-                        var id = li.getAttribute("data-draft-id");
-                        if (!id) return;
-                        if (!window.confirm("Delete this draft? This cannot be undone.")) return;
-                        const { error } = await client
-                            .from(BLOG_DRAFTS_TABLE)
-                            .delete()
-                            .eq("id", id);
-                        if (error) {
-                            setStatus("Could not delete draft", "error");
-                            setHelper(error.message || "Delete failed.");
-                            return;
-                        }
-                        if (currentBlogDraftId === id) currentBlogDraftId = null;
-                        setStatus("Draft deleted", null);
-                        setHelper("Draft removed.");
-                        loadBlogDraftsList();
-                    });
-                });
-            }
 
             function extractStoragePathFromPublicUrl(url) {
                 if (!url || typeof url !== "string") return null;
@@ -1378,24 +1431,32 @@
 
             function collectImageUrlsFromPayload(payload, usedSet) {
                 payload = payload || {};
+                // Legacy: scan site_content blog row (cards format)
                 var cards = parseBlogCardsJson(payload.button_primary) || [];
                 cards.forEach(function (c) {
                     var u = c && c.image ? String(c.image).trim() : "";
                     var path = normalizeBlogStoragePath(u);
                     if (path) usedSet.add(path);
                 });
-                var blocks = parseBlogBlocks(payload.button_secondary) || [];
-                blocks.forEach(function (b) {
-                    var imageUrl = b && b.imageUrl ? String(b.imageUrl).trim() : "";
-                    var imagePath = normalizeBlogStoragePath(imageUrl);
-                    if (imagePath) usedSet.add(imagePath);
-                    var galleryUrls = Array.isArray(b && b.galleryUrls) ? b.galleryUrls : [];
-                    galleryUrls.forEach(function (u) {
-                        var su = u ? String(u).trim() : "";
-                        var p = normalizeBlogStoragePath(su);
-                        if (p) usedSet.add(p);
-                    });
-                });
+                // Legacy: scan flexible blocks (button_secondary JSON)
+                var blocksRaw = payload.button_secondary;
+                if (blocksRaw) {
+                    try {
+                        var blocksObj = typeof blocksRaw === "string" ? JSON.parse(blocksRaw) : blocksRaw;
+                        var blocks = Array.isArray(blocksObj) ? blocksObj : (blocksObj && Array.isArray(blocksObj.blocks) ? blocksObj.blocks : []);
+                        blocks.forEach(function (b) {
+                            var imageUrl = b && b.imageUrl ? String(b.imageUrl).trim() : "";
+                            var imagePath = normalizeBlogStoragePath(imageUrl);
+                            if (imagePath) usedSet.add(imagePath);
+                            var galleryUrls = Array.isArray(b && b.galleryUrls) ? b.galleryUrls : [];
+                            galleryUrls.forEach(function (u) {
+                                var su = u ? String(u).trim() : "";
+                                var p = normalizeBlogStoragePath(su);
+                                if (p) usedSet.add(p);
+                            });
+                        });
+                    } catch (e) {}
+                }
             }
 
             async function listAllStorageObjects(prefix) {
@@ -1576,33 +1637,39 @@
 
                 const usedUrls = new Set();
 
+                // Scan site_content blog row (legacy images)
                 const publishedRes = await client
                     .from("site_content")
                     .select("button_primary,button_secondary")
                     .eq("section_key", BLOG_KEY)
                     .maybeSingle();
-                if (publishedRes.error) {
-                    setStatus("Scan failed", "error");
-                    setHelper(publishedRes.error.message || "Could not read published blog row.");
-                    blogStorageSummary.textContent = "Scan failed.";
-                    return;
+                if (!publishedRes.error && publishedRes.data) {
+                    collectImageUrlsFromPayload(publishedRes.data, usedUrls);
                 }
-                if (publishedRes.data) collectImageUrlsFromPayload(publishedRes.data, usedUrls);
 
-                const draftsRes = await client
-                    .from(BLOG_DRAFTS_TABLE)
-                    .select("payload_json")
-                    .eq("section_key", BLOG_KEY)
-                    .limit(300);
-                if (draftsRes.error) {
-                    setStatus("Scan failed", "error");
-                    setHelper(draftsRes.error.message || "Could not read drafts.");
-                    blogStorageSummary.textContent = "Scan failed.";
-                    return;
+                // Scan blog_posts cover images and content sections
+                const postsRes = await client.from(BLOG_POSTS_TABLE).select("cover_image_url, content");
+                if (!postsRes.error && postsRes.data) {
+                    postsRes.data.forEach(function (post) {
+                        if (post.cover_image_url) {
+                            var p = normalizeBlogStoragePath(String(post.cover_image_url));
+                            if (p) usedUrls.add(p);
+                        }
+                        if (post.content) {
+                            try {
+                                var parsed = JSON.parse(String(post.content));
+                                if (parsed && Array.isArray(parsed.sections)) {
+                                    parsed.sections.forEach(function (sec) {
+                                        if (sec && sec.type === "image" && sec.url) {
+                                            var sp = normalizeBlogStoragePath(String(sec.url));
+                                            if (sp) usedUrls.add(sp);
+                                        }
+                                    });
+                                }
+                            } catch (e) {}
+                        }
+                    });
                 }
-                (draftsRes.data || []).forEach(function (d) {
-                    collectImageUrlsFromPayload((d && d.payload_json) || {}, usedUrls);
-                });
 
                 const listed = await listAllStorageObjects("");
                 if (listed.error) {
@@ -1965,74 +2032,76 @@
                 }
             });
 
-            // Wire Blog image upload/delete via delegation (stable after form reloads)
-            (function wireBlogImageTools() {
-                var blogCardsEditor = document.getElementById("blog-cards-editor");
-                if (blogCardsEditor) {
-                    blogCardsEditor.addEventListener("click", function (e) {
-                        var btn = e.target && e.target.closest ? e.target.closest("button[id^='blog-c'][id$='-upload-btn'], button[id^='blog-c'][id$='-delete-btn']") : null;
-                        if (!btn || !btn.id) return;
-                        var match = btn.id.match(/^blog-c(\d+)-(upload|delete)-btn$/);
-                        if (!match) return;
-                        var idx = Number(match[1]);
-                        if (match[2] === "upload") uploadBlogCardImage(idx);
-                        else deleteBlogCardImage(idx);
-                    });
-                }
-                if (blogFlexEditor) {
-                    blogFlexEditor.addEventListener("click", function (e) {
-                        var blockEl = e.target && e.target.closest ? e.target.closest(".blog-card-block[data-block-index]") : null;
-                        if (!blockEl) return;
-                        var idx = Number(blockEl.getAttribute("data-block-index"));
-                        if (isNaN(idx)) return;
-                        if (e.target.closest(".blog-block-image-upload-btn")) uploadBlockImage(idx);
-                        else if (e.target.closest(".blog-block-gallery-upload-btn")) uploadBlockGalleryImages(idx);
-                    });
-                }
-            })();
+            // -- Blog CMS: wire all blog tab/post/settings events ----------------------
 
-            if (blogAddBlockBtn) {
-                blogAddBlockBtn.addEventListener("click", function () {
-                    blogBlocks = collectBlogBlocksFromEditor();
-                    if (blogBlocks.length >= BLOG_MAX_BLOCKS) {
-                        setStatus("Max blog blocks reached", "warn");
-                        setHelper("You can add up to " + BLOG_MAX_BLOCKS + " blocks.");
-                        return;
-                    }
-                    blogBlocks.push(normalizeBlock({ type: "text" }));
-                    renderBlogBlocksEditor();
+            // Tab buttons
+            document.querySelectorAll(".blog-tab-btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    switchBlogTab(btn.getAttribute("data-tab"));
                 });
-            }
+            });
 
-            function addBlogBlockTemplate(blockObj) {
-                blogBlocks = collectBlogBlocksFromEditor();
-                if (blogBlocks.length >= BLOG_MAX_BLOCKS) {
-                    setStatus("Max blog blocks reached", "warn");
-                    setHelper("You can add up to " + BLOG_MAX_BLOCKS + " blocks.");
-                    return;
-                }
-                blogBlocks.push(normalizeBlock(blockObj || { type: "text" }));
-                renderBlogBlocksEditor();
-            }
+            // Theme picker cards
+            document.querySelectorAll(".blog-theme-card").forEach(function (card) {
+                card.addEventListener("click", function () {
+                    setActiveBlogTheme(card.getAttribute("data-theme"));
+                });
+            });
 
-            if (blogAddTextBtn) blogAddTextBtn.addEventListener("click", function () {
-                addBlogBlockTemplate({ type: "text", title: "", text: "" });
+            // Settings save
+            var blogSaveSettingsBtn = document.getElementById("blog-save-settings-btn");
+            if (blogSaveSettingsBtn) blogSaveSettingsBtn.addEventListener("click", function () { saveBlogPageSettings(); });
+
+            // Posts tab
+            var blogNewPostBtn = document.getElementById("blog-new-post-btn");
+            var blogRefreshPostsBtn = document.getElementById("blog-refresh-posts-btn");
+            if (blogNewPostBtn) blogNewPostBtn.addEventListener("click", function () { openNewPost(); });
+            if (blogRefreshPostsBtn) blogRefreshPostsBtn.addEventListener("click", function () { loadBlogPostsList(); });
+
+            // Post editor: cover image
+            var blogPostCoverUploadBtn = document.getElementById("blog-post-cover-upload-btn");
+            var blogPostCoverRemoveBtn = document.getElementById("blog-post-cover-remove-btn");
+            if (blogPostCoverUploadBtn) blogPostCoverUploadBtn.addEventListener("click", function () { uploadPostCoverImage(); });
+            if (blogPostCoverRemoveBtn) blogPostCoverRemoveBtn.addEventListener("click", function () {
+                var urlEl = document.getElementById("blog-post-cover-url");
+                var previewEl = document.getElementById("blog-post-cover-preview");
+                if (urlEl) urlEl.value = "";
+                if (previewEl) { previewEl.src = ""; previewEl.style.display = "none"; }
             });
-            if (blogAddImageBtn) blogAddImageBtn.addEventListener("click", function () {
-                addBlogBlockTemplate({ type: "image", title: "", imageUrl: "" });
+
+            // Post editor: cover URL preview on input
+            var blogPostCoverUrlEl = document.getElementById("blog-post-cover-url");
+            if (blogPostCoverUrlEl) blogPostCoverUrlEl.addEventListener("input", function () {
+                var previewEl = document.getElementById("blog-post-cover-preview");
+                if (!previewEl) return;
+                var v = blogPostCoverUrlEl.value.trim();
+                if (v) { previewEl.src = v; previewEl.style.display = "block"; }
+                else { previewEl.src = ""; previewEl.style.display = "none"; }
             });
-            if (blogAddSplitLeftBtn) blogAddSplitLeftBtn.addEventListener("click", function () {
-                addBlogBlockTemplate({ type: "split", title: "", text: "", imageUrl: "", imagePosition: "left" });
+
+            // Post editor: add sections
+            var blogAddTextSectionBtn = document.getElementById("blog-add-text-section-btn");
+            var blogAddImageSectionBtn = document.getElementById("blog-add-image-section-btn");
+            if (blogAddTextSectionBtn) blogAddTextSectionBtn.addEventListener("click", function () {
+                var sections = collectPostSections();
+                sections.push({ type: "text", heading: "", body: "" });
+                postSections = sections;
+                renderPostSections();
             });
-            if (blogAddSplitRightBtn) blogAddSplitRightBtn.addEventListener("click", function () {
-                addBlogBlockTemplate({ type: "split", title: "", text: "", imageUrl: "", imagePosition: "right" });
+            if (blogAddImageSectionBtn) blogAddImageSectionBtn.addEventListener("click", function () {
+                var sections = collectPostSections();
+                sections.push({ type: "image", url: "", caption: "" });
+                postSections = sections;
+                renderPostSections();
             });
-            if (blogAddSplitCenterBtn) blogAddSplitCenterBtn.addEventListener("click", function () {
-                addBlogBlockTemplate({ type: "split", title: "", text: "", imageUrl: "", imagePosition: "center" });
-            });
-            if (blogAddGalleryBtn) blogAddGalleryBtn.addEventListener("click", function () {
-                addBlogBlockTemplate({ type: "gallery", title: "", galleryUrls: [] });
-            });
+
+            // Post editor: back / save draft / publish
+            var blogPostBackBtn = document.getElementById("blog-post-back-btn");
+            var blogPostSaveDraftBtn = document.getElementById("blog-post-save-draft-btn");
+            var blogPostPublishBtn = document.getElementById("blog-post-publish-btn");
+            if (blogPostBackBtn) blogPostBackBtn.addEventListener("click", function () { switchBlogTab("posts"); });
+            if (blogPostSaveDraftBtn) blogPostSaveDraftBtn.addEventListener("click", function () { saveBlogPost("draft"); });
+            if (blogPostPublishBtn) blogPostPublishBtn.addEventListener("click", function () { saveBlogPost("published"); });
 
             client.auth.onAuthStateChange(function (event) {
                 if (event === "PASSWORD_RECOVERY") {
@@ -2087,16 +2156,10 @@
 
                 if (sectionKey === BLOG_KEY) {
                     setBlogEditorVisible(true);
-                    if (blogDraftsCard) blogDraftsCard.classList.remove("is-hidden");
+                    if (blogDraftsCard) blogDraftsCard.classList.add("is-hidden");
                     if (blogStorageCard) blogStorageCard.classList.remove("is-hidden");
-                    fillBlogForm(data || {});
-                    currentBlogDraftId = null;
-                    loadBlogDraftsList();
-                    var updatedB = data && data.updated_at ? data.updated_at : null;
-                    lastMetaStatus = data ? "In database" : "Defaults (not saved)";
-                    updateMeta(sectionKey, updatedB);
-                    setStatus("Draft loaded", null);
-                    setHelper(updatedB ? "Last synced: " + new Date(updatedB).toLocaleString() : "Defaults shown - Save to store in Supabase. Public blog preview loads this row.");
+                    switchBlogTab("settings");
+                    await loadBlogPageSettings();
                     return;
                 }
 
@@ -2121,61 +2184,13 @@
                 disableButtons(true);
                 setStatus(mode === "publish" ? "Publishing..." : "Saving...", "warn");
 
-                if (currentSectionKey === BLOG_KEY && mode === "draft") {
-                    var d = getBlogDraftPayload();
-                    var draftPayload = {
-                        section_key: d.section_key,
-                        title: d.title,
-                        payload_json: d.payload_json,
-                        status: "draft",
-                        updated_at: d.updated_at
-                    };
-                    let draftError = null;
-                    if (currentBlogDraftId) {
-                        const res = await client
-                            .from(BLOG_DRAFTS_TABLE)
-                            .update(draftPayload)
-                            .eq("id", currentBlogDraftId)
-                            .select("id")
-                            .single();
-                        draftError = res.error || null;
-                    } else {
-                        const res = await client
-                            .from(BLOG_DRAFTS_TABLE)
-                            .insert(draftPayload)
-                            .select("id")
-                            .single();
-                        draftError = res.error || null;
-                        if (res.data && res.data.id) currentBlogDraftId = res.data.id;
-                    }
-                    if (draftError) {
-                        setStatus("Save failed", "error");
-                        setHelper("Save error: " + draftError.message);
-                        lastMetaStatus = "Error";
-                        updateMeta(currentSectionKey, null);
-                        disableButtons(false);
-                        return;
-                    }
-                    lastMetaStatus = "Draft saved";
-                    updateMeta(currentSectionKey, d.updated_at);
-                    setStatus("Draft saved", null);
-                    setHelper("Draft stored. Open from Blog Drafts card.");
-                    disableButtons(false);
-                    loadBlogDraftsList();
-                    return;
-                }
-
                 var payload;
                 if (currentSectionKey === BLOG_KEY) {
-                    var b = collectBlogPayload();
-                    payload = {
-                        section_key: BLOG_KEY,
-                        title: b.title,
-                        subtitle: b.subtitle,
-                        button_primary: b.button_primary,
-                        button_secondary: b.button_secondary,
-                        updated_at: new Date().toISOString()
-                    };
+                    // Blog uses its own per-tab save buttons; shared buttons are hidden.
+                    // This fallback saves page settings in case they're ever invoked.
+                    await saveBlogPageSettings();
+                    disableButtons(false);
+                    return;
                 } else {
                     payload = {
                         section_key: currentSectionKey,
@@ -2197,31 +2212,13 @@
                     return;
                 }
 
-                if (currentSectionKey === BLOG_KEY && currentBlogDraftId) {
-                    await client
-                        .from(BLOG_DRAFTS_TABLE)
-                        .update({
-                            status: "published",
-                            published_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString()
-                        })
-                        .eq("id", currentBlogDraftId);
-                    loadBlogDraftsList();
-                }
-
                 lastMetaStatus = mode === "publish" ? "Published" : "Draft saved";
                 updateMeta(currentSectionKey, payload.updated_at);
                 setStatus(lastMetaStatus, null);
                 setHelper(mode === "publish"
-                    ? "Published at " + new Date().toLocaleString() + ". Open preview-blog.html and hard-refresh (Ctrl+F5)."
+                    ? "Published at " + new Date().toLocaleString() + ". Refresh the public page to see changes."
                     : "Saved at " + new Date().toLocaleString());
                 disableButtons(false);
-                if (currentSectionKey === BLOG_KEY && mode === "publish") {
-                    await loadContentForSection(BLOG_KEY);
-                    lastMetaStatus = "Published";
-                    metaStatus.textContent = "Published";
-                    metaUpdated.textContent = new Date(payload.updated_at).toLocaleString();
-                }
             }
 
             function switchSection(navId) {
@@ -2346,19 +2343,9 @@
                     }
                 });
             }
-            if (blogRefreshDraftsBtn) {
-                blogRefreshDraftsBtn.addEventListener("click", function () {
-                    if (currentSectionKey === BLOG_KEY) loadBlogDraftsList();
-                });
-            }
             if (blogStorageScanBtn) {
                 blogStorageScanBtn.addEventListener("click", function () {
                     if (currentSectionKey === BLOG_KEY) scanBlogUnusedStorageFiles();
-                });
-            }
-            if (blogCleanNonMainCardsBtn) {
-                blogCleanNonMainCardsBtn.addEventListener("click", function () {
-                    if (currentSectionKey === BLOG_KEY) cleanNonMainBlogCards();
                 });
             }
             if (anResetViewsBtn) {
