@@ -744,7 +744,7 @@
                                 <div class="analytics-stat"><strong>Top Viewed Page</strong><span id="an-top-page">-</span></div>
                                 <div class="analytics-stat"><strong>Views (Last 30 Days)</strong><span id="an-site-views-30d">-</span></div>
                                 <div class="analytics-stat"><strong>Blog Drafts</strong><span id="an-blog-drafts">-</span></div>
-                                <div class="analytics-stat"><strong>Published Blog Row</strong><span id="an-blog-published">-</span></div>
+                                <div class="analytics-stat"><strong>Published Posts</strong><span id="an-blog-published">-</span></div>
                                 <div class="analytics-stat"><strong>Blog Storage Files</strong><span id="an-storage-files">-</span></div>
                                 <div class="analytics-stat"><strong>Storage Used</strong><span id="an-storage-size">-</span></div>
                             </div>
@@ -1503,8 +1503,8 @@
                 if (anRangeSummary) anRangeSummary.textContent = "Range: calculating...";
 
                 const viewsRowsRes = await client.from("page_views").select("page_path,created_at").order("created_at", { ascending: false }).limit(5000);
-                const draftsRes = await client.from(BLOG_DRAFTS_TABLE).select("*", { count: "exact", head: true }).eq("section_key", BLOG_KEY);
-                const pubRes = await client.from("site_content").select("updated_at").eq("section_key", BLOG_KEY).maybeSingle();
+                const draftsRes = await client.from(BLOG_POSTS_TABLE).select("*", { count: "exact", head: true }).eq("status", "draft");
+                const pubRes = await client.from(BLOG_POSTS_TABLE).select("*", { count: "exact", head: true }).eq("status", "published");
                 const listed = await listAllStorageObjects("");
 
                 if (viewsRowsRes && viewsRowsRes.error) {
@@ -1558,7 +1558,7 @@
                     }
                 });
                 var draftCount = draftsRes && typeof draftsRes.count === "number" ? draftsRes.count : 0;
-                var published = pubRes && pubRes.data ? "Yes" : "No";
+                var published = pubRes && typeof pubRes.count === "number" ? String(pubRes.count) : "0";
                 var files = (listed && listed.data) ? listed.data : [];
                 var storageFiles = files.length;
                 var totalSize = files.reduce(function (sum, f) { return sum + Number((f && f.size) || 0); }, 0);
@@ -1732,258 +1732,6 @@
 
                 setStatus("Scan complete", null);
                 setHelper("Review unused files before deletion.");
-            }
-
-            async function cleanNonMainBlogCards() {
-                if (!blogStorageSummary) return;
-                var ok = window.confirm("Clean non-main published cards? This keeps Card 1 and clears Cards 2-3 in the published Blog row.");
-                if (!ok) return;
-
-                setStatus("Cleaning cards...", "warn");
-                setHelper("Keeping only the published main card.");
-
-                const publishedRes = await client
-                    .from("site_content")
-                    .select("button_primary")
-                    .eq("section_key", BLOG_KEY)
-                    .maybeSingle();
-
-                if (publishedRes.error) {
-                    setStatus("Clean failed", "error");
-                    setHelper(publishedRes.error.message || "Could not read published blog row.");
-                    return;
-                }
-
-                var cards = parseBlogCardsJson(publishedRes.data && publishedRes.data.button_primary) || [];
-                var first = cards[0] || {};
-                var cleanedCards = [
-                    {
-                        title: first && first.title ? String(first.title).trim() : "",
-                        excerpt: first && first.excerpt ? String(first.excerpt).trim() : "",
-                        image: first && first.image ? String(first.image).trim() : ""
-                    },
-                    { title: "", excerpt: "", image: "" },
-                    { title: "", excerpt: "", image: "" }
-                ];
-
-                const updateRes = await client
-                    .from("site_content")
-                    .update({
-                        button_primary: JSON.stringify({ cards: cleanedCards }),
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq("section_key", BLOG_KEY);
-
-                if (updateRes.error) {
-                    setStatus("Clean failed", "error");
-                    setHelper(updateRes.error.message || "Could not update published blog row.");
-                    return;
-                }
-
-                blogStorageSummary.textContent = "Published cards cleaned: kept Card 1, cleared Cards 2-3.";
-                setStatus("Cards cleaned", null);
-                setHelper("Non-main published cards removed.");
-                await loadContentForSection(BLOG_KEY);
-            }
-
-            async function uploadBlogCardImage(cardIndex) {
-                var fileInput = document.getElementById("blog-c" + cardIndex + "-file");
-                var imgInput = document.getElementById("blog-c" + cardIndex + "-image");
-                var preview = document.getElementById("blog-c" + cardIndex + "-preview");
-                if (!fileInput || !imgInput) return;
-
-                var file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
-                if (!file) {
-                    setStatus("Choose an image file first", "warn");
-                    setHelper("Use Upload to add an image to Supabase Storage.");
-                    return;
-                }
-
-                setStatus("Uploading image...", "warn");
-                setHelper("");
-
-                var uuid = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : String(Date.now());
-                var safeName = (file.name || "image").replace(/[^\w.\-]+/g, "_");
-                var key = "blog/" + cardIndex + "/" + uuid + "_" + safeName;
-
-                var { error } = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, {
-                    upsert: true,
-                    contentType: file.type || "application/octet-stream"
-                });
-
-                if (error) {
-                    setStatus("Upload failed", "error");
-                    setHelper(error.message || "Could not upload.");
-                    return;
-                }
-
-                var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
-                var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
-
-                if (publicUrl) {
-                    imgInput.value = publicUrl;
-                    if (preview) {
-                        preview.src = publicUrl;
-                        preview.style.display = "block";
-                    }
-                    setStatus("Uploaded", null);
-                    setHelper("Image uploaded to Storage. You must click Publish Changes for it to appear on the blog page.");
-                } else {
-                    setStatus("Uploaded, but public URL missing", "warn");
-                    setHelper("Please retry or check Storage bucket settings.");
-                }
-            }
-
-            async function deleteBlogCardImage(cardIndex) {
-                var imgInput = document.getElementById("blog-c" + cardIndex + "-image");
-                var preview = document.getElementById("blog-c" + cardIndex + "-preview");
-                if (!imgInput) return;
-
-                var url = (imgInput.value || "").trim();
-                if (!url) {
-                    if (preview) {
-                        preview.src = "";
-                        preview.style.display = "none";
-                    }
-                    setStatus("Cleared", null);
-                    return;
-                }
-
-                var path = extractStoragePathFromPublicUrl(url);
-                if (!path) {
-                    // Not a Storage-managed URL (could be default repo image). We just clear the link in the form.
-                    imgInput.value = "";
-                    if (preview) {
-                        preview.src = "";
-                        preview.style.display = "none";
-                    }
-                    setStatus("Link cleared (not deleted from Storage)", "warn");
-                    setHelper("Only Storage images can be deleted from Supabase.");
-                    return;
-                }
-
-                setStatus("Deleting image...", "warn");
-                setHelper("");
-                var { error } = await client.storage.from(BLOG_IMAGE_BUCKET).remove([path]);
-                if (error) {
-                    setStatus("Delete failed", "error");
-                    setHelper(error.message || "Could not delete.");
-                    return;
-                }
-
-                imgInput.value = "";
-                if (preview) {
-                    preview.src = "";
-                    preview.style.display = "none";
-                }
-                setStatus("Deleted", null);
-                setHelper("Image removed from Storage. Save Draft/Publish to update the Blog content.");
-            }
-
-            async function uploadSingleBlogStorageFile(file, keyPrefix) {
-                if (!file) return { error: { message: "No file selected." } };
-                var uuid = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : String(Date.now());
-                var safeName = (file.name || "image").replace(/[^\w.\-]+/g, "_");
-                var key = keyPrefix + "/" + uuid + "_" + safeName;
-                var upRes = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, {
-                    upsert: true,
-                    contentType: file.type || "application/octet-stream"
-                });
-                if (upRes.error) return { error: upRes.error };
-                var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
-                var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
-                if (!publicUrl) return { error: { message: "Uploaded but missing public URL." } };
-                return { publicUrl: publicUrl };
-            }
-
-            async function uploadBlockImage(blockIndex) {
-                if (!blogFlexEditor) return;
-                var blockEl = blogFlexEditor.querySelector('.blog-card-block[data-block-index="' + blockIndex + '"]');
-                if (!blockEl) return;
-                var fileInput = blockEl.querySelector(".blog-block-image-file");
-                var imageInput = blockEl.querySelector(".blog-block-image-input");
-                var typeEl = blockEl.querySelector(".blog-block-type");
-                var blockType = typeEl ? typeEl.value : "image";
-                var file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
-                if (!file || !imageInput) {
-                    setStatus("Choose an image first", "warn");
-                    setHelper("Pick a file before uploading.");
-                    return;
-                }
-                setStatus("Uploading image...", "warn");
-                var res = await uploadSingleBlogStorageFile(file, "blog/blocks/" + blockIndex + "/single");
-                if (res.error) {
-                    setStatus("Upload failed", "error");
-                    setHelper(res.error.message || "Could not upload.");
-                    return;
-                }
-                if (blockType === "gallery") {
-                    var galleryTextarea = blockEl.querySelector(".blog-block-gallery-input");
-                    var existingGallery = (galleryTextarea && galleryTextarea.value ? galleryTextarea.value : "")
-                        .split(/\r?\n/)
-                        .map(function (s) { return s.trim(); })
-                        .filter(Boolean);
-                    if (existingGallery.indexOf(res.publicUrl) === -1) existingGallery.push(res.publicUrl);
-                    if (galleryTextarea) galleryTextarea.value = existingGallery.join("\n");
-                    imageInput.value = "";
-                    var galleryPreviewWrap = blockEl.querySelector(".blog-block-gallery-preview-wrap");
-                    if (galleryPreviewWrap) {
-                        galleryPreviewWrap.innerHTML = existingGallery.slice(0, 6).map(function (u) {
-                            var su = resolveBlogEditorImageUrl(u || '').replace(/"/g, '&quot;');
-                            return '<img src="' + su + '" alt="" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#fff;">';
-                        }).join("");
-                    }
-                } else {
-                    imageInput.value = res.publicUrl;
-                }
-                var previewWrap = blockEl.querySelector(".blog-block-image-preview-wrap");
-                if (previewWrap) {
-                    previewWrap.innerHTML = '<img class="blog-block-image-preview" src="' + res.publicUrl + '" alt="Preview" style="width:78px; height:78px; object-fit:cover; border-radius:10px; border:1px solid var(--border); background:#fff;">';
-                }
-                if (fileInput) fileInput.value = "";
-                setStatus("Uploaded", null);
-                setHelper("Image uploaded. Click Publish Changes for it to appear on the blog page.");
-            }
-
-            async function uploadBlockGalleryImages(blockIndex) {
-                if (!blogFlexEditor) return;
-                var blockEl = blogFlexEditor.querySelector('.blog-card-block[data-block-index="' + blockIndex + '"]');
-                if (!blockEl) return;
-                var filesInput = blockEl.querySelector(".blog-block-gallery-files");
-                var galleryTextarea = blockEl.querySelector(".blog-block-gallery-input");
-                var files = filesInput && filesInput.files ? Array.from(filesInput.files) : [];
-                if (!files.length || !galleryTextarea) {
-                    setStatus("Choose gallery images first", "warn");
-                    setHelper("Pick one or more files before uploading.");
-                    return;
-                }
-                setStatus("Uploading gallery images...", "warn");
-                var uploaded = [];
-                for (var i = 0; i < files.length; i++) {
-                    var res = await uploadSingleBlogStorageFile(files[i], "blog/blocks/" + blockIndex + "/gallery");
-                    if (res.error) {
-                        setStatus("Upload failed", "error");
-                        setHelper(res.error.message || "Could not upload one of the files.");
-                        return;
-                    }
-                    uploaded.push(res.publicUrl);
-                }
-                var existing = (galleryTextarea.value || "")
-                    .split(/\r?\n/)
-                    .map(function (s) { return s.trim(); })
-                    .filter(Boolean);
-                var all = existing.concat(uploaded);
-                galleryTextarea.value = all.join("\n");
-                var previewWrap = blockEl.querySelector(".blog-block-gallery-preview-wrap");
-                if (previewWrap) {
-                    previewWrap.innerHTML = all.slice(0, 6).map(function (u) {
-                        var su = resolveBlogEditorImageUrl(u || '').replace(/"/g, '&quot;');
-                        return '<img src="' + su + '" alt="" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid var(--border); background:#fff;">';
-                    }).join("");
-                }
-                if (filesInput) filesInput.value = "";
-                setStatus("Uploaded", null);
-                setHelper("Gallery uploaded. Click Publish Changes for images to appear on the blog page.");
             }
 
             function setStatus(text, mode) {
