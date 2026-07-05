@@ -32,8 +32,13 @@
             from { opacity: 0; transform: scale(1.07); }
             to   { opacity: 1; transform: scale(1); }
         }
+        @keyframes textFadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
         @media (prefers-reduced-motion: reduce) {
-            .blog-card, .blog-card-cover { animation: none !important; }
+            .blog-card, .blog-card-cover,
+            .blog-hero h1, .blog-hero p { animation: none !important; }
         }
 
         /* -- Blog Hero -- */
@@ -47,6 +52,7 @@
             line-height: 1.15;
             color: #000;
             margin-bottom: 16px;
+            animation: textFadeUp 0.75s ease 0.15s both;
         }
         .blog-hero p {
             font-size: 16px;
@@ -54,6 +60,7 @@
             max-width: 640px;
             margin: 0 auto;
             line-height: 1.65;
+            animation: textFadeUp 0.75s ease 0.32s both;
         }
 
         /* -- Posts grid -- */
