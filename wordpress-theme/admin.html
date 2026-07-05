@@ -501,6 +501,65 @@
             .analytics-grid { grid-template-columns: 1fr; }
             .analytics-filters .field { min-width: min(100%, 170px); flex: 1 1 140px; }
         }
+
+        /* ?? Storage warning banner ?? */
+        #storage-warning-banner {
+            display: none;
+            align-items: flex-start;
+            gap: 14px;
+            background: #fff8e1;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 22px;
+            animation: adminFadeIn 0.4s ease both;
+        }
+        #storage-warning-banner.show { display: flex; }
+        .storage-warn-icon { font-size: 28px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+        .storage-warn-body { flex: 1; }
+        .storage-warn-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+        .storage-warn-text {
+            font-size: 13px;
+            color: #78350f;
+            line-height: 1.55;
+        }
+        .storage-warn-bar-wrap {
+            margin-top: 10px;
+            background: #fde68a;
+            border-radius: 999px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .storage-warn-bar {
+            height: 100%;
+            border-radius: 999px;
+            background: #f59e0b;
+            transition: width 0.5s ease;
+        }
+        .storage-warn-bar.critical { background: #dc2626; }
+        .storage-warn-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .storage-warn-btn {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background: #f59e0b;
+            color: #fff;
+            transition: opacity 0.2s;
+        }
+        .storage-warn-btn:hover { opacity: 0.85; }
+        .storage-warn-dismiss {
+            background: transparent;
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
     </style>
 </head>
 <body>
@@ -520,6 +579,26 @@
         </aside>
 
         <main class="content">
+
+            <!-- Storage warning banner (shown automatically when >90% of 1 GB used) -->
+            <div id="storage-warning-banner" role="alert" aria-live="polite">
+                <div class="storage-warn-icon">??</div>
+                <div class="storage-warn-body">
+                    <div class="storage-warn-title">Storage Almost Full</div>
+                    <div class="storage-warn-text" id="storage-warn-text">
+                        You are using <strong id="storage-warn-pct">?</strong> of your 1 GB Supabase storage limit.
+                        Delete unused images to avoid upload failures.
+                    </div>
+                    <div class="storage-warn-bar-wrap">
+                        <div class="storage-warn-bar" id="storage-warn-bar" style="width:0%"></div>
+                    </div>
+                    <div class="storage-warn-actions">
+                        <button class="storage-warn-btn" type="button" id="storage-warn-goto">Go to Storage Scan</button>
+                        <button class="storage-warn-btn storage-warn-dismiss" type="button" id="storage-warn-dismiss">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+
             <section id="dash-welcome" class="dashboard-hero">
                 <div>
                     <h2>Welcome to ProArtist Admin</h2>
@@ -2322,9 +2401,76 @@
                 window.location.href = "login.html";
             });
 
+            // ?? Storage usage warning ??????????????????????????????????????????????
+            async function checkStorageUsage() {
+                const FREE_TIER_BYTES = 1_073_741_824; // 1 GB
+                const WARN_THRESHOLD  = 0.90;           // 90 %
+
+                try {
+                    // Collect sizes from root and any immediate sub-folders
+                    async function listSizes(prefix) {
+                        const { data, error } = await client.storage
+                            .from(BLOG_IMAGE_BUCKET)
+                            .list(prefix, { limit: 1000 });
+                        if (error || !data) return 0;
+                        let total = 0;
+                        for (const item of data) {
+                            if (item.metadata && item.metadata.size) {
+                                total += item.metadata.size;
+                            } else if (!item.metadata) {
+                                // item is a folder ? recurse one level
+                                total += await listSizes(prefix ? prefix + "/" + item.name : item.name);
+                            }
+                        }
+                        return total;
+                    }
+
+                    const usedBytes = await listSizes("");
+                    const pct = usedBytes / FREE_TIER_BYTES;
+
+                    if (pct >= WARN_THRESHOLD) {
+                        const pctDisplay = (pct * 100).toFixed(1) + "%";
+                        const usedMB = (usedBytes / 1_048_576).toFixed(0);
+                        const banner = document.getElementById("storage-warning-banner");
+                        const pctEl  = document.getElementById("storage-warn-pct");
+                        const bar    = document.getElementById("storage-warn-bar");
+
+                        if (banner) {
+                            if (pctEl) pctEl.textContent = pctDisplay + " (" + usedMB + " MB)";
+                            if (bar) {
+                                bar.style.width = Math.min(pct * 100, 100) + "%";
+                                if (pct >= 0.98) bar.classList.add("critical");
+                            }
+                            banner.classList.add("show");
+                        }
+                    }
+                } catch (e) {
+                    // Silent fail ? warning is non-critical
+                }
+            }
+
+            // Wire warning banner buttons
+            var storageGotoBtn = document.getElementById("storage-warn-goto");
+            var storageDismissBtn = document.getElementById("storage-warn-dismiss");
+            if (storageGotoBtn) {
+                storageGotoBtn.addEventListener("click", function () {
+                    document.getElementById("storage-warning-banner").classList.remove("show");
+                    // Navigate to blog section where storage scan lives
+                    var blogBtn = document.querySelector('.nav-btn[data-nav="blog"]');
+                    if (blogBtn) blogBtn.click();
+                });
+            }
+            if (storageDismissBtn) {
+                storageDismissBtn.addEventListener("click", function () {
+                    document.getElementById("storage-warning-banner").classList.remove("show");
+                });
+            }
+            // ?????????????????????????????????????????????????????????????????????????
+
             ensureAuthenticated().then(function (user) {
                 if (!user) return;
                 switchSection("dashboard");
+                checkStorageUsage();
             });
         })();
     </script>

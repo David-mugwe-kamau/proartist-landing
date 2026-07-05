@@ -1,0 +1,38 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Supabase Keep-Alive
+# Runs a tiny database query every 5 days so the free-tier project never pauses.
+# Supabase pauses free projects after 7 days of zero activity.
+# ─────────────────────────────────────────────────────────────────────────────
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # 08:00 UTC every 5 days (days 1, 6, 11, 16, 21, 26, 31 of each month)
+    - cron: "0 8 */5 * *"
+  # Allow a manual trigger from the GitHub Actions tab if needed
+  workflow_dispatch:
+
+jobs:
+  keepalive:
+    name: Ping Supabase
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Query Supabase REST API
+        run: |
+          HTTP_STATUS=$(curl -s -o /tmp/sb_response.json -w "%{http_code}" \
+            "https://qckpjmoajhskxrfcsvpa.supabase.co/rest/v1/site_content?select=section_key&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c" \
+            -H "Accept: application/json")
+
+          echo "HTTP status: $HTTP_STATUS"
+          echo "Response: $(cat /tmp/sb_response.json)"
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ Supabase is active and responding."
+          else
+            echo "❌ Supabase returned an unexpected status: $HTTP_STATUS"
+            exit 1
+          fi
