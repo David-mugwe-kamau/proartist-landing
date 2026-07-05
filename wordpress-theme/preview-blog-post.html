@@ -156,6 +156,8 @@
     </style>
 </head>
 <body class="pa-supabase-page theme-minimal">
+    <!-- Apply saved theme instantly before first paint to prevent flash -->
+    <script>(function(){try{var t=localStorage.getItem("proartist_blog_theme");if(t==="bold"||t==="magazine")document.body.className=document.body.className.replace(/\btheme-\w+\b/,"theme-"+t);}catch(e){}})();</script>
     <header class="site-header">
         <div class="container">
             <div class="site-branding">
@@ -277,6 +279,7 @@
                 document.body.classList.remove("theme-minimal", "theme-magazine", "theme-bold");
                 var t = (theme === "magazine" || theme === "bold") ? theme : "minimal";
                 document.body.classList.add("theme-" + t);
+                try { localStorage.setItem("proartist_blog_theme", t); } catch (e) {}
             }
 
             function showLoading(on) {
