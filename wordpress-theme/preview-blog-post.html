@@ -105,6 +105,26 @@
             text-align: center;
             margin-top: 4px;
         }
+        .post-section-btn-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 8px 0;
+        }
+        .post-section-btn {
+            display: inline-block;
+            padding: 14px 36px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: "Montserrat", system-ui, sans-serif;
+            transition: opacity 0.15s;
+        }
+        .post-section-btn:hover { opacity: 0.85; }
+        .post-section-btn-solid { background: #ffdb00; color: #000; border: 2px solid #ffdb00; }
+        .post-section-btn-outline { background: transparent; color: #000; border: 2px solid #000; }
+        body.theme-bold .post-section-btn-solid { background: #ffdb00; color: #000; border-color: #ffdb00; }
+        body.theme-bold .post-section-btn-outline { color: #ffdb00; border-color: #ffdb00; }
 
         /* ── Not found / loading states ── */
         .post-loading, .post-not-found {
@@ -308,6 +328,14 @@
                         if (sections.length) {
                             contentEl.innerHTML = sections.map(function (sec) {
                                 if (!sec) return "";
+                                if (sec.type === "button") {
+                                    if (!sec.url && !sec.label) return "";
+                                    var btnCls = sec.style === "outline" ? "post-section-btn-outline" : "post-section-btn-solid";
+                                    return '<div class="post-section">' +
+                                        '<div class="post-section-btn-wrap">' +
+                                        '<a class="post-section-btn ' + btnCls + '" href="' + esc(sec.url || "#") + '" target="_blank" rel="noopener noreferrer">' + esc(sec.label || "Learn More") + '</a>' +
+                                        '</div></div>';
+                                }
                                 if (sec.type === "image") {
                                     if (!sec.url) return "";
                                     return '<div class="post-section">' +

@@ -308,6 +308,10 @@
         .blog-section-block { border: 1px dashed var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: #fafafa; display: grid; gap: 10px; }
         .blog-section-header { display: flex; justify-content: space-between; align-items: center; }
         .blog-section-header strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #555; }
+        .blog-btn-preview-wrap { display: flex; justify-content: center; padding: 8px 0 2px; }
+        .blog-btn-preview { display: inline-block; padding: 10px 28px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: default; transition: none; font-family: inherit; pointer-events: none; }
+        .blog-btn-preview-solid { background: var(--brand); color: #000; border: 2px solid var(--brand); }
+        .blog-btn-preview-outline { background: transparent; color: #000; border: 2px solid #000; }
 
         /* Media Library Overlay */
         #media-library-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; }
@@ -703,6 +707,7 @@
                                         <div class="btn-row" style="padding-top:4px;">
                                             <button id="blog-add-text-section-btn" class="btn" type="button">+ Add Text</button>
                                             <button id="blog-add-image-section-btn" class="btn" type="button">+ Add Image</button>
+                                            <button id="blog-add-button-section-btn" class="btn" type="button">+ Add Button</button>
                                         </div>
                                         <div style="border-top:1px solid var(--border); margin-top:16px; padding-top:14px;">
                                             <div class="btn-row">
@@ -1217,6 +1222,26 @@
                     return;
                 }
                 sectionsEl.innerHTML = postSections.map(function (sec, i) {
+                    if (sec.type === "button") {
+                        var solidSel = (!sec.style || sec.style === "solid") ? " selected" : "";
+                        var outlineSel = sec.style === "outline" ? " selected" : "";
+                        var previewCls = sec.style === "outline" ? "blog-btn-preview-outline" : "blog-btn-preview-solid";
+                        var previewLabel = escHtml(sec.label || "Button");
+                        return '<div class="blog-section-block" data-section-idx="' + i + '">' +
+                            '<div class="blog-section-header"><strong>Button Section</strong>' +
+                            '<button type="button" class="btn blog-section-delete-btn">Remove</button></div>' +
+                            '<div class="field"><label>Button label</label>' +
+                            '<input class="blog-section-btn-label" type="text" value="' + escAttr(sec.label || "") + '" placeholder="e.g. Watch Video, Download PDF, Chat on WhatsApp\u2026"></div>' +
+                            '<div class="field"><label>URL (link opens in new tab)</label>' +
+                            '<input class="blog-section-btn-url" type="url" value="' + escAttr(sec.url || "") + '" placeholder="https://\u2026"></div>' +
+                            '<div class="field"><label>Style</label>' +
+                            '<select class="blog-section-btn-style">' +
+                            '<option value="solid"' + solidSel + '>Solid (filled)</option>' +
+                            '<option value="outline"' + outlineSel + '>Outline (bordered)</option>' +
+                            '</select></div>' +
+                            '<div class="blog-btn-preview-wrap"><span class="blog-btn-preview ' + previewCls + '">' + previewLabel + '</span></div>' +
+                            '</div>';
+                    }
                     if (sec.type === "image") {
                         return '<div class="blog-section-block" data-section-idx="' + i + '">' +
                             '<div class="blog-section-header"><strong>Image Section</strong>' +
@@ -1248,6 +1273,23 @@
                         if (!block) return;
                         postSections.splice(Number(block.getAttribute("data-section-idx")), 1);
                         renderPostSections();
+                    });
+                });
+
+                // Button sections: live preview update on label/style change
+                sectionsEl.querySelectorAll(".blog-section-btn-label, .blog-section-btn-style").forEach(function (el) {
+                    el.addEventListener("input", function () {
+                        var block = el.closest(".blog-section-block");
+                        if (!block) return;
+                        var labelEl = block.querySelector(".blog-section-btn-label");
+                        var styleEl = block.querySelector(".blog-section-btn-style");
+                        var previewEl = block.querySelector(".blog-btn-preview");
+                        if (!previewEl) return;
+                        if (labelEl) previewEl.textContent = labelEl.value || "Button";
+                        if (styleEl) {
+                            previewEl.classList.toggle("blog-btn-preview-solid", styleEl.value !== "outline");
+                            previewEl.classList.toggle("blog-btn-preview-outline", styleEl.value === "outline");
+                        }
                     });
                 });
 
@@ -1299,7 +1341,12 @@
                 sectionsEl.querySelectorAll(".blog-section-block").forEach(function (block) {
                     var idx = Number(block.getAttribute("data-section-idx"));
                     var sec = postSections[idx] || {};
-                    if (sec.type === "image") {
+                    if (sec.type === "button") {
+                        var lblEl = block.querySelector(".blog-section-btn-label");
+                        var btnUrlEl = block.querySelector(".blog-section-btn-url");
+                        var styEl = block.querySelector(".blog-section-btn-style");
+                        out.push({ type: "button", label: lblEl ? lblEl.value.trim() : (sec.label || ""), url: btnUrlEl ? btnUrlEl.value.trim() : (sec.url || ""), style: styEl ? styEl.value : (sec.style || "solid") });
+                    } else if (sec.type === "image") {
                         var urlEl = block.querySelector(".blog-section-image-url");
                         var capEl = block.querySelector(".blog-section-caption");
                         out.push({ type: "image", url: urlEl ? urlEl.value.trim() : (sec.url || ""), caption: capEl ? capEl.value.trim() : (sec.caption || "") });
@@ -1977,8 +2024,15 @@
                 postSections = sections;
                 renderPostSections();
             });
+            var blogAddButtonSectionBtn = document.getElementById("blog-add-button-section-btn");
+            if (blogAddButtonSectionBtn) blogAddButtonSectionBtn.addEventListener("click", function () {
+                var sections = collectPostSections();
+                sections.push({ type: "button", label: "", url: "", style: "solid" });
+                postSections = sections;
+                renderPostSections();
+            });
 
-            // Post editor: cover image — Browse Library
+            // Post editor: cover image ? Browse Library
             var blogPostCoverBrowseBtn = document.getElementById("blog-post-cover-browse-btn");
             if (blogPostCoverBrowseBtn) blogPostCoverBrowseBtn.addEventListener("click", function () {
                 openMediaLibrary(function (url) {
