@@ -73,7 +73,14 @@
             align-items: center;
         }
         .blog-hero.has-bg-image .container { width: 100%; }
-        @media (max-width: 600px) { .blog-hero.has-bg-image { min-height: 280px; } }
+        @media (max-width: 768px) {
+            .blog-hero.has-bg-image {
+                min-height: 240px;
+                padding-top: 36px;
+                padding-bottom: 32px;
+                background-position: center 25%;
+            }
+        }
         .blog-hero.has-bg-image::before {
             content: "";
             position: absolute;
