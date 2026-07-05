@@ -13,9 +13,19 @@
     <style>
         html, body { overflow-x: hidden; }
         body { background: #ffffff; font-family: "Montserrat", system-ui, sans-serif; }
-        .site-main { animation: pageFadeIn 0.8s ease forwards; }
+        .site-main { animation: pageFadeIn 0.7s ease forwards; }
         @keyframes pageFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) { .site-main { animation: none; } }
+        @keyframes imgReveal {
+            from { opacity: 0; transform: scale(1.04); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes sectionFadeUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .site-main, .post-cover, .post-section, .post-section-image { animation: none !important; }
+        }
 
         @media (min-width: 769px) {
             .primary-menu { display: flex !important; list-style: none; gap: 30px; margin: 0; padding: 0; }
@@ -24,7 +34,7 @@
 
         /* ── Back link ── */
         .post-back {
-            padding: 24px 0 0;
+            padding: 28px 0 0;
         }
         .post-back a {
             display: inline-flex;
@@ -34,76 +44,88 @@
             font-weight: 700;
             color: #000;
             text-decoration: none;
+            transition: opacity 0.2s;
         }
-        .post-back a:hover { text-decoration: underline; }
+        .post-back a:hover { opacity: 0.65; }
         .post-back a::before { content: "←"; }
 
         /* ── Post header ── */
         .post-header {
-            padding: 32px 0 24px;
+            padding: 36px 0 28px;
         }
         .post-date {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #888;
-            margin-bottom: 12px;
+            letter-spacing: 0.1em;
+            color: #999;
+            margin-bottom: 14px;
         }
         .post-title {
-            font-size: clamp(26px, 4.5vw, 48px);
+            font-size: clamp(26px, 4.5vw, 52px);
             font-weight: 800;
-            line-height: 1.15;
+            line-height: 1.12;
             color: #000;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
         .post-excerpt {
-            font-size: 17px;
+            font-size: 18px;
             color: #555;
-            line-height: 1.6;
-            max-width: 700px;
+            line-height: 1.65;
+            max-width: 680px;
         }
 
         /* ── Cover image ── */
         .post-cover {
             width: 100%;
-            max-height: 480px;
+            max-height: 500px;
             object-fit: cover;
-            border-radius: 14px;
+            border-radius: 16px;
             display: block;
-            margin-bottom: 48px;
+            margin-bottom: 52px;
             background: #f0f0f0;
+            animation: imgReveal 0.9s ease 0.25s both;
         }
 
         /* ── Content sections ── */
         .post-content { max-width: 760px; }
-        .post-section { margin-bottom: 40px; }
+        .post-section {
+            margin-bottom: 44px;
+            animation: sectionFadeUp 0.65s ease calc(var(--i, 0) * 100ms) both;
+        }
         .post-section-heading {
-            font-size: clamp(20px, 3vw, 28px);
-            font-weight: 700;
-            line-height: 1.25;
+            font-size: clamp(20px, 3vw, 30px);
+            font-weight: 800;
+            line-height: 1.2;
             color: #000;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
         .post-section-body {
             font-size: 16px;
-            line-height: 1.75;
+            line-height: 1.8;
             color: #333;
             white-space: pre-wrap;
             word-break: break-word;
         }
         .post-section-image {
             width: 100%;
-            max-height: 480px;
+            max-height: 500px;
             object-fit: cover;
-            border-radius: 12px;
+            border-radius: 14px;
             display: block;
             margin-bottom: 10px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            animation: imgReveal 0.85s ease calc(var(--i, 0) * 100ms + 150ms) both;
+        }
+        .post-section-image:hover {
+            transform: scale(1.015);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.12);
         }
         .post-section-caption {
             font-size: 12px;
-            color: #888;
+            color: #999;
             text-align: center;
-            margin-top: 4px;
+            margin-top: 8px;
+            font-style: italic;
         }
         .post-section-btn-wrap {
             display: flex;
@@ -143,19 +165,30 @@
         body.theme-bold .primary-menu { background: #111; }
         body.theme-bold .primary-menu a { color: #fff; }
         body.theme-bold .post-back a { color: #ffdb00; }
-        body.theme-bold .post-title { color: #fff; }
-        body.theme-bold .post-date { color: #666; }
+        body.theme-bold .post-back a:hover { opacity: 0.75; }
+        body.theme-bold .post-date { color: #555; }
+        body.theme-bold .post-title { color: #f5f5f5; }
         body.theme-bold .post-excerpt { color: #aaa; }
         body.theme-bold .post-section-heading { color: #ffdb00; }
         body.theme-bold .post-section-body { color: #ccc; }
-        body.theme-bold .post-section-caption { color: #666; }
-        body.theme-bold .site-footer { background: #000; border-top: 1px solid #222; }
+        body.theme-bold .post-section-caption { color: #555; }
+        body.theme-bold .post-cover { border-color: #1e1e1e; }
+        body.theme-bold .post-section-image { border-radius: 14px; }
+        body.theme-bold .post-section-image:hover { box-shadow: 0 12px 36px rgba(255,219,0,0.08); }
+        body.theme-bold .site-footer { background: #000; border-top: 1px solid #1e1e1e; }
         body.theme-bold .site-footer, body.theme-bold .site-footer a,
-        body.theme-bold .site-footer h3, body.theme-bold .site-footer h4 { color: #ccc; }
-        body.theme-bold .footer-bottom { color: #666; }
+        body.theme-bold .site-footer h3, body.theme-bold .site-footer h4 { color: #bbb; }
+        body.theme-bold .footer-bottom { color: #555; }
 
         /* ── Theme: Magazine ── */
-        body.theme-magazine .post-back a { color: #000; }
+        body.theme-magazine .post-back a { color: #000; background: #ffdb00; padding: 6px 16px; border-radius: 999px; }
+        body.theme-magazine .post-back a:hover { opacity: 0.8; }
+        body.theme-magazine .post-back a::before { margin-right: 4px; }
+        body.theme-magazine .post-date { color: #555; }
+        body.theme-magazine .post-title { color: #000; }
+        body.theme-magazine .post-excerpt { color: #333; }
+        body.theme-magazine .post-section-heading { color: #000; }
+        body.theme-magazine .post-section-body { color: #333; }
     </style>
 </head>
 <body class="pa-supabase-page theme-minimal">
@@ -332,34 +365,39 @@
                         var parsed = JSON.parse(String(post.content));
                         var sections = (parsed && Array.isArray(parsed.sections)) ? parsed.sections : [];
                         if (sections.length) {
+                            var si = 0;
                             contentEl.innerHTML = sections.map(function (sec) {
                                 if (!sec) return "";
+                                var idx = si;
+                                var result;
                                 if (sec.type === "button") {
                                     if (!sec.url && !sec.label) return "";
                                     var btnCls = sec.style === "outline" ? "post-section-btn-outline" : "post-section-btn-solid";
-                                    return '<div class="post-section">' +
+                                    result = '<div class="post-section" style="--i:' + idx + '">' +
                                         '<div class="post-section-btn-wrap">' +
                                         '<a class="post-section-btn ' + btnCls + '" href="' + esc(sec.url || "#") + '" target="_blank" rel="noopener noreferrer">' + esc(sec.label || "Learn More") + '</a>' +
                                         '</div></div>';
-                                }
-                                if (sec.type === "image") {
+                                } else if (sec.type === "image") {
                                     if (!sec.url) return "";
-                                    return '<div class="post-section">' +
+                                    result = '<div class="post-section" style="--i:' + idx + '">' +
                                         '<img class="post-section-image" src="' + esc(sec.url) + '" alt="' + esc(sec.caption || "") + '" loading="lazy">' +
                                         (sec.caption ? '<p class="post-section-caption">' + esc(sec.caption) + '</p>' : '') +
                                         '</div>';
+                                } else {
+                                    var hasHeading = sec.heading && String(sec.heading).trim();
+                                    var hasBody = sec.body && String(sec.body).trim();
+                                    if (!hasHeading && !hasBody) return "";
+                                    result = '<div class="post-section" style="--i:' + idx + '">' +
+                                        (hasHeading ? '<h2 class="post-section-heading">' + esc(sec.heading) + '</h2>' : '') +
+                                        (hasBody ? '<p class="post-section-body">' + esc(sec.body) + '</p>' : '') +
+                                        '</div>';
                                 }
-                                var hasHeading = sec.heading && String(sec.heading).trim();
-                                var hasBody = sec.body && String(sec.body).trim();
-                                if (!hasHeading && !hasBody) return "";
-                                return '<div class="post-section">' +
-                                    (hasHeading ? '<h2 class="post-section-heading">' + esc(sec.heading) + '</h2>' : '') +
-                                    (hasBody ? '<p class="post-section-body">' + esc(sec.body) + '</p>' : '') +
-                                    '</div>';
+                                if (result) si++;
+                                return result;
                             }).filter(Boolean).join("");
                         }
                     } catch (e) {
-                        if (post.content) contentEl.innerHTML = '<div class="post-section"><p class="post-section-body">' + esc(post.content) + '</p></div>';
+                        if (post.content) contentEl.innerHTML = '<div class="post-section" style="--i:0"><p class="post-section-body">' + esc(post.content) + '</p></div>';
                     }
                 }
             }
