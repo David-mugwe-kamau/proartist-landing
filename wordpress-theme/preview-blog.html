@@ -68,7 +68,12 @@
             background-size: cover;
             background-position: center;
             position: relative;
+            min-height: 440px;
+            display: flex;
+            align-items: center;
         }
+        .blog-hero.has-bg-image .container { width: 100%; }
+        @media (max-width: 600px) { .blog-hero.has-bg-image { min-height: 280px; } }
         .blog-hero.has-bg-image::before {
             content: "";
             position: absolute;
