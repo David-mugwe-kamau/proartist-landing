@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="proartist-theme/assets/css/main.css">
     <style>
-        /* ── Base ── */
+        /* -- Base -- */
         html, body { overflow-x: hidden; }
         body { background: #ffffff; font-family: "Montserrat", system-ui, sans-serif; }
         .site-main { animation: pageFadeIn 0.8s ease forwards; }
@@ -23,7 +23,7 @@
         }
         .primary-menu a { text-transform: uppercase; font-weight: 600; font-size: 14px; letter-spacing: 0.05em; }
 
-        /* ── Blog Hero ── */
+        /* -- Blog Hero -- */
         .blog-hero {
             padding: 64px 0 40px;
             text-align: center;
@@ -43,7 +43,7 @@
             line-height: 1.6;
         }
 
-        /* ── Posts grid ── */
+        /* -- Posts grid -- */
         .blog-posts-section { padding: 0 0 80px; }
         .blog-posts-grid {
             display: grid;
@@ -123,7 +123,7 @@
             font-weight: 700;
             color: #000;
         }
-        .blog-card-read::after { content: "→"; }
+        .blog-card-read::after { content: "?"; }
 
         .blog-empty {
             text-align: center;
@@ -158,12 +158,12 @@
         .skel-text { height: 11px; }
         .skel-text-short { width: 55%; }
 
-        /* ── Theme: Minimal (default — white, editorial) ── */
+        /* -- Theme: Minimal (default � white, editorial) -- */
         body.theme-minimal .blog-hero { background: #fff; }
         body.theme-minimal .blog-card { border: 1px solid #eee; }
         body.theme-minimal .blog-card-read { color: #000; }
 
-        /* ── Theme: Magazine (yellow branded header, bold cards) ── */
+        /* -- Theme: Magazine (yellow branded header, bold cards) -- */
         body.theme-magazine .blog-hero {
             background: #ffdb00;
             padding-bottom: 48px;
@@ -184,7 +184,7 @@
         }
         body.theme-magazine .blog-card-read::after { content: ""; }
 
-        /* ── Theme: Bold (black background, yellow accents) ── */
+        /* -- Theme: Bold (black background, yellow accents) -- */
         body.theme-bold {
             background: #0a0a0a;
         }
@@ -303,7 +303,7 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="proartist-theme/assets/js/supabase.min.js"></script>
     <script src="proartist-theme/assets/js/main.js"></script>
     <script>
         (function () {

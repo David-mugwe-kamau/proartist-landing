@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -831,7 +831,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="proartist-theme/assets/js/supabase.min.js"></script>
     <script>
         (function () {
             "use strict";
@@ -846,7 +846,7 @@
             const SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
             const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
 
-            /** nav id → site_content.section_key (null = dashboard only) */
+            /** nav id ? site_content.section_key (null = dashboard only) */
             const NAV_TO_KEY = {
                 dashboard: null,
                 home: "home_hero",
@@ -1978,7 +1978,7 @@
                 renderPostSections();
             });
 
-            // Post editor: cover image — Browse Library
+            // Post editor: cover image � Browse Library
             var blogPostCoverBrowseBtn = document.getElementById("blog-post-cover-browse-btn");
             if (blogPostCoverBrowseBtn) blogPostCoverBrowseBtn.addEventListener("click", function () {
                 openMediaLibrary(function (url) {
