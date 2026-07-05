@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ProArtist Africa - Article</title>
+    <link rel="preconnect" href="https://qckpjmoajhskxrfcsvpa.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="proartist-theme/assets/css/main.css">
     <style>
@@ -371,17 +375,15 @@
             if (!postId) {
                 showNotFound();
             } else {
-                // Load footer settings and blog theme in parallel
-                client.from("site_content").select("title,subtitle,button_primary,button_secondary")
-                    .eq("section_key", "settings").maybeSingle()
-                    .then(function (res) { if (!res.error && res.data) applyFooterSettings(res.data); });
-
-                client.from("site_content").select("button_primary")
-                    .eq("section_key", "blog").maybeSingle()
+                // Load both site_content rows in one query
+                client.from("site_content").select("section_key,title,subtitle,button_primary,button_secondary")
+                    .in("section_key", ["blog", "settings"])
                     .then(function (res) {
-                        if (!res.error && res.data && res.data.button_primary) {
-                            applyTheme(String(res.data.button_primary).trim());
-                        }
+                        if (res.error || !res.data) return;
+                        res.data.forEach(function (row) {
+                            if (row.section_key === "settings") applyFooterSettings(row);
+                            if (row.section_key === "blog" && row.button_primary) applyTheme(String(row.button_primary).trim());
+                        });
                     });
 
                 // Load the specific post

@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ProArtist Africa - Blog</title>
+    <link rel="preconnect" href="https://qckpjmoajhskxrfcsvpa.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="proartist-theme/assets/css/main.css">
     <style>
@@ -130,6 +134,30 @@
         .blog-empty h2 { font-size: 22px; margin-bottom: 10px; color: #333; }
         .blog-empty p { font-size: 15px; }
 
+        /* Skeleton loading cards */
+        @keyframes shimmer {
+            0% { background-position: -600px 0; }
+            100% { background-position: 600px 0; }
+        }
+        .blog-card-skeleton {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            background: #fff;
+        }
+        .skel {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 600px 100%;
+            animation: shimmer 1.4s infinite linear;
+            border-radius: 6px;
+        }
+        .skel-cover { width: 100%; aspect-ratio: 16/9; border-radius: 0; }
+        .skel-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .skel-line { height: 12px; }
+        .skel-title { height: 18px; width: 80%; }
+        .skel-text { height: 11px; }
+        .skel-text-short { width: 55%; }
+
         /* ── Theme: Minimal (default — white, editorial) ── */
         body.theme-minimal .blog-hero { background: #fff; }
         body.theme-minimal .blog-card { border: 1px solid #eee; }
@@ -231,9 +259,9 @@
         <section class="blog-posts-section">
             <div class="container" style="max-width:1200px;">
                 <div id="blog-posts-grid" class="blog-posts-grid">
-                    <div class="blog-empty">
-                        <p>Loading articles&hellip;</p>
-                    </div>
+                    <div class="blog-card-skeleton"><div class="skel skel-cover"></div><div class="skel-body"><div class="skel skel-line skel-text skel-text-short"></div><div class="skel skel-line skel-title"></div><div class="skel skel-line skel-text"></div><div class="skel skel-line skel-text skel-text-short"></div></div></div>
+                    <div class="blog-card-skeleton"><div class="skel skel-cover"></div><div class="skel-body"><div class="skel skel-line skel-text skel-text-short"></div><div class="skel skel-line skel-title"></div><div class="skel skel-line skel-text"></div><div class="skel skel-line skel-text skel-text-short"></div></div></div>
+                    <div class="blog-card-skeleton"><div class="skel skel-cover"></div><div class="skel-body"><div class="skel skel-line skel-text skel-text-short"></div><div class="skel skel-line skel-title"></div><div class="skel skel-line skel-text"></div><div class="skel skel-line skel-text skel-text-short"></div></div></div>
                 </div>
             </div>
         </section>
@@ -375,25 +403,25 @@
                 }).join("");
             }
 
-            // Load footer settings
-            client.from("site_content").select("title,subtitle,button_primary,button_secondary")
-                .eq("section_key", "settings").maybeSingle()
-                .then(function (res) { if (!res.error && res.data) applyFooterSettings(res.data); });
-
-            // Load blog page settings (hero + theme)
-            client.from("site_content").select("title,subtitle,button_primary")
-                .eq("section_key", "blog").maybeSingle()
+            // Load site_content rows for both 'blog' and 'settings' in one query
+            client.from("site_content").select("section_key,title,subtitle,button_primary,button_secondary")
+                .in("section_key", ["blog", "settings"])
                 .then(function (res) {
                     if (res.error || !res.data) return;
-                    var data = res.data;
-                    var heroTitle = document.getElementById("blog-hero-title");
-                    var heroSubtitle = document.getElementById("blog-hero-subtitle");
-                    if (heroTitle && data.title) {
-                        var lines = String(data.title).split(/\n+/);
-                        heroTitle.innerHTML = lines.map(function (l) { return esc(l.trim()); }).filter(Boolean).join("<br>");
-                    }
-                    if (heroSubtitle && data.subtitle) heroSubtitle.textContent = data.subtitle;
-                    if (data.button_primary) applyTheme(String(data.button_primary).trim());
+                    res.data.forEach(function (row) {
+                        if (row.section_key === "settings") {
+                            applyFooterSettings(row);
+                        } else if (row.section_key === "blog") {
+                            var heroTitle = document.getElementById("blog-hero-title");
+                            var heroSubtitle = document.getElementById("blog-hero-subtitle");
+                            if (heroTitle && row.title) {
+                                var lines = String(row.title).split(/\n+/);
+                                heroTitle.innerHTML = lines.map(function (l) { return esc(l.trim()); }).filter(Boolean).join("<br>");
+                            }
+                            if (heroSubtitle && row.subtitle) heroSubtitle.textContent = row.subtitle;
+                            if (row.button_primary) applyTheme(String(row.button_primary).trim());
+                        }
+                    });
                 });
 
             // Load published posts
