@@ -63,6 +63,44 @@
             animation: textFadeUp 0.75s ease 0.32s both;
         }
 
+        /* -- Hero background image (optional) -- */
+        .blog-hero.has-bg-image {
+            background-image: var(--hero-bg);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .blog-hero.has-bg-image::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.48);
+            border-radius: inherit;
+        }
+        .blog-hero.has-bg-image .container { position: relative; z-index: 1; }
+        .blog-hero.has-bg-image h1 { color: #fff; }
+        .blog-hero.has-bg-image p  { color: rgba(255,255,255,0.88); }
+
+        /* -- Hero CTA button (optional) -- */
+        #blog-hero-cta-wrap { animation: textFadeUp 0.7s ease 0.48s both; }
+        .blog-hero-cta {
+            display: inline-block;
+            margin-top: 26px;
+            padding: 14px 36px;
+            border-radius: 999px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: "Montserrat", system-ui, sans-serif;
+            background: #ffdb00;
+            color: #000;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .blog-hero-cta:hover { opacity: 0.88; transform: translateY(-2px); }
+        body.theme-bold    .blog-hero-cta { background: #ffdb00; color: #000; }
+        body.theme-magazine .blog-hero-cta { background: #000; color: #ffdb00; }
+        .blog-hero.has-bg-image .blog-hero-cta { background: #fff; color: #000; }
+
         /* -- Posts grid -- */
         .blog-posts-section { padding: 32px 0 80px; }
         .blog-posts-grid {
@@ -300,6 +338,7 @@
             <div class="container" style="max-width:900px;">
                 <h1 id="blog-hero-title"></h1>
                 <p id="blog-hero-subtitle"></p>
+                <div id="blog-hero-cta-wrap"></div>
             </div>
         </section>
 
@@ -468,6 +507,24 @@
                             }
                             if (heroSubtitle && row.subtitle) heroSubtitle.textContent = row.subtitle;
                             if (row.button_primary) applyTheme(String(row.button_primary).trim());
+
+                            // Apply optional hero image and CTA button from button_secondary JSON
+                            var heroExtras = null;
+                            try { if (row.button_secondary) heroExtras = JSON.parse(String(row.button_secondary)); } catch (e) {}
+                            if (heroExtras) {
+                                if (heroExtras.hero_image_url) {
+                                    var heroEl = document.querySelector(".blog-hero");
+                                    if (heroEl) {
+                                        heroEl.classList.add("has-bg-image");
+                                        heroEl.style.setProperty("--hero-bg", "url(\"" + heroExtras.hero_image_url.replace(/"/g, "%22") + "\")");
+                                    }
+                                }
+                                var ctaWrap = document.getElementById("blog-hero-cta-wrap");
+                                if (ctaWrap && heroExtras.cta_label) {
+                                    var ctaHref = heroExtras.cta_url ? esc(heroExtras.cta_url) : "#blog-posts-grid";
+                                    ctaWrap.innerHTML = "<a class=\"blog-hero-cta\" href=\"" + ctaHref + "\">" + esc(heroExtras.cta_label) + "</a>";
+                                }
+                            }
                         }
                     });
                 });

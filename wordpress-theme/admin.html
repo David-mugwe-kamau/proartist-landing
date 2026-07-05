@@ -705,6 +705,37 @@
                                         <label for="blog-page-subtitle">Blog page subtitle</label>
                                         <textarea id="blog-page-subtitle" rows="3" placeholder="Short intro shown below the title on the blog page."></textarea>
                                     </div>
+                                    <!-- Optional: Hero Background Image -->
+                                    <div class="field" style="border-top:1px solid var(--border);padding-top:18px;margin-top:4px;">
+                                        <label>Hero Background Image <small style="font-weight:400;color:var(--muted);">— optional</small></label>
+                                        <div id="blog-hero-img-preview-wrap" style="display:none;margin-bottom:10px;">
+                                            <img id="blog-hero-img-preview" src="" alt="" style="max-width:100%;max-height:180px;object-fit:cover;border-radius:8px;display:block;">
+                                        </div>
+                                        <div class="btn-row" style="padding-top:0;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+                                            <label class="btn" style="cursor:pointer;margin:0;">Upload Image<input type="file" id="blog-hero-img-file" accept="image/*" style="display:none;"></label>
+                                            <button type="button" class="btn" id="blog-hero-img-browse-btn">Browse Library</button>
+                                            <button type="button" class="btn" id="blog-hero-img-remove-btn" style="display:none;background:#fef2f2;color:#dc2626;border-color:#fca5a5;">Remove Image</button>
+                                        </div>
+                                        <input type="hidden" id="blog-hero-img-url">
+                                        <p class="helper" style="margin-top:4px;">Shows as the hero section background. Leave blank for the theme colour.</p>
+                                    </div>
+
+                                    <!-- Optional: Hero CTA Button -->
+                                    <div class="field" style="border-top:1px solid var(--border);padding-top:18px;margin-top:4px;">
+                                        <label>Hero Button <small style="font-weight:400;color:var(--muted);">— optional</small></label>
+                                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                                            <div>
+                                                <label for="blog-hero-cta-label" style="font-size:12px;margin-bottom:4px;display:block;color:var(--muted);">Button label</label>
+                                                <input id="blog-hero-cta-label" type="text" placeholder="e.g. Explore All Posts">
+                                            </div>
+                                            <div>
+                                                <label for="blog-hero-cta-url" style="font-size:12px;margin-bottom:4px;display:block;color:var(--muted);">Button URL</label>
+                                                <input id="blog-hero-cta-url" type="url" placeholder="e.g. https://...">
+                                            </div>
+                                        </div>
+                                        <p class="helper" style="margin-top:6px;">A call-to-action button shown below the hero subtitle. Leave both blank to hide it.</p>
+                                    </div>
+
                                     <div class="field">
                                         <label>Visual theme</label>
                                         <div class="blog-theme-picker">
@@ -1100,10 +1131,28 @@
 
             // -- Blog CMS: page settings -----------------------------------------------
 
+            function setHeroImgPreview(url) {
+                var wrap = document.getElementById("blog-hero-img-preview-wrap");
+                var img  = document.getElementById("blog-hero-img-preview");
+                var rem  = document.getElementById("blog-hero-img-remove-btn");
+                var inp  = document.getElementById("blog-hero-img-url");
+                if (!wrap || !img) return;
+                if (url) {
+                    img.src = url;
+                    wrap.style.display = "block";
+                    if (rem) rem.style.display = "";
+                } else {
+                    img.src = "";
+                    wrap.style.display = "none";
+                    if (rem) rem.style.display = "none";
+                }
+                if (inp) inp.value = url || "";
+            }
+
             async function loadBlogPageSettings() {
                 const { data, error } = await client
                     .from("site_content")
-                    .select("title, subtitle, button_primary, updated_at")
+                    .select("title, subtitle, button_primary, button_secondary, updated_at")
                     .eq("section_key", BLOG_KEY)
                     .maybeSingle();
 
@@ -1118,6 +1167,15 @@
                 if (titleEl) titleEl.value = (data && data.title) ? data.title : "";
                 if (subtitleEl) subtitleEl.value = (data && data.subtitle) ? data.subtitle : "";
                 setActiveBlogTheme((data && data.button_primary) ? data.button_primary : "minimal");
+
+                // Parse hero extras (image + CTA button) from button_secondary JSON
+                var extras = null;
+                try { if (data && data.button_secondary) extras = JSON.parse(String(data.button_secondary)); } catch (e) {}
+                setHeroImgPreview(extras && extras.hero_image_url ? extras.hero_image_url : "");
+                var ctaLabelEl = document.getElementById("blog-hero-cta-label");
+                var ctaUrlEl   = document.getElementById("blog-hero-cta-url");
+                if (ctaLabelEl) ctaLabelEl.value = (extras && extras.cta_label) ? extras.cta_label : "";
+                if (ctaUrlEl)   ctaUrlEl.value   = (extras && extras.cta_url)   ? extras.cta_url   : "";
 
                 var updatedAt = data && data.updated_at ? data.updated_at : null;
                 lastMetaStatus = data ? "In database" : "New (not saved yet)";
@@ -1140,11 +1198,24 @@
                 setStatus("Saving settings...", "warn");
                 if (settingsHelper) settingsHelper.textContent = "Saving\u2026";
 
+                // Collect optional hero image + CTA button
+                var heroImgUrlEl = document.getElementById("blog-hero-img-url");
+                var ctaLabelEl   = document.getElementById("blog-hero-cta-label");
+                var ctaUrlEl     = document.getElementById("blog-hero-cta-url");
+                var heroImgUrl   = heroImgUrlEl ? heroImgUrlEl.value.trim() : "";
+                var ctaLabel     = ctaLabelEl   ? ctaLabelEl.value.trim()   : "";
+                var ctaUrl       = ctaUrlEl     ? ctaUrlEl.value.trim()     : "";
+                var extras = {};
+                if (heroImgUrl) extras.hero_image_url = heroImgUrl;
+                if (ctaLabel)   extras.cta_label      = ctaLabel;
+                if (ctaUrl)     extras.cta_url        = ctaUrl;
+
                 var payload = {
                     section_key: BLOG_KEY,
                     title: title,
                     subtitle: subtitle,
                     button_primary: theme,
+                    button_secondary: Object.keys(extras).length > 0 ? JSON.stringify(extras) : null,
                     updated_at: new Date().toISOString()
                 };
 
@@ -2400,6 +2471,36 @@
                 await client.auth.signOut();
                 window.location.href = "login.html";
             });
+
+            // ── Hero image upload / browse / remove ───────────────────────────────
+            var blogHeroImgFile = document.getElementById("blog-hero-img-file");
+            if (blogHeroImgFile) {
+                blogHeroImgFile.addEventListener("change", async function () {
+                    var file = this.files && this.files[0] ? this.files[0] : null;
+                    if (!file) return;
+                    setStatus("Uploading hero image\u2026", "warn");
+                    var uuid = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : String(Date.now());
+                    var safeName = (file.name || "hero").replace(/[^\w.\-]+/g, "_");
+                    var key = "hero/" + uuid + "_" + safeName;
+                    var upRes = await client.storage.from(BLOG_IMAGE_BUCKET).upload(key, file, { upsert: true, contentType: file.type || "application/octet-stream" });
+                    if (upRes.error) { setStatus("Upload failed", "error"); setHelper(upRes.error.message || "Could not upload."); return; }
+                    var pub = client.storage.from(BLOG_IMAGE_BUCKET).getPublicUrl(key);
+                    var publicUrl = pub && pub.data && pub.data.publicUrl ? pub.data.publicUrl : "";
+                    if (publicUrl) { setHeroImgPreview(publicUrl); setStatus("Uploaded \u2014 save settings to apply", null); }
+                    this.value = "";
+                });
+            }
+            var blogHeroImgBrowseBtn = document.getElementById("blog-hero-img-browse-btn");
+            if (blogHeroImgBrowseBtn) {
+                blogHeroImgBrowseBtn.addEventListener("click", function () {
+                    openMediaLibrary(function (url) { setHeroImgPreview(url); });
+                });
+            }
+            var blogHeroImgRemoveBtn = document.getElementById("blog-hero-img-remove-btn");
+            if (blogHeroImgRemoveBtn) {
+                blogHeroImgRemoveBtn.addEventListener("click", function () { setHeroImgPreview(""); });
+            }
+            // ─────────────────────────────────────────────────────────────────────────
 
             // ?? Storage usage warning ??????????????????????????????????????????????
             async function checkStorageUsage() {
