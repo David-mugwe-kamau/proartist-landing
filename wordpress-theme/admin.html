@@ -977,12 +977,14 @@
                 home: { title: "Home", desc: "Edit home hero and buttons" },
                 investors: { title: "Investors", desc: "Investors page copy" },
                 brands: { title: "Brands", desc: "Brands page copy" },
-                jobs: { title: "Jobs", desc: "Jobs page copy" },
+                jobs: { title: "Jobs", desc: "Edit Apply Now links" },
                 blog: { title: "Blog", desc: "Hero, image, and optional flexible blocks" },
                 analytics: { title: "Analytics", desc: "Analytics labels and links" }
             };
 
-            const COMING_SOON_NAV = new Set(["home", "investors", "brands", "jobs"]);
+            const COMING_SOON_NAV = new Set(["home", "investors", "brands"]);
+            const JOBS_DEFAULT_APPLY_ARTISTS = "https://forms.gle/LMRh3Bo8zr2DeLnJA";
+            const JOBS_DEFAULT_APPLY_COORDINATORS = "https://forms.gle/Pagqt6LzBEJCrZGz7";
 
             const EDITOR_LABELS = {
                 home_hero: {
@@ -1010,12 +1012,12 @@
                     d: "Secondary CTA"
                 },
                 jobs: {
-                    heading: "Jobs Content",
-                    sub: "Headline, intro, and call-to-action labels.",
+                    heading: "Jobs Apply Links",
+                    sub: "Update the Apply Now form links for each role. Paste any URL (Google Form, Drive, etc.).",
                     a: "Headline",
                     b: "Intro / body",
-                    c: "Primary CTA",
-                    d: "Secondary CTA"
+                    c: "Professional Artists — Apply Now URL",
+                    d: "Location Coordinators — Apply Now URL"
                 },
                 blog: {
                     heading: "Blog page",
@@ -2092,6 +2094,14 @@
                 labelB.textContent = L.b;
                 labelC.textContent = L.c;
                 labelD.textContent = L.d;
+                // Jobs editor is link-only: hide unused title/subtitle fields
+                var hideTextFields = sectionKey === "jobs";
+                if (titleInput && titleInput.closest) {
+                    var fieldA = titleInput.closest(".field");
+                    var fieldB = subtitleInput ? subtitleInput.closest(".field") : null;
+                    if (fieldA) fieldA.style.display = hideTextFields ? "none" : "";
+                    if (fieldB) fieldB.style.display = hideTextFields ? "none" : "";
+                }
             }
 
             function updateMeta(sectionKey, updatedAtIso) {
@@ -2277,8 +2287,17 @@
                 if (blogStorageCard) blogStorageCard.classList.add("is-hidden");
                 titleInput.value = (data && data.title) ? data.title : "";
                 subtitleInput.value = (data && data.subtitle) ? data.subtitle : "";
-                primaryBtnInput.value = (data && data.button_primary) ? data.button_primary : "";
-                secondaryBtnInput.value = (data && data.button_secondary) ? data.button_secondary : "";
+                if (sectionKey === "jobs") {
+                    primaryBtnInput.value = (data && data.button_primary)
+                        ? data.button_primary
+                        : JOBS_DEFAULT_APPLY_ARTISTS;
+                    secondaryBtnInput.value = (data && data.button_secondary)
+                        ? data.button_secondary
+                        : JOBS_DEFAULT_APPLY_COORDINATORS;
+                } else {
+                    primaryBtnInput.value = (data && data.button_primary) ? data.button_primary : "";
+                    secondaryBtnInput.value = (data && data.button_secondary) ? data.button_secondary : "";
+                }
 
                 const updated = data && data.updated_at ? data.updated_at : null;
                 lastMetaStatus = data ? "In database" : "New (defaults)";

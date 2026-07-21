@@ -85,7 +85,7 @@
                         <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #000000;">Artists</div>
                     </div>
 
-                    <a href="https://forms.gle/LMRh3Bo8zr2DeLnJA" target="_blank" rel="noopener noreferrer" class="btn" style="background: #000000; color: #ffffff; border: none; width: fit-content; padding: 12px 32px;">Apply Now</a>
+                    <a id="jobs-apply-artists" href="https://forms.gle/LMRh3Bo8zr2DeLnJA" target="_blank" rel="noopener noreferrer" class="btn" style="background: #000000; color: #ffffff; border: none; width: fit-content; padding: 12px 32px;">Apply Now</a>
                 </div>
                 <div class="jobs-image-carousel" style="display: flex; align-items: center; justify-content: flex-end; width: 100%; max-width: 100%; overflow: hidden;">
                     <div class="jobs-image-carousel-track">
@@ -115,7 +115,7 @@
                         <div style="font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #000000;">Coordinators</div>
                     </div>
 
-                    <a href="https://forms.gle/Pagqt6LzBEJCrZGz7" target="_blank" rel="noopener noreferrer" class="btn" style="background: #000000; color: #ffffff; border: none; width: fit-content; padding: 12px 32px;">Apply Now</a>
+                    <a id="jobs-apply-coordinators" href="https://forms.gle/Pagqt6LzBEJCrZGz7" target="_blank" rel="noopener noreferrer" class="btn" style="background: #000000; color: #ffffff; border: none; width: fit-content; padding: 12px 32px;">Apply Now</a>
                 </div>
                 <div class="jobs-image-carousel" style="display: flex; align-items: center; justify-content: flex-end; width: 100%; max-width: 100%; overflow: hidden;">
                     <div class="jobs-image-carousel-track">
@@ -163,12 +163,36 @@
             </div>
         </div>
     </footer>
+    <script src="proartist-theme/assets/js/supabase.min.js"></script>
     <script src="proartist-theme/assets/js/main.js"></script>
     <script>
         const y = document.getElementById('year');
         if (y) {
             y.textContent = new Date().getFullYear();
         }
+
+        (function () {
+            var SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
+            var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
+            if (typeof window.supabase === "undefined") return;
+            var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            client.from("site_content")
+                .select("button_primary,button_secondary")
+                .eq("section_key", "jobs")
+                .maybeSingle()
+                .then(function (res) {
+                    var data = res && res.data ? res.data : null;
+                    if (!data) return;
+                    var artists = document.getElementById("jobs-apply-artists");
+                    var coordinators = document.getElementById("jobs-apply-coordinators");
+                    if (artists && data.button_primary && String(data.button_primary).trim()) {
+                        artists.href = String(data.button_primary).trim();
+                    }
+                    if (coordinators && data.button_secondary && String(data.button_secondary).trim()) {
+                        coordinators.href = String(data.button_secondary).trim();
+                    }
+                });
+        })();
     </script>
 </body>
 </html>
