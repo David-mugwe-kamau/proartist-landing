@@ -1013,7 +1013,7 @@
                 },
                 jobs: {
                     heading: "Jobs Apply Links",
-                    sub: "Update the Apply Now form links for each role. Paste any URL (Google Form, Drive, etc.).",
+                    sub: "Paste any link for each Apply Now button — Google Form, Drive, YouTube, WhatsApp, website, mailto:, tel:, or any other URL.",
                     a: "Headline",
                     b: "Intro / body",
                     c: "Professional Artists — Apply Now URL",
@@ -2102,6 +2102,33 @@
                     if (fieldA) fieldA.style.display = hideTextFields ? "none" : "";
                     if (fieldB) fieldB.style.display = hideTextFields ? "none" : "";
                 }
+                if (primaryBtnInput) {
+                    primaryBtnInput.setAttribute("type", "text");
+                    primaryBtnInput.setAttribute("inputmode", "url");
+                    primaryBtnInput.removeAttribute("pattern");
+                    primaryBtnInput.placeholder = hideTextFields
+                        ? "https://…  or  mailto:…  or  https://wa.me/…"
+                        : "";
+                }
+                if (secondaryBtnInput) {
+                    secondaryBtnInput.setAttribute("type", "text");
+                    secondaryBtnInput.setAttribute("inputmode", "url");
+                    secondaryBtnInput.removeAttribute("pattern");
+                    secondaryBtnInput.placeholder = hideTextFields
+                        ? "https://…  or  mailto:…  or  https://wa.me/…"
+                        : "";
+                }
+            }
+
+            /** Accept any link type; only add https:// when no scheme is present. */
+            function normalizeJobLink(raw) {
+                var s = String(raw == null ? "" : raw).trim();
+                if (!s) return "";
+                // Already has a scheme (http, https, mailto, tel, sms, intentional, etc.)
+                if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return s;
+                // Protocol-relative or site-relative / hash / query
+                if (s.charAt(0) === "/" || s.charAt(0) === "#" || s.charAt(0) === "?" || s.indexOf("//") === 0) return s;
+                return "https://" + s;
             }
 
             function updateMeta(sectionKey, updatedAtIso) {
@@ -2328,6 +2355,12 @@
                         button_secondary: secondaryBtnInput.value.trim(),
                         updated_at: new Date().toISOString()
                     };
+                    if (currentSectionKey === "jobs") {
+                        payload.button_primary = normalizeJobLink(payload.button_primary);
+                        payload.button_secondary = normalizeJobLink(payload.button_secondary);
+                        primaryBtnInput.value = payload.button_primary;
+                        secondaryBtnInput.value = payload.button_secondary;
+                    }
                 }
 
                 const { error } = await client.from("site_content").upsert(payload, { onConflict: "section_key" });

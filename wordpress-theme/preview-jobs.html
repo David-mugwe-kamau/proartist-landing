@@ -174,6 +174,31 @@
         (function () {
             var SUPABASE_URL = "https://qckpjmoajhskxrfcsvpa.supabase.co";
             var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFja3BqbW9hamhza3hyZmNzdnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTAzOTcsImV4cCI6MjA4OTkyNjM5N30.vIS_AWNXn1ezKND9ARMJHNOTcuDR_-7PQ6Qedas_46c";
+
+            function normalizeJobLink(raw) {
+                var s = String(raw == null ? "" : raw).trim();
+                if (!s) return "";
+                if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return s;
+                if (s.charAt(0) === "/" || s.charAt(0) === "#" || s.charAt(0) === "?" || s.indexOf("//") === 0) return s;
+                return "https://" + s;
+            }
+
+            function applyJobLink(el, raw) {
+                if (!el) return;
+                var href = normalizeJobLink(raw);
+                if (!href) return;
+                el.href = href;
+                var scheme = (href.match(/^([a-z][a-z0-9+.-]*):/i) || [])[1];
+                var isWeb = !scheme || scheme === "http" || scheme === "https";
+                if (isWeb) {
+                    el.setAttribute("target", "_blank");
+                    el.setAttribute("rel", "noopener noreferrer");
+                } else {
+                    el.removeAttribute("target");
+                    el.removeAttribute("rel");
+                }
+            }
+
             if (typeof window.supabase === "undefined") return;
             var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             client.from("site_content")
@@ -183,14 +208,8 @@
                 .then(function (res) {
                     var data = res && res.data ? res.data : null;
                     if (!data) return;
-                    var artists = document.getElementById("jobs-apply-artists");
-                    var coordinators = document.getElementById("jobs-apply-coordinators");
-                    if (artists && data.button_primary && String(data.button_primary).trim()) {
-                        artists.href = String(data.button_primary).trim();
-                    }
-                    if (coordinators && data.button_secondary && String(data.button_secondary).trim()) {
-                        coordinators.href = String(data.button_secondary).trim();
-                    }
+                    applyJobLink(document.getElementById("jobs-apply-artists"), data.button_primary);
+                    applyJobLink(document.getElementById("jobs-apply-coordinators"), data.button_secondary);
                 });
         })();
     </script>
